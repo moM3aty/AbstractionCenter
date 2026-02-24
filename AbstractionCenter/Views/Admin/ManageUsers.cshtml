@@ -1,0 +1,66 @@
+﻿@model IEnumerable<AbstractionCenter.Models.Entities.ApplicationUser>
+@{
+    ViewData["Title"] = "إدارة المستخدمين";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    .admin-wrapper { padding: 120px 0 60px; min-height: 70vh; }
+    .admin-table {
+        width: 100%;
+        border-collapse: collapse;
+        background: white;
+        border-radius: var(--radius-md);
+        overflow: hidden;
+        box-shadow: var(--shadow-sm);
+        margin-top: 20px;
+    }
+    .admin-table th, .admin-table td {
+        padding: 15px 20px;
+        text-align: right;
+        border-bottom: 1px solid #e2e8f0;
+    }
+    .admin-table th { background: var(--primary-color); color: white; }
+    .admin-table tr:hover { background: #f8fafc; }
+</style>
+
+<div class="container admin-wrapper">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+        <div>
+            <h2 style="color: var(--primary-color);"><i class="fa-solid fa-users-gear"></i> إدارة المستخدمين</h2>
+            <p style="color: #64748b;">قائمة بجميع المسجلين في النظام (طلاب، محاضرين، إداريين).</p>
+        </div>
+    </div>
+
+    <table class="admin-table">
+        <thead>
+            <tr>
+                <th>الاسم الكامل</th>
+                <th>البريد الإلكتروني</th>
+                <th>تاريخ الانضمام</th>
+                <th>إجراءات</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if(Model != null && Model.Any())
+            {
+                foreach (var user in Model)
+                {
+                    <tr>
+                        <td style="font-weight: 600;">@(string.IsNullOrEmpty(user.FullName) ? "غير محدد" : user.FullName)</td>
+                        <td>@user.Email</td>
+                        <td>@user.CreatedAt.ToString("yyyy-MM-dd")</td>
+                        <td>
+                            <button class="btn btn-outline" style="padding: 5px 15px; font-size: 0.85rem;"><i class="fa-solid fa-user-pen"></i> الصلاحيات</button>
+                        </td>
+                    </tr>
+                }
+            }
+            else
+            {
+                <tr>
+                    <td colspan="4" style="text-align: center; padding: 30px; color: #64748b;">لا يوجد مستخدمين مسجلين.</td>
+                }
+        </tbody>
+    </table>
+</div>

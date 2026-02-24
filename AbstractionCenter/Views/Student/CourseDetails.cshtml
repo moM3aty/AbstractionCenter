@@ -1,0 +1,90 @@
+﻿@{
+    ViewData["Title"] = "محتوى الدورة";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    .course-nav {
+        display: flex;
+        gap: 15px;
+        margin-bottom: 30px;
+        border-bottom: 1px solid #e2e8f0;
+        padding-bottom: 15px;
+    }
+
+        .course-nav button {
+            background: none;
+            border: none;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #64748b;
+            cursor: pointer;
+            padding: 10px 20px;
+            border-radius: var(--radius-md);
+            transition: all 0.3s;
+            font-family: inherit;
+        }
+
+            .course-nav button.active {
+                background: rgba(59, 130, 246, 0.1);
+                color: var(--secondary-color);
+            }
+
+    .assignment-card {
+        border-right: 4px solid var(--accent-color);
+        background: white;
+        padding: 20px;
+        border-radius: var(--radius-md);
+        box-shadow: var(--shadow-sm);
+        margin-bottom: 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+</style>
+
+<div style="padding: 120px 0 60px; background: #f1f5f9;">
+    <div class="container">
+        <a href="/Student/Dashboard" style="color: var(--secondary-color); margin-bottom: 20px; display: inline-block;">
+            <i class="fa-solid fa-arrow-right"></i> العودة للوحة التحكم
+        </a>
+        <h1 style="color: var(--primary-color);">دبلومة تطوير واجهات الويب (Front-End)</h1>
+        <p style="color: #64748b;">المحاضر: أ. أحمد محمود</p>
+    </div>
+</div>
+
+<div class="container" style="padding: 40px 0 80px;">
+    <!-- Tabs -->
+    <div class="course-nav">
+        <button class="active">المحتوى التعليمي</button>
+        <button>الواجبات (Assignments)</button>
+    </div>
+
+    <!-- Content Area -->
+    <div class="glass-card">
+        <!-- Mock Data for Content -->
+        <h3 style="margin-bottom: 20px; color: var(--primary-color);"><i class="fa-solid fa-video" style="color: var(--secondary-color);"></i> المحاضرة الأولى: مقدمة في HTML5</h3>
+        <p style="color: #475569; margin-bottom: 20px;">في هذه المحاضرة سنتعرف على أساسيات بناء هيكل الصفحات باستخدام أحدث وسوم HTML5.</p>
+
+        <div style="background: black; height: 400px; border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; color: white; margin-bottom: 30px;">
+            <i class="fa-solid fa-circle-play" style="font-size: 4rem; opacity: 0.7; cursor: pointer;"></i>
+        </div>
+
+        <a href="#" class="btn btn-outline"><i class="fa-solid fa-download"></i> تحميل ملحقات المحاضرة (PDF)</a>
+    </div>
+
+    <!-- Assignments Area (Will be toggled via JS in a real scenario) -->
+    <div style="margin-top: 40px;">
+        <h3 style="margin-bottom: 20px;">الواجبات المطلوبة</h3>
+
+        <div class="assignment-card">
+            <div>
+                <h4 style="color: var(--primary-color); margin-bottom: 5px;">تصميم صفحة شخصية (Portfolio)</h4>
+                <div style="color: #64748b; font-size: 0.9rem;"><i class="fa-regular fa-clock"></i> آخر موعد للتسليم: 25 أكتوبر 2024</div>
+            </div>
+            <div>
+                <button class="btn btn-primary" style="padding: 8px 20px; font-size: 0.9rem;">رفع الواجب <i class="fa-solid fa-cloud-arrow-up"></i></button>
+            </div>
+        </div>
+    </div>
+</div>

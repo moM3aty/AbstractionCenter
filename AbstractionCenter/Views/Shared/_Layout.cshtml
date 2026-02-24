@@ -1,0 +1,65 @@
+﻿<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - مركز ابستراكشن</title>
+
+    <!-- Google Fonts: Cairo for Arabic -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
+
+    <!-- Font Awesome for Icons (using CDN as it's standard for icons, but CSS is pure) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+
+    <!-- Our Pure CSS Design System -->
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+</head>
+<body>
+    <!-- Premium Navigation -->
+    <nav class="navbar">
+        <div class="container">
+            <a href="/" class="logo">
+                <i class="fa-solid fa-layer-group"></i>
+                ابستراكشن <span>سنتر</span>
+            </a>
+
+            <ul class="nav-links">
+                <li><a href="/" class="active">الرئيسية</a></li>
+                <li><a href="/Home/About">من نحن</a></li>
+                <li><a href="/Home/Tracks">المسارات التدريبية</a></li>
+                <li><a href="/Home/Staff">هيئة التدريس</a></li>
+                <li><a href="/Courses/Open">الدورات المتاحة</a></li>
+                <li><a href="/Home/Contact">تواصل معنا</a></li>
+            </ul>
+
+            <div class="nav-actions">
+                <a href="/Account/Login" class="btn btn-outline">تسجيل الدخول</a>
+                <a href="/Courses/Open" class="btn btn-primary">ابدأ الآن</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content Area -->
+    <main role="main">
+        @RenderBody()
+    </main>
+
+    <!-- Global Footer (Simplified for now) -->
+    <footer style="background: var(--primary-color); color: white; padding: 40px 0; text-align: center; margin-top: 80px;">
+        <div class="container">
+            <h3>مركز ابستراكشن للتدريب وبناء القدرات</h3>
+            <p>نصنع المستقبل بالمعرفة والمهارة.</p>
+            <div style="margin-top: 20px; color: #cbd5e1;">
+                &copy; @DateTime.Now.Year - Abstraction Center. جميع الحقوق محفوظة.
+            </div>
+            
+        </div>
+    </footer>
+
+    <!-- Global Scripts (if needed later) -->
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

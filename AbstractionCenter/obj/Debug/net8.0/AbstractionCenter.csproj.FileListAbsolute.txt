@@ -1,0 +1,8 @@
+D:\Dev\AbstractionCenter\AbstractionCenter\obj\Debug\net8.0\AbstractionCenter.csproj.AssemblyReference.cache
+D:\Dev\AbstractionCenter\AbstractionCenter\obj\Debug\net8.0\AbstractionCenter.GeneratedMSBuildEditorConfig.editorconfig
+D:\Dev\AbstractionCenter\AbstractionCenter\obj\Debug\net8.0\AbstractionCenter.AssemblyInfoInputs.cache
+D:\Dev\AbstractionCenter\AbstractionCenter\obj\Debug\net8.0\AbstractionCenter.AssemblyInfo.cs
+D:\Dev\AbstractionCenter\AbstractionCenter\obj\Debug\net8.0\AbstractionCenter.csproj.CoreCompileInputs.cache
+D:\Dev\AbstractionCenter\AbstractionCenter\obj\Debug\net8.0\AbstractionCenter.MvcApplicationPartsAssemblyInfo.cache
+D:\Dev\AbstractionCenter\AbstractionCenter\obj\Debug\net8.0\AbstractionCenter.RazorAssemblyInfo.cache
+D:\Dev\AbstractionCenter\AbstractionCenter\obj\Debug\net8.0\AbstractionCenter.RazorAssemblyInfo.cs

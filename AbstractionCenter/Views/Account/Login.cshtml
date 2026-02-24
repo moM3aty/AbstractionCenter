@@ -1,0 +1,129 @@
+﻿@{
+    ViewData["Title"] = "تسجيل الدخول";
+    Layout = "~/Views/Shared/_Layout.cshtml"; // استخدام الهيكل الرئيسي
+}
+
+<style>
+    .login-container {
+        min-height: 80vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 120px 20px 60px;
+        background: radial-gradient(circle at center, rgba(59, 130, 246, 0.05), transparent 60%);
+    }
+
+    .login-card {
+        display: flex;
+        max-width: 900px;
+        width: 100%;
+        background: rgba(255, 255, 255, 0.85);
+        backdrop-filter: blur(20px);
+        border: 1px solid var(--glass-border);
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-premium);
+        overflow: hidden;
+    }
+
+    .login-form-section {
+        flex: 1;
+        padding: 50px 40px;
+    }
+
+    .login-image-section {
+        flex: 1;
+        background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+        color: white;
+        padding: 50px 40px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        text-align: center;
+    }
+
+    .form-group {
+        margin-bottom: 25px;
+    }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+
+    .form-control {
+        width: 100%;
+        padding: 15px;
+        border: 2px solid #e2e8f0;
+        border-radius: var(--radius-md);
+        font-family: inherit;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+        background: #f8fafc;
+    }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--secondary-color);
+            background: white;
+            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+        }
+
+    .login-btn {
+        width: 100%;
+        padding: 15px;
+        font-size: 1.1rem;
+        margin-top: 10px;
+    }
+
+    @@media (max-width: 768px) {
+        .login-card {
+            flex-direction: column;
+        }
+
+        .login-image-section {
+            display: none; /* إخفاء الصورة في الشاشات الصغيرة لتوفير المساحة */
+        }
+    }
+</style>
+
+<div class="login-container">
+    <div class="login-card">
+
+        <!-- قسم النموذج -->
+        <div class="login-form-section">
+            <h2 style="font-size: 2rem; color: var(--primary-color); margin-bottom: 10px;">مرحباً بعودتك!</h2>
+            <p style="color: #64748b; margin-bottom: 30px;">قم بتسجيل الدخول للوصول إلى منصتك التعليمية.</p>
+
+            <form asp-controller="Account" asp-action="Login" method="post">
+                @Html.AntiForgeryToken()
+
+                <div class="form-group">
+                    <label for="email">البريد الإلكتروني</label>
+                    <input type="email" id="email" name="email" class="form-control" placeholder="name@example.com" required />
+                </div>
+
+                <div class="form-group">
+                    <label for="password">كلمة المرور</label>
+                    <input type="password" id="password" name="password" class="form-control" placeholder="********" required />
+                </div>
+
+                <div class="form-group" style="display: flex; align-items: center; gap: 10px;">
+                    <input type="checkbox" id="rememberMe" name="rememberMe" style="width: 18px; height: 18px; accent-color: var(--secondary-color);" />
+                    <label for="rememberMe" style="margin: 0; font-weight: normal; cursor: pointer;">تذكرني</label>
+                </div>
+
+                <button type="submit" class="btn btn-primary login-btn">تسجيل الدخول <i class="fa-solid fa-arrow-left-to-bracket" style="margin-right: 8px;"></i></button>
+            </form>
+        </div>
+
+        <!-- قسم الترحيب / الصورة -->
+        <div class="login-image-section">
+            <i class="fa-solid fa-graduation-cap" style="font-size: 5rem; margin-bottom: 20px; color: var(--accent-color);"></i>
+            <h3 style="font-size: 1.8rem; margin-bottom: 15px;">مركز ابستراكشن</h3>
+            <p style="font-size: 1.1rem; opacity: 0.9;">بوابتك نحو التميز الأكاديمي والمهني. تابع تقدمك وتفاعل مع دوراتك في مكان واحد.</p>
+        </div>
+
+    </div>
+</div>

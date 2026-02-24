@@ -1,0 +1,75 @@
+﻿@{
+    ViewData["Title"] = "هيئة التدريس";
+}
+
+<style>
+    .staff-card {
+        text-align: center;
+        padding: 40px 20px;
+    }
+
+    .staff-img {
+        width: 120px;
+        height: 120px;
+        border-radius: 50%;
+        background-color: #e2e8f0;
+        margin: 0 auto 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 3rem;
+        color: #94a3b8;
+        border: 4px solid white;
+        box-shadow: var(--shadow-sm);
+    }
+
+    .staff-title {
+        color: var(--secondary-color);
+        font-weight: 600;
+        font-size: 0.95rem;
+        margin-bottom: 10px;
+    }
+</style>
+
+<section class="hero" style="min-height: 40vh; padding: 120px 0 50px;">
+    <div class="container hero-content">
+        <h1 style="font-size: 3rem;">هيئة التدريس</h1>
+        <p>نفخر في ابستراكشن بنخبة من أفضل الخبراء الأكاديميين والمهنيين الذين ينقلون خبراتهم العملية لك.</p>
+    </div>
+</section>
+
+<section style="padding: 40px 0 80px;">
+    <div class="container">
+        <div class="grid-3">
+            <!-- Staff Member 1 -->
+            <div class="glass-card staff-card">
+                <div class="staff-img">
+                    <i class="fa-solid fa-user-tie"></i>
+                </div>
+                <h3>د. محمد عبد الله</h3>
+                <div class="staff-title">خبير تطوير البرمجيات</div>
+                <p style="color: #64748b; font-size: 0.9rem;">أكثر من 15 عاماً من الخبرة في بناء الأنظمة المعمارية والتطوير البرمجي.</p>
+            </div>
+
+            <!-- Staff Member 2 -->
+            <div class="glass-card staff-card">
+                <div class="staff-img">
+                    <i class="fa-solid fa-user-graduate"></i>
+                </div>
+                <h3>أ. ريم الشافعي</h3>
+                <div class="staff-title">استشاري التسويق الرقمي</div>
+                <p style="color: #64748b; font-size: 0.9rem;">مدربة معتمدة في استراتيجيات التسويق الحديثة وإدارة الحملات الإعلانية الضخمة.</p>
+            </div>
+
+            <!-- Staff Member 3 -->
+            <div class="glass-card staff-card">
+                <div class="staff-img">
+                    <i class="fa-solid fa-user-tie"></i>
+                </div>
+                <h3>م. كريم حسن</h3>
+                <div class="staff-title">مهندس بيانات (Data Engineer)</div>
+                <p style="color: #64748b; font-size: 0.9rem;">متخصص في تحليل البيانات الضخمة وبناء نماذج الذكاء الاصطناعي التنبؤية.</p>
+            </div>
+        </div>
+    </div>
+</section>

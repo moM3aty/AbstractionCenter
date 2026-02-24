@@ -1,0 +1,81 @@
+﻿@model IEnumerable<AbstractionCenter.Models.Entities.StudentCourse>
+@{
+    ViewData["Title"] = "لوحة تحكم الطالب";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    .dashboard-header {
+        background: var(--primary-color);
+        color: white;
+        padding: 120px 0 40px;
+        margin-bottom: 40px;
+    }
+
+    .status-badge {
+        padding: 6px 12px;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        font-weight: 700;
+    }
+
+    .status-inprogress {
+        background-color: rgba(59, 130, 246, 0.1);
+        color: var(--secondary-color);
+        border: 1px solid var(--secondary-color);
+    }
+
+    .status-completed {
+        background-color: rgba(16, 185, 129, 0.1);
+        color: #10b981;
+        border: 1px solid #10b981;
+    }
+</style>
+
+<div class="dashboard-header">
+    <div class="container">
+        <h1 style="font-size: 2.5rem;">مرحباً بك، @ViewData["StudentName"] 👋</h1>
+        <p style="color: #cbd5e1; font-size: 1.1rem; margin-top: 10px;">هذه لوحة التحكم الخاصة بك. يمكنك متابعة دوراتك والوصول للمحتوى من هنا.</p>
+    </div>
+</div>
+
+<div class="container" style="min-height: 40vh; margin-bottom: 80px;">
+    <h2 style="margin-bottom: 30px; color: var(--primary-color); border-bottom: 2px solid var(--glass-border); padding-bottom: 10px;">دوراتي المسجلة</h2>
+
+    @if (!Model.Any())
+    {
+        <div class="glass-card" style="text-align: center; padding: 50px;">
+            <i class="fa-solid fa-folder-open" style="font-size: 4rem; color: #cbd5e1; margin-bottom: 20px;"></i>
+            <h3>لست مسجلاً في أي دورة حالياً</h3>
+            <a href="/Courses/Open" class="btn btn-primary" style="margin-top: 20px;">تصفح الدورات المتاحة</a>
+        </div>
+    }
+    else
+    {
+        <div class="grid-3">
+            @foreach (var enrollment in Model)
+            {
+                <div class="glass-card">
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px;">
+                        <div style="width: 50px; height: 50px; background: var(--primary-color); color: white; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem;">
+                            <i class="fa-solid fa-book-open"></i>
+                        </div>
+
+                        @if (enrollment.Status == AbstractionCenter.Models.Entities.EnrollmentStatus.InProgress)
+                        {
+                            <span class="status-badge status-inprogress">قيد التنفيذ</span>
+                        }
+                        else
+                        {
+                            <span class="status-badge status-completed">مكتملة</span>
+                        }
+                    </div>
+
+                    <h3 style="font-size: 1.2rem; margin-bottom: 15px; min-height: 55px;">@enrollment.Course.Title</h3>
+
+                    <a href="/Student/CourseDetails/@enrollment.Course.Id" class="btn btn-outline" style="width: 100%; text-align: center;">دخول الدورة <i class="fa-solid fa-arrow-left" style="margin-right: 5px;"></i></a>
+                </div>
+            }
+        </div>
+    }
+</div>

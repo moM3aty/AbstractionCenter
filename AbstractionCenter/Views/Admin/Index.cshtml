@@ -1,0 +1,155 @@
+﻿@{
+    ViewData["Title"] = "لوحة تحكم الإدارة";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    .dashboard-wrapper {
+        padding: 120px 0 60px;
+    }
+
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 20px;
+        margin-bottom: 40px;
+    }
+
+    .stat-card {
+        background: white;
+        border-radius: var(--radius-lg);
+        padding: 30px;
+        box-shadow: var(--shadow-sm);
+        display: flex;
+        align-items: center;
+        gap: 20px;
+        border-bottom: 4px solid transparent;
+        transition: transform 0.3s;
+    }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+
+    .stat-icon {
+        width: 60px;
+        height: 60px;
+        border-radius: 15px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2rem;
+    }
+
+    .stat-details h3 {
+        font-size: 2rem;
+        margin: 0;
+        color: var(--primary-color);
+    }
+
+    .stat-details p {
+        margin: 0;
+        color: #64748b;
+        font-weight: 600;
+    }
+
+    .admin-table {
+        width: 100%;
+        border-collapse: collapse;
+        background: white;
+        border-radius: var(--radius-md);
+        overflow: hidden;
+        box-shadow: var(--shadow-sm);
+    }
+
+        .admin-table th, .admin-table td {
+            padding: 15px 20px;
+            text-align: right;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .admin-table th {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .admin-table tr:hover {
+            background: #f8fafc;
+        }
+</style>
+
+<div class="dashboard-wrapper container">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+        <h2 style="color: var(--primary-color);">لوحة الإدارة الرئيسية</h2>
+        <a href="/Admin/ManageCourses" class="btn btn-primary"><i class="fa-solid fa-plus"></i> إضافة دورة جديدة</a>
+    </div>
+
+    <!-- البطاقات الإحصائية -->
+    <div class="stats-grid">
+        <div class="stat-card" style="border-bottom-color: var(--secondary-color);">
+            <div class="stat-icon" style="background: rgba(59, 130, 246, 0.1); color: var(--secondary-color);"><i class="fa-solid fa-users"></i></div>
+            <div class="stat-details">
+                <h3>@ViewBag.TotalStudents</h3>
+                <p>إجمالي الطلاب</p>
+            </div>
+        </div>
+        <div class="stat-card" style="border-bottom-color: var(--accent-color);">
+            <div class="stat-icon" style="background: rgba(245, 158, 11, 0.1); color: var(--accent-color);"><i class="fa-solid fa-layer-group"></i></div>
+            <div class="stat-details">
+                <h3>@ViewBag.TotalCourses</h3>
+                <p>الدورات النشطة</p>
+            </div>
+        </div>
+        <div class="stat-card" style="border-bottom-color: #10b981;">
+            <div class="stat-icon" style="background: rgba(16, 185, 129, 0.1); color: #10b981;"><i class="fa-solid fa-certificate"></i></div>
+            <div class="stat-details">
+                <h3>@ViewBag.PendingCertificates</h3>
+                <p>شهادات بانتظار الاعتماد</p>
+            </div>
+        </div>
+        <div class="stat-card" style="border-bottom-color: #8b5cf6;">
+            <div class="stat-icon" style="background: rgba(139, 92, 246, 0.1); color: #8b5cf6;"><i class="fa-solid fa-chalkboard-user"></i></div>
+            <div class="stat-details">
+                <h3>@ViewBag.ActiveInstructors</h3>
+                <p>أعضاء هيئة التدريس</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- جدول إدارة الاعتمادات والشهادات -->
+    <h3 style="margin-bottom: 20px; color: var(--primary-color);">آخر طلبات إصدار الشهادات</h3>
+    <table class="admin-table">
+        <thead>
+            <tr>
+                <th>رقم الطلب</th>
+                <th>اسم الطالب</th>
+                <th>اسم الدورة</th>
+                <th>حالة الدورة</th>
+                <th>إجراء</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>#10024</td>
+                <td>محمود عبد الرحمن</td>
+                <td>دبلومة تطوير واجهات الويب</td>
+                <td><span style="color: #10b981; font-weight: bold;">مكتملة 100%</span></td>
+                <td>
+                    <form asp-action="ApproveCertificate" method="post" style="display:inline;">
+                        <input type="hidden" name="certificateId" value="1" />
+                        <button type="submit" class="btn btn-outline" style="padding: 5px 15px; font-size: 0.85rem;"><i class="fa-solid fa-check"></i> اعتماد وإصدار</button>
+                    </form>
+                </td>
+            </tr>
+            <tr>
+                <td>#10025</td>
+                <td>سارة علي مسعود</td>
+                <td>دورة التسويق الرقمي</td>
+                <td><span style="color: #10b981; font-weight: bold;">مكتملة 100%</span></td>
+                <td>
+                    <button class="btn btn-outline" style="padding: 5px 15px; font-size: 0.85rem;"><i class="fa-solid fa-check"></i> اعتماد وإصدار</button>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>

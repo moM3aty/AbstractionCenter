@@ -1,0 +1,92 @@
+﻿@{
+    ViewData["Title"] = "التحقق من الشهادة";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    .verify-section {
+        min-height: 80vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(135deg, var(--background-light), #e2e8f0);
+        padding: 120px 20px 60px;
+    }
+    .verify-box {
+        background: white;
+        padding: 50px;
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-premium);
+        max-width: 600px;
+        width: 100%;
+        text-align: center;
+        border-top: 5px solid var(--secondary-color);
+    }
+    .search-bar {
+        display: flex;
+        margin-top: 30px;
+        margin-bottom: 20px;
+    }
+    .search-bar input {
+        flex-grow: 1;
+        padding: 15px 20px;
+        border: 2px solid #e2e8f0;
+        border-radius: 0 var(--radius-md) var(--radius-md) 0; /* RTL Fix */
+        font-size: 1.1rem;
+        font-family: inherit;
+        outline: none;
+    }
+    .search-bar input:focus { border-color: var(--secondary-color); }
+    .search-bar button {
+        background: var(--secondary-color);
+        color: white;
+        border: none;
+        padding: 0 30px;
+        font-size: 1.1rem;
+        border-radius: var(--radius-md) 0 0 var(--radius-md); /* RTL Fix */
+        cursor: pointer;
+        font-family: inherit;
+        font-weight: bold;
+        transition: background 0.3s;
+    }
+    .search-bar button:hover { background: #2563eb; }
+    
+    .certificate-result {
+        margin-top: 30px;
+        padding: 30px;
+        background: rgba(16, 185, 129, 0.05);
+        border: 2px dashed #10b981;
+        border-radius: var(--radius-md);
+        display: none; /* يتم إظهارها برمجياً عند نجاح البحث */
+    }
+</style>
+
+<div class="verify-section">
+    <div class="verify-box">
+        <i class="fa-solid fa-shield-check" style="font-size: 4rem; color: var(--secondary-color); margin-bottom: 20px;"></i>
+        <h1 style="color: var(--primary-color); font-size: 2.2rem; margin-bottom: 10px;">التحقق من صحة الشهادة</h1>
+        <p style="color: #64748b; font-size: 1.1rem;">أدخل رقم الشهادة الفريد (Serial Number) للتحقق من موثوقيتها واعتمادها من مركز ابستراكشن.</p>
+
+        <form method="get" action="/Home/VerifyCertificate" class="search-bar">
+            <input type="text" name="serialNumber" placeholder="مثال: A1B2C3D4E5" required />
+            <button type="submit">تحقق <i class="fa-solid fa-magnifying-glass"></i></button>
+        </form>
+
+        <!-- مثال على شكل النتيجة عند إدخال رقم صحيح (للتوضيح فقط) -->
+        <!-- في البرمجة الفعلية ستضع @if(Model != null) لعرض هذه النتيجة -->
+        <div class="certificate-result" style="display: block;">
+            <div style="width: 60px; height: 60px; background: #10b981; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.8rem; margin: 0 auto 15px;">
+                <i class="fa-solid fa-check"></i>
+            </div>
+            <h3 style="color: #10b981; margin-bottom: 15px;">شهادة معتمدة وموثقة</h3>
+            
+            <div style="text-align: right; color: #334155; line-height: 1.8;">
+                <p><strong>اسم المتدرب:</strong> محمود عبد الرحمن</p>
+                <p><strong>اسم الدورة:</strong> دبلومة تطوير واجهات الويب (Front-End)</p>
+                <p><strong>تاريخ الإصدار:</strong> 20 أكتوبر 2024</p>
+                <p><strong>الرقم المرجعي:</strong> A1B2C3D4E5</p>
+            </div>
+        </div>
+
+    </div>
+</div>

@@ -1,0 +1,119 @@
+﻿@model IEnumerable<AbstractionCenter.Models.Entities.Course>
+@{
+    ViewData["Title"] = "الدورات المتاحة للتسجيل";
+}
+
+<style>
+    /* تنسيقات إضافية خاصة ببطاقات الدورات */
+    .course-card {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        padding: 0;
+    }
+
+    .course-header {
+        background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+        color: white;
+        padding: 30px 20px;
+        text-align: center;
+        border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+        position: relative;
+    }
+
+    .course-body {
+        padding: 25px;
+        flex-grow: 1;
+    }
+
+    .course-date {
+        font-size: 0.9rem;
+        color: #64748b;
+        margin-bottom: 15px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .course-actions {
+        padding: 20px 25px;
+        border-top: 1px solid var(--glass-border);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background: rgba(248, 250, 252, 0.5);
+        border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+    }
+
+    .btn-whatsapp {
+        background-color: #25d366;
+        color: white;
+        width: 45px;
+        height: 45px;
+        border-radius: 50%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 1.5rem;
+        box-shadow: 0 4px 10px rgba(37, 211, 102, 0.3);
+        transition: transform 0.3s ease;
+    }
+
+        .btn-whatsapp:hover {
+            transform: scale(1.1) rotate(-10deg);
+            color: white;
+        }
+
+    .registrar-info {
+        font-size: 0.85rem;
+        color: #64748b;
+        margin-top: 10px;
+        text-align: center;
+    }
+</style>
+
+<section class="hero" style="min-height: 40vh; padding: 120px 0 50px;">
+    <div class="container hero-content">
+        <h1 style="font-size: 3rem;">الدورات المفتوحة للتسجيل</h1>
+        <p>اكتشف أحدث الدورات المتاحة لدينا وسجل الآن للبدء في تطوير مهاراتك وبناء قدراتك.</p>
+    </div>
+</section>
+
+<section style="padding: 40px 0 80px;">
+    <div class="container">
+        <div class="grid-3">
+            @foreach (var course in Model)
+            {
+                <div class="glass-card course-card">
+                    <div class="course-header">
+                        <i class="fa-solid fa-graduation-cap" style="font-size: 3rem; opacity: 0.8; margin-bottom: 15px;"></i>
+                        <h3 style="font-size: 1.4rem; margin: 0;">@course.Title</h3>
+                    </div>
+
+                    <div class="course-body">
+                        <div class="course-date">
+                            <i class="fa-regular fa-calendar-days"></i>
+                            تاريخ البدء المتوقع: @course.StartDate.ToString("dd MMMM yyyy")
+                        </div>
+                        <p>@course.Description</p>
+                    </div>
+
+                    <div class="course-actions">
+                        <!-- زر الاشتراك (يفتح الفورم الخاص بمسجل الدورة) -->
+                        <a href="@course.RegistrationFormUrl" target="_blank" class="btn btn-primary" style="flex-grow: 1; text-align: center; margin-left: 15px;">
+                            <i class="fa-solid fa-pen-to-square"></i> سجل الآن
+                        </a>
+
+                        <!-- زر الواتساب (للتواصل المباشر مع المسجل) -->
+                        <a href="https://wa.me/@course.RegistrarWhatsApp" target="_blank" class="btn-whatsapp" title="تواصل مع مسجل الدورة">
+                            <i class="fa-brands fa-whatsapp"></i>
+                        </a>
+                    </div>
+                    <div class="registrar-info">
+                        مسجل الدورة: <strong>@course.RegistrarName</strong>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</section>

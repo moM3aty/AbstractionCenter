@@ -1,0 +1,79 @@
+﻿@model AbstractionCenter.Models.Entities.Course
+@{
+    ViewData["Title"] = "إدارة محتوى الدورة";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    .instructor-wrapper {
+        padding: 120px 0 60px;
+        min-height: 80vh;
+    }
+
+    .form-control {
+        width: 100%;
+        padding: 12px 15px;
+        border: 2px solid #e2e8f0;
+        border-radius: var(--radius-md);
+        font-family: inherit;
+        font-size: 1rem;
+        margin-bottom: 15px;
+    }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--secondary-color);
+        }
+
+    .section-card {
+        background: white;
+        border-radius: var(--radius-md);
+        padding: 30px;
+        box-shadow: var(--shadow-sm);
+        margin-bottom: 30px;
+    }
+</style>
+
+<div class="container instructor-wrapper">
+    <a href="/Instructor/Dashboard" style="color: var(--secondary-color); margin-bottom: 20px; display: inline-block;">
+        <i class="fa-solid fa-arrow-right"></i> العودة للوحة المحاضر
+    </a>
+
+    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 30px;">
+        <div>
+            <h1 style="color: var(--primary-color);">@(Model?.Title ?? "دورة تجريبية")</h1>
+            <p style="color: #64748b;">إدارة المحتوى وإضافة الواجبات للطلاب</p>
+        </div>
+    </div>
+
+    <div class="section-card">
+        <h3 style="color: var(--primary-color); margin-bottom: 20px;"><i class="fa-solid fa-tasks"></i> إضافة واجب جديد (Assignment)</h3>
+
+        <form asp-controller="Instructor" asp-action="AddAssignment" method="post">
+            <input type="hidden" name="courseId" value="@(Model?.Id ?? 1)" />
+
+            <label style="font-weight: 600; margin-bottom: 5px; display: block;">عنوان الواجب</label>
+            <input type="text" name="title" class="form-control" placeholder="مثال: المشروع النهائي" required />
+
+            <label style="font-weight: 600; margin-bottom: 5px; display: block;">وصف أو متطلبات الواجب</label>
+            <textarea name="description" class="form-control" rows="3" placeholder="اكتب تفاصيل الواجب المطلوبة من الطالب..."></textarea>
+
+            <label style="font-weight: 600; margin-bottom: 5px; display: block;">تاريخ التسليم (Deadline)</label>
+            <input type="date" name="dueDate" class="form-control" required style="width: 250px;" />
+
+            <button type="submit" class="btn btn-primary" style="margin-top: 10px;"><i class="fa-solid fa-plus"></i> حفظ وإضافة الواجب</button>
+        </form>
+    </div>
+
+    <div class="section-card">
+        <h3 style="color: var(--primary-color); margin-bottom: 20px;"><i class="fa-solid fa-video"></i> رفع محتوى تعليمي</h3>
+        <p style="color: #64748b; margin-bottom: 15px;">هذه الميزة تتيح لك رفع فيديوهات ومستندات للطلاب. (سيتم تفعيل الرفع السحابي قريباً)</p>
+
+        <div style="border: 2px dashed #cbd5e1; padding: 40px; text-align: center; border-radius: var(--radius-md); background: #f8fafc; cursor: pointer;">
+            <i class="fa-solid fa-cloud-arrow-up" style="font-size: 3rem; color: #94a3b8; margin-bottom: 15px;"></i>
+            <h4 style="color: var(--text-dark);">اسحب وأفلت الملفات هنا</h4>
+            <p style="color: #64748b; font-size: 0.9rem;">أو اضغط لاختيار ملف من جهازك</p>
+            <button class="btn btn-outline" style="margin-top: 15px;">تصفح الملفات</button>
+        </div>
+    </div>
+</div>
