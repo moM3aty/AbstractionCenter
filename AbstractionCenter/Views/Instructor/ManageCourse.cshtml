@@ -1,92 +1,527 @@
 ﻿@model AbstractionCenter.Models.Entities.Course
 @{
-    ViewData["Title"] = "إدارة محتوى الدورة";
+    ViewData["Title"] = "إدارة هيكل الدورة";
 }
 
 <style>
-    .manage-wrapper {
-        padding: 120px 0 60px;
-        min-height: 80vh;
+    :root {
+        --mc-primary: #0b1120;
+        --mc-gold: #d4af37;
+        --mc-surface: #ffffff;
+        --mc-bg: #f8fafc;
+        --mc-border: #e2e8f0;
+        --mc-radius: 20px;
     }
+
+    .page-header-card {
+        background: linear-gradient(135deg, var(--mc-primary) 0%, #1e293b 100%);
+        border-radius: var(--mc-radius);
+        padding: 40px;
+        color: white;
+        margin-bottom: 30px;
+        box-shadow: 0 20px 40px -10px rgba(11, 17, 32, 0.3);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border: 1px solid rgba(212,175,55,0.2);
+        flex-wrap: wrap;
+        gap: 20px;
+    }
+
+        .page-header-card h1 {
+            font-size: 2rem;
+            font-weight: 900;
+            margin-bottom: 5px;
+            color: var(--mc-gold);
+        }
+
+        .page-header-card p {
+            color: #cbd5e1;
+            margin: 0;
+            font-size: 1.05rem;
+        }
+
+    .btn-back {
+        background: rgba(255, 255, 255, 0.05);
+        color: white;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        padding: 12px 25px;
+        border-radius: 12px;
+        font-weight: 700;
+        transition: 0.3s;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        backdrop-filter: blur(5px);
+    }
+
+        .btn-back:hover {
+            background: var(--mc-gold);
+            color: var(--mc-primary);
+            border-color: var(--mc-gold);
+        }
+
+    /* --- التبويبات الفخمة --- */
+    .premium-tabs {
+        display: flex;
+        gap: 15px;
+        margin-bottom: 30px;
+        background: var(--mc-surface);
+        padding: 10px;
+        border-radius: 16px;
+        box-shadow: 0 10px 30px rgba(11, 17, 32, 0.05);
+        border: 1px solid var(--mc-border);
+        overflow-x: auto;
+    }
+
+    .tab-btn {
+        background: transparent;
+        border: none;
+        padding: 15px 25px;
+        border-radius: 12px;
+        font-weight: 800;
+        font-size: 1.05rem;
+        color: #64748b;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        white-space: nowrap;
+    }
+
+        .tab-btn:hover {
+            color: var(--mc-primary);
+            background: #f1f5f9;
+        }
+
+        .tab-btn.active {
+            background: var(--mc-primary);
+            color: var(--mc-gold);
+            box-shadow: 0 10px 20px rgba(11, 17, 32, 0.15);
+        }
+
+    /* --- المحتوى والنماذج --- */
+    .tab-content {
+        display: none;
+        animation: fadeIn 0.4s ease forwards;
+    }
+
+        .tab-content.active {
+            display: block;
+        }
+    @keyframes fadeIn {
+        from
+
+    {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    }
+
+    .content-grid {
+        display: grid;
+        grid-template-columns: 1.2fr 2fr;
+        gap: 30px;
+        margin-bottom: 60px;
+        align-items: start;
+    }
+
+    .premium-panel {
+        background: var(--mc-surface);
+        border-radius: var(--mc-radius);
+        padding: 35px;
+        box-shadow: 0 15px 35px -10px rgba(11, 17, 32, 0.05);
+        border: 1px solid var(--mc-border);
+    }
+
+    .panel-title {
+        color: var(--mc-primary);
+        font-size: 1.3rem;
+        font-weight: 900;
+        margin-bottom: 25px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        border-bottom: 2px solid var(--mc-bg);
+        padding-bottom: 15px;
+    }
+
+        .panel-title i {
+            color: var(--mc-gold);
+        }
+
+    .form-group {
+        margin-bottom: 20px;
+    }
+
+        .form-group label {
+            display: block;
+            font-weight: 800;
+            color: var(--mc-primary);
+            margin-bottom: 8px;
+            font-size: 0.95rem;
+        }
 
     .form-control {
         width: 100%;
-        padding: 12px 15px;
+        padding: 14px 18px;
         border: 2px solid #e2e8f0;
-        border-radius: var(--radius-md);
+        border-radius: 12px;
         font-family: inherit;
         font-size: 1rem;
-        margin-bottom: 15px;
         background: #f8fafc;
+        transition: 0.3s;
+        color: var(--mc-primary);
     }
 
         .form-control:focus {
             outline: none;
-            border-color: var(--secondary-color);
+            border-color: var(--mc-gold);
             background: white;
+            box-shadow: 0 0 0 4px rgba(212, 175, 55, 0.1);
         }
 
-    .section-card {
+    .btn-submit {
+        background: var(--mc-primary);
+        color: var(--mc-gold);
+        border: none;
+        padding: 15px 30px;
+        border-radius: 12px;
+        font-weight: 900;
+        font-size: 1.05rem;
+        cursor: pointer;
+        width: 100%;
+        transition: 0.3s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+    }
+
+        .btn-submit:hover {
+            background: var(--mc-gold);
+            color: var(--mc-primary);
+            box-shadow: 0 10px 20px rgba(212, 175, 55, 0.2);
+        }
+
+    /* Lists */
+    .premium-list-item {
+        background: #fcfcfd;
+        border: 1px solid #e2e8f0;
+        padding: 20px;
+        border-radius: 16px;
+        margin-bottom: 15px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        transition: 0.3s;
+        border-right: 4px solid var(--mc-gold);
+    }
+
+        .premium-list-item:hover {
+            background: white;
+            box-shadow: 0 10px 20px rgba(11, 17, 32, 0.05);
+            border-color: rgba(212,175,55,0.3);
+        }
+
+    .action-icons {
+        display: flex;
+        gap: 10px;
+    }
+
+    .icon-btn {
+        width: 35px;
+        height: 35px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        border: none;
+        font-size: 1rem;
+        transition: 0.3s;
         background: white;
-        border-radius: var(--radius-lg);
-        padding: 30px;
-        box-shadow: var(--shadow-sm);
-        margin-bottom: 30px;
-        border: 1px solid var(--glass-border);
+        border: 1px solid #e2e8f0;
+    }
+
+    .btn-delete {
+        color: #ef4444;
+    }
+
+        .btn-delete:hover {
+            background: #ef4444;
+            color: white;
+            border-color: #ef4444;
+        }
+
+    .btn-move {
+        color: #64748b;
+    }
+
+        .btn-move:hover {
+            background: #64748b;
+            color: white;
+            border-color: #64748b;
+        }
+
+    .manage-lesson-btn {
+        background: rgba(212, 175, 55, 0.1);
+        color: var(--mc-primary);
+        font-weight: 800;
+        border: 1px solid rgba(212, 175, 55, 0.3);
+        padding: 8px 15px;
+        border-radius: 10px;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        transition: 0.3s;
+        font-size: 0.9rem;
+    }
+
+        .manage-lesson-btn:hover {
+            background: var(--mc-gold);
+            color: var(--mc-primary);
+        }
+
+    @media (max-width: 992px) {
+        .content-grid
+
+    {
+        grid-template-columns: 1fr;
+    }
+
     }
 </style>
 
-<div class="container manage-wrapper">
-    <a href="/Instructor/Dashboard" style="color: var(--secondary-color); margin-bottom: 20px; display: inline-block; font-weight: bold;">
-        <i class="fa-solid fa-arrow-right"></i> العودة لقائمة الدورات
-    </a>
-
-    <div style="margin-bottom: 30px;">
-        <h1 style="color: var(--primary-color);">@(Model?.Title)</h1>
-        <p style="color: #64748b; font-size: 1.1rem;">إضافة الواجبات للطلاب ورفع المحتوى التعليمي</p>
+<div>
+    <div class="page-header-card">
+        <div>
+            <h1>@(Model?.Title)</h1>
+            <p>أدر هيكل المنهج، وصمم استمارة التسجيل، وحدد أسئلة الاختبار النهائي للشهادات.</p>
+        </div>
+        <a href="/Instructor/Dashboard" class="btn-back">
+            العودة للأكاديمية <i class="fa-solid fa-arrow-left"></i>
+        </a>
     </div>
 
-    @if (TempData["SuccessMessage"] != null)
-    {
-        <div style="background: #10b981; color: white; padding: 15px; border-radius: var(--radius-md); margin-bottom: 20px; font-weight: bold;">
-            <i class="fa-solid fa-circle-check"></i> @TempData["SuccessMessage"]
-        </div>
-    }
+    <!-- التبويبات -->
+    <div class="premium-tabs">
+        <button class="tab-btn active" data-target="lessons-tab"><i class="fa-solid fa-folder-tree"></i> وحدات المنهج الدراسي</button>
+        <button class="tab-btn" data-target="exam-tab"><i class="fa-solid fa-graduation-cap"></i> الاختبار النهائي والشهادة</button>
+        <button class="tab-btn" data-target="questions-tab"><i class="fa-solid fa-clipboard-list"></i> تخصيص نموذج التسجيل</button>
+    </div>
 
-    <div class="grid-3" style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px;">
+    <!-- 1. الوحدات الدراسية (Modules / Lessons) -->
+    <div id="lessons-tab" class="tab-content active">
+        <div class="content-grid">
+            <div class="premium-panel">
+                <h3 class="panel-title"><i class="fa-solid fa-folder-plus"></i> إنشاء وحدة جديدة</h3>
+                <form id="form-lesson" action="/Instructor/AddLessonModule" method="post">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="courseId" value="@(Model?.Id)" />
+                    <div class="form-group">
+                        <label>عنوان الوحدة / القسم</label>
+                        <input type="text" name="title" class="form-control" placeholder="مثال: الفصل الأول: المقدمة" required />
+                    </div>
+                    <div class="form-group">
+                        <label>الترتيب (يحدد التسلسل)</label>
+                        <input type="number" name="order" class="form-control" value="@((Model?.Lessons?.Count ?? 0) + 1)" required />
+                    </div>
+                    <button type="submit" class="btn-submit"><i class="fa-solid fa-plus"></i> حفظ وإنشاء</button>
+                </form>
+            </div>
 
-        <!-- قسم إضافة الواجبات -->
-        <div class="section-card">
-            <h3 style="color: var(--primary-color); margin-bottom: 20px;"><i class="fa-solid fa-tasks" style="color: var(--secondary-color);"></i> إضافة واجب (Assignment)</h3>
-
-            <form asp-controller="Instructor" asp-action="AddAssignment" method="post">
-                <input type="hidden" name="courseId" value="@(Model?.Id)" />
-
-                <label style="font-weight: 600; margin-bottom: 5px; display: block; color: var(--text-dark);">عنوان الواجب</label>
-                <input type="text" name="title" class="form-control" placeholder="مثال: إنشاء مشروع التخرج" required />
-
-                <label style="font-weight: 600; margin-bottom: 5px; display: block; color: var(--text-dark);">وصف الواجب</label>
-                <textarea name="description" class="form-control" rows="4" placeholder="اكتب تفاصيل المتطلبات هنا..." required></textarea>
-
-                <label style="font-weight: 600; margin-bottom: 5px; display: block; color: var(--text-dark);">تاريخ التسليم (Deadline)</label>
-                <input type="date" name="dueDate" class="form-control" required />
-
-                <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 10px; padding: 12px;"><i class="fa-solid fa-plus"></i> حفظ ونشر للطلاب</button>
-            </form>
-        </div>
-
-        <!-- قسم رفع المحتوى (UI فقط للتمثيل) -->
-        <div class="section-card">
-            <h3 style="color: var(--primary-color); margin-bottom: 20px;"><i class="fa-solid fa-cloud-arrow-up" style="color: var(--secondary-color);"></i> رفع محتوى تعليمي</h3>
-            <p style="color: #64748b; margin-bottom: 20px;">قم برفع ملفات الـ PDF أو مقاطع الفيديو الخاصة بالدورة ليتمكن الطلاب من مشاهدتها.</p>
-
-            <div style="border: 2px dashed #cbd5e1; padding: 50px 20px; text-align: center; border-radius: var(--radius-md); background: #f8fafc; cursor: pointer; transition: all 0.3s;" onmouseover="this.style.borderColor='var(--secondary-color)'" onmouseout="this.style.borderColor='#cbd5e1'">
-                <i class="fa-solid fa-file-arrow-up" style="font-size: 3.5rem; color: #94a3b8; margin-bottom: 15px;"></i>
-                <h4 style="color: var(--text-dark); margin-bottom: 5px;">اسحب وأفلت الملفات هنا</h4>
-                <p style="color: #64748b; font-size: 0.9rem; margin-bottom: 20px;">أو اضغط لاختيار ملف (PDF, MP4, ZIP)</p>
-                <button class="btn btn-outline">تصفح الجهاز</button>
+            <div class="premium-panel">
+                <h3 class="panel-title"><i class="fa-solid fa-list-check"></i> الهيكل الأكاديمي الحالي</h3>
+                <div>
+                    @if (Model?.Lessons != null && Model.Lessons.Any())
+                    {
+                        foreach (var lesson in Model.Lessons.OrderBy(l => l.Order))
+                        {
+                            <div class="premium-list-item">
+                                <div>
+                                    <strong style="font-size: 1.1rem; color: var(--mc-primary); display: block; margin-bottom: 8px;">
+                                        الوحدة @lesson.Order: @lesson.Title
+                                    </strong>
+                                </div>
+                                <div class="action-icons">
+                                    <a href="/Instructor/ManageLessonDetails/@lesson.Id" class="manage-lesson-btn">
+                                        <i class="fa-solid fa-photo-film"></i> إدارة محتوى الوحدة
+                                    </a>
+                                </div>
+                            </div>
+                        }
+                    }
+                    else
+                    {
+                        <div style="text-align: center; padding: 40px; color: #94a3b8;">
+                            <i class="fa-solid fa-box-open" style="font-size: 3rem; opacity: 0.5; margin-bottom: 15px;"></i>
+                            <p>قم بإنشاء الوحدة الأولى للبدء في رفع المنهج.</p>
+                        </div>
+                    }
+                </div>
             </div>
         </div>
+    </div>
 
+    <!-- 2. الاختبار النهائي والشهادة -->
+    <div id="exam-tab" class="tab-content">
+        <div class="content-grid">
+            <div class="premium-panel">
+                <h3 class="panel-title"><i class="fa-solid fa-certificate"></i> معايير الاجتياز</h3>
+                <form action="/Instructor/SaveExamSettings" method="post">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="courseId" value="@(Model?.Id)" />
+                    <div class="form-group">
+                        <label>نسبة النجاح المطلوبة للحصول على الشهادة (%)</label>
+                        <input type="number" name="passingScorePercentage" class="form-control" value="@(Model?.FinalExam?.PassingScorePercentage ?? 70)" required min="1" max="100" />
+                    </div>
+                    <button type="submit" class="btn-submit"><i class="fa-solid fa-floppy-disk"></i> تحديث المعايير</button>
+                </form>
+
+                <hr style="border:0; border-top:1px solid var(--mc-border); margin:30px 0;" />
+
+                <h3 class="panel-title"><i class="fa-solid fa-plus-circle"></i> إضافة سؤال للاختبار</h3>
+                <form action="/Instructor/AddExamQuestion" method="post">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="courseId" value="@(Model?.Id)" />
+
+                    <div class="form-group">
+                        <label>نص السؤال</label>
+                        <input type="text" name="questionText" class="form-control" required />
+                    </div>
+                    <div class="form-group" style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                        <div><label>الخيار 1</label><input type="text" name="option1" class="form-control" required /></div>
+                        <div><label>الخيار 2</label><input type="text" name="option2" class="form-control" required /></div>
+                        <div><label>الخيار 3</label><input type="text" name="option3" class="form-control" required /></div>
+                        <div><label>الخيار 4</label><input type="text" name="option4" class="form-control" required /></div>
+                    </div>
+                    <div class="form-group">
+                        <label style="color: #ef4444;">الخيار الصحيح (اكتب الرقم من 1 إلى 4)</label>
+                        <input type="number" name="correctOption" class="form-control" min="1" max="4" required />
+                    </div>
+
+                    <button type="submit" class="btn-submit" style="background: #10b981; color: white;"><i class="fa-solid fa-check-double"></i> اعتماد السؤال</button>
+                </form>
+            </div>
+
+            <div class="premium-panel">
+                <h3 class="panel-title"><i class="fa-solid fa-list-check"></i> بنك الأسئلة المعتمد</h3>
+                <div>
+                    @if (Model?.FinalExam?.Questions != null && Model.FinalExam.Questions.Any())
+                    {
+                        int qIndex = 1;
+                        foreach (var eq in Model.FinalExam.Questions)
+                        {
+                            <div class="premium-list-item" style="flex-direction: column; align-items: flex-start; gap: 15px; border-right-color: #10b981;">
+                                <div style="display:flex; justify-content:space-between; width:100%;">
+                                    <strong style="color: var(--mc-primary); font-size: 1.1rem;">@qIndex. @eq.QuestionText</strong>
+                                    <form asp-action="DeleteExamQuestion" method="post" style="display:inline;" onsubmit="return confirm('تأكيد حذف السؤال؟')">
+                                        <input type="hidden" name="id" value="@eq.Id" />
+                                        <button type="submit" class="icon-btn btn-delete"><i class="fa-solid fa-trash-can"></i></button>
+                                    </form>
+                                </div>
+                                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; width: 100%;">
+                                    <div style="padding: 10px; border-radius: 8px; background: @(eq.CorrectOption == 1 ? "rgba(16, 185, 129, 0.1)" : "#f8fafc"); border: 1px solid @(eq.CorrectOption == 1 ? "#10b981" : "#e2e8f0");">1. @eq.Option1</div>
+                                    <div style="padding: 10px; border-radius: 8px; background: @(eq.CorrectOption == 2 ? "rgba(16, 185, 129, 0.1)" : "#f8fafc"); border: 1px solid @(eq.CorrectOption == 2 ? "#10b981" : "#e2e8f0");">2. @eq.Option2</div>
+                                    <div style="padding: 10px; border-radius: 8px; background: @(eq.CorrectOption == 3 ? "rgba(16, 185, 129, 0.1)" : "#f8fafc"); border: 1px solid @(eq.CorrectOption == 3 ? "#10b981" : "#e2e8f0");">3. @eq.Option3</div>
+                                    <div style="padding: 10px; border-radius: 8px; background: @(eq.CorrectOption == 4 ? "rgba(16, 185, 129, 0.1)" : "#f8fafc"); border: 1px solid @(eq.CorrectOption == 4 ? "#10b981" : "#e2e8f0");">4. @eq.Option4</div>
+                                </div>
+                            </div>
+                            qIndex++;
+                        }
+                    }
+                    else
+                    {
+                        <div style="text-align: center; padding: 40px; color: #94a3b8;">
+                            <i class="fa-solid fa-file-circle-question" style="font-size: 3rem; opacity: 0.5; margin-bottom: 15px;"></i>
+                            <p>لا توجد أسئلة في الاختبار النهائي.</p>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 3. تخصيص استمارة التسجيل -->
+    <div id="questions-tab" class="tab-content">
+        <div class="content-grid">
+            <div class="premium-panel">
+                <h3 class="panel-title"><i class="fa-solid fa-clipboard-question"></i> سؤال إضافي لنموذج التسجيل</h3>
+                <p style="color: #64748b; font-size: 0.95rem; margin-bottom: 25px;">البيانات (الاسم، الواتساب، التخصص) تُطلب أساساً. أضف أسئلة لتحديد مستوى الطالب.</p>
+                <form action="/Instructor/AddCourseQuestion" method="post">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="courseId" value="@(Model?.Id)" />
+                    <div class="form-group">
+                        <label>نص السؤال</label>
+                        <input type="text" name="questionText" class="form-control" placeholder="مثال: لماذا ترغب في دراسة هذا المسار؟" required />
+                    </div>
+                    <div class="form-group">
+                        <label>الترتيب</label>
+                        <input type="number" name="order" class="form-control" value="@((Model?.CustomQuestions?.Count ?? 0) + 1)" required />
+                    </div>
+                    <div class="form-group" style="display: flex; align-items: center; gap: 10px; background: #f8fafc; padding: 15px; border-radius: 12px; border: 1px solid #e2e8f0;">
+                        <input type="checkbox" name="isRequired" value="true" checked style="width: 20px; height: 20px; accent-color: var(--mc-gold);" />
+                        <label style="margin: 0;">جعل السؤال إجبارياً</label>
+                    </div>
+                    <button type="submit" class="btn-submit"><i class="fa-solid fa-plus"></i> اعتماد السؤال</button>
+                </form>
+            </div>
+
+            <div class="premium-panel">
+                <h3 class="panel-title"><i class="fa-solid fa-list-ol"></i> الأسئلة المخصصة الحالية</h3>
+                <div>
+                    @if (Model?.CustomQuestions != null && Model.CustomQuestions.Any())
+                    {
+                        foreach (var q in Model.CustomQuestions.OrderBy(q => q.Order))
+                        {
+                            <div class="premium-list-item">
+                                <div>
+                                    <strong style="color: var(--mc-primary); font-size: 1.05rem;">@q.Order. @q.QuestionText</strong>
+                                    @if (q.IsRequired)
+                                    {
+                                        <span style="color: #ef4444; font-size: 0.8rem; font-weight: 800; background: rgba(239, 68, 68, 0.1); padding: 4px 8px; border-radius: 6px; margin-right: 10px;">مطلوب</span>
+                                    }
+                                </div>
+                                <div class="action-icons">
+                                    <form asp-action="DeleteCourseQuestion" method="post" style="display:inline;" onsubmit="return confirm('تأكيد الحذف؟')">
+                                        <input type="hidden" name="id" value="@q.Id" />
+                                        <button type="submit" class="icon-btn btn-delete"><i class="fa-solid fa-trash-can"></i></button>
+                                    </form>
+                                </div>
+                            </div>
+                        }
+                    }
+                    else
+                    {
+                        <div style="text-align: center; padding: 40px; color: #94a3b8;">
+                            <i class="fa-solid fa-clipboard" style="font-size: 3rem; opacity: 0.5; margin-bottom: 15px;"></i>
+                            <p>الاستمارة تحتوي على البيانات الأساسية فقط.</p>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
     </div>
 </div>
+
+@section Scripts {
+    <script>
+        document.querySelectorAll('.tab-btn').forEach(button => {
+            button.addEventListener('click', function() {
+                document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+                document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+                this.classList.add('active');
+                document.getElementById(this.getAttribute('data-target')).classList.add('active');
+            });
+        });
+    </script>
+}

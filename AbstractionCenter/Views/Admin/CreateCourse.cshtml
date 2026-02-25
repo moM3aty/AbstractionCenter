@@ -1,16 +1,49 @@
 ﻿@model AbstractionCenter.Models.Entities.Course
 @{
-    ViewData["Title"] = "إضافة دورة جديدة";
+    ViewData["Title"] = "إنشاء دورة تدريبية جديدة";
 }
 
 <style>
-    .form-card {
-        background: var(--card-bg);
-        border-radius: var(--radius-box);
-        padding: 40px;
-        box-shadow: var(--shadow-card);
-        max-width: 800px;
+    .premium-form-card {
+        background: #ffffff;
+        border-radius: 24px;
+        padding: 50px;
+        box-shadow: 0 15px 35px -10px rgba(11, 17, 32, 0.08);
+        border: 1px solid rgba(212, 175, 55, 0.15);
+        max-width: 900px;
         margin: 0 auto;
+    }
+
+    .form-header {
+        text-align: center;
+        margin-bottom: 40px;
+    }
+
+    .form-header-icon {
+        width: 80px;
+        height: 80px;
+        background: linear-gradient(135deg, rgba(212, 175, 55, 0.15), rgba(212, 175, 55, 0.05));
+        color: #d4af37;
+        border-radius: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2.5rem;
+        margin: 0 auto 20px;
+        border: 1px solid rgba(212, 175, 55, 0.3);
+        transform: rotate(10deg);
+    }
+
+    .form-header h2 {
+        color: #0b1120;
+        font-size: 2rem;
+        font-weight: 900;
+        margin-bottom: 10px;
+    }
+
+    .form-header p {
+        color: #64748b;
+        font-size: 1.1rem;
     }
 
     .form-group {
@@ -20,117 +53,179 @@
         .form-group label {
             display: block;
             margin-bottom: 10px;
-            font-weight: 700;
-            color: var(--text-main);
-            font-size: 0.95rem;
+            font-weight: 800;
+            color: #0b1120;
+            font-size: 1.05rem;
         }
 
     .form-control {
         width: 100%;
-        padding: 15px 20px;
-        border: 2px solid var(--border-color);
-        border-radius: 15px;
+        padding: 16px 20px;
+        border: 2px solid #e2e8f0;
+        border-radius: 16px;
         font-family: inherit;
         font-size: 1rem;
-        background: var(--bg-body);
-        transition: 0.3s;
+        background: #f8fafc;
+        transition: all 0.3s ease;
+        color: #1e293b;
     }
 
         .form-control:focus {
             outline: none;
-            border-color: var(--sidebar-active-bg);
-            background: white;
+            border-color: #d4af37;
+            background: #ffffff;
+            box-shadow: 0 0 0 4px rgba(212, 175, 55, 0.15);
         }
 
     .form-row {
         display: grid;
         grid-template-columns: 1fr 1fr;
-        gap: 20px;
+        gap: 25px;
     }
 
-    .section-title {
-        color: var(--sidebar-active-bg);
-        font-size: 1.2rem;
-        font-weight: 800;
-        margin: 35px 0 20px;
-        border-bottom: 2px solid var(--bg-body);
-        padding-bottom: 10px;
+    .section-divider {
+        color: #0b1120;
+        font-size: 1.4rem;
+        font-weight: 900;
+        margin: 40px 0 25px;
+        padding-bottom: 15px;
+        border-bottom: 2px solid #e2e8f0;
+        display: flex;
+        align-items: center;
+        gap: 10px;
     }
 
-    .btn-save {
-        background: var(--sidebar-active-bg);
-        color: white;
-        border: none;
-        padding: 15px 40px;
-        border-radius: 15px;
-        font-weight: bold;
-        font-size: 1.1rem;
-        cursor: pointer;
-        box-shadow: 0 10px 20px rgba(67, 24, 255, 0.2);
-        transition: 0.3s;
-        width: 100%;
-    }
-
-        .btn-save:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 15px 25px rgba(67, 24, 255, 0.3);
+        .section-divider i {
+            color: #d4af37;
         }
+
+    .btn-submit {
+        background: linear-gradient(135deg, #d4af37, #fef08a);
+        color: #0b1120;
+        border: none;
+        padding: 18px 40px;
+        border-radius: 50px;
+        font-weight: 900;
+        font-size: 1.15rem;
+        cursor: pointer;
+        box-shadow: 0 10px 25px -5px rgba(212, 175, 55, 0.4);
+        transition: all 0.4s ease;
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+    }
+
+        .btn-submit:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 35px -5px rgba(212, 175, 55, 0.6);
+            background: linear-gradient(135deg, #b48a25, #d4af37);
+            color: white;
+        }
+
+    .btn-cancel {
+        display: block;
+        text-align: center;
+        margin-top: 20px;
+        color: #64748b;
+        font-weight: 700;
+        text-decoration: none;
+        transition: 0.3s;
+    }
+
+        .btn-cancel:hover {
+            color: #ef4444;
+        }
+
+    @@media (max-width: 768px) {
+        .form-row
+
+    {
+        grid-template-columns: 1fr;
+    }
+
+    .premium-form-card {
+        padding: 30px 20px;
+    }
+
+    }
 </style>
 
-<div class="form-card">
-    <h2 style="color: var(--text-main); margin-bottom: 10px; text-align: center;">إنشاء دورة تدريبية</h2>
-    <p style="text-align: center; color: var(--text-muted); margin-bottom: 30px;">قم بملء البيانات الأساسية لنشر الدورة على المنصة.</p>
+<div class="premium-form-card">
+    <div class="form-header">
+        <div class="form-header-icon">
+            <i class="fa-solid fa-layer-group" style="transform: rotate(-10deg);"></i>
+        </div>
+        <h2>إعداد مسار تدريبي جديد</h2>
+        <p>قم بملء البيانات الأساسية لنشر الدورة على المنصة بأفضل صورة.</p>
+    </div>
 
-    <form asp-action="CreateCourse" method="post">
+    <form asp-action="CreateCourse" method="post" enctype="multipart/form-data">
+        @Html.AntiForgeryToken()
+
         <div class="form-group">
-            <label>اسم الدورة / المسار</label>
+            <label>اسم الدورة / المسار <span style="color: #ef4444;">*</span></label>
             <input asp-for="Title" class="form-control" placeholder="مثال: دبلومة البرمجة المتقدمة" required />
+            <span asp-validation-for="Title" class="text-danger" style="font-size: 0.85rem; font-weight: bold; color: #ef4444; margin-top: 5px; display: block;"></span>
         </div>
 
         <div class="form-group">
-            <label>وصف الدورة (نبذة تعريفية للطلاب)</label>
-            <textarea asp-for="Description" class="form-control" rows="4" placeholder="اكتب نبذة عن الدورة ومحتواها..."></textarea>
+            <label>وصف الدورة (نبذة تعريفية للطلاب) <span style="color: #ef4444;">*</span></label>
+            <textarea asp-for="Description" class="form-control" rows="5" placeholder="اكتب نبذة شيقة عن الدورة ومخرجاتها التعليمية..." required></textarea>
         </div>
 
         <div class="form-row">
             <div class="form-group">
-                <label>تاريخ البدء المتوقع</label>
+                <label>صورة غلاف الدورة (JPG, PNG)</label>
+                <div style="position: relative;">
+                    <input asp-for="ImageFile" type="file" class="form-control" accept="image/*" style="padding-left: 45px;" />
+                    <i class="fa-solid fa-cloud-arrow-up" style="position: absolute; left: 18px; top: 18px; color: #d4af37; font-size: 1.2rem; pointer-events: none;"></i>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>تاريخ البدء المتوقع <span style="color: #ef4444;">*</span></label>
                 <input asp-for="StartDate" type="date" class="form-control" required />
             </div>
-            <div class="form-group">
-                <label>حالة الدورة</label>
-                <select asp-for="Status" class="form-control">
-                    <option value="0">مفتوحة للتسجيل</option>
-                    <option value="1">قيد التنفيذ</option>
-                    <option value="2">مكتملة</option>
-                </select>
-            </div>
         </div>
 
+        <div class="form-group">
+            <label>حالة الدورة الافتراضية</label>
+            <select asp-for="Status" class="form-control">
+                <option value="0">مفتوحة للتسجيل (مرئية للطلاب)</option>
+                <option value="1">قيد التنفيذ (مغلقة للتسجيل ولكن نشطة)</option>
+                <option value="2">مكتملة</option>
+                <option value="3">مغلقة (مخفية)</option>
+            </select>
+        </div>
 
-        <h4 class="section-title"><i class="fa-solid fa-user-tie"></i> إسناد الدورة لمحاضر</h4>
-        <div class="form-row">
-            <div class="form-group" style="grid-column: 1 / -1;">
-                <label>اختر المحاضر المسؤول عن الدورة</label>
-                <select asp-for="RegistrarUserId" class="form-control" required>
-                    <option value="">-- اضغط لاختيار محاضر من فريق العمل --</option>
-                    @if (ViewBag.Instructors != null)
+        <div class="section-divider">
+            <i class="fa-solid fa-chalkboard-user"></i> تعيين هيئة التدريس
+        </div>
+
+        <div class="form-group">
+            <label>اختر المحاضر المسؤول عن الدورة <span style="color: #ef4444;">*</span></label>
+            <select asp-for="RegistrarUserId" class="form-control" required>
+                <option value="">-- انقر لاختيار محاضر معتمد من القائمة --</option>
+                @if (ViewBag.Instructors != null)
+                {
+                    foreach (var inst in ViewBag.Instructors)
                     {
-                        foreach (var inst in ViewBag.Instructors)
-                        {
-                            <option value="@inst.Id">@inst.FullName - (@inst.Specialization)</option>
-                        }
+                        <option value="@inst.Id">@inst.FullName - (@inst.Specialization)</option>
                     }
-                </select>
-                <small style="color: var(--text-muted); margin-top: 5px; display: block;">ملاحظة: سيتم سحب اسم المحاضر ورقم هاتفه تلقائياً من ملفه الشخصي.</small>
-            </div>
+                }
+            </select>
+            <small style="color: #64748b; margin-top: 8px; display: block; font-weight: 600;">
+                <i class="fa-solid fa-circle-info" style="color: #3b82f6;"></i> سيتم سحب اسم المحاضر ورقم هاتفه تلقائياً ليظهر للطلاب للتواصل.
+            </small>
         </div>
 
-        <div style="margin-top: 40px;">
-            <button type="submit" class="btn-save">حفظ ونشر الدورة <i class="fa-solid fa-paper-plane" style="margin-right: 8px;"></i></button>
-            <div style="text-align: center; margin-top: 15px;">
-                <a href="/Admin/ManageCourses" style="color: var(--text-muted); font-weight: 600;">إلغاء والعودة للقائمة</a>
-            </div>
+        <div style="margin-top: 50px;">
+            <button type="submit" class="btn-submit">
+                نشر الدورة الآن <i class="fa-solid fa-rocket"></i>
+            </button>
+            <a href="/Admin/ManageCourses" class="btn-cancel">إلغاء والعودة للقائمة</a>
         </div>
     </form>
 </div>

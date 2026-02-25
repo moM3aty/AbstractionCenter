@@ -3,293 +3,268 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - نظام إدارة أبستراكشن</title>
+    <title>@ViewData["Title"] - لوحة التحكم | ابستراكشن</title>
+    <!-- Google Fonts: Cairo -->
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
     <style>
-        /* Modern Enterprise Dashboard UI */
+        /* --- Premium Admin Layout Variables --- */
         :root {
-            --bg-body: #f4f7fe;
-            --bg-sidebar: #ffffff;
-            --sidebar-text: #a3aed1;
-            --sidebar-active-bg: #4318ff;
-            --sidebar-active-text: #ffffff;
-            --sidebar-hover: #f4f7fe;
-            --card-bg: #ffffff;
-            --text-main: #2b3674;
-            --text-muted: #a3aed1;
-            --border-color: #e2e8f0;
-            --shadow-card: 0px 18px 40px rgba(112, 144, 176, 0.12);
-            --radius-box: 20px;
+            --admin-bg: #f4f7fb;
+            --admin-sidebar: #0b1120;
+            --admin-surface: #ffffff;
+            --admin-gold: #d4af37;
+            --admin-gold-hover: #b48a25;
+            --admin-text: #1e293b;
+            --admin-muted: #64748b;
+            --admin-border: #e2e8f0;
+            --sidebar-width: 280px;
+            --header-height: 80px;
+            --transition-speed: 0.3s;
         }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Cairo', sans-serif;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Cairo', sans-serif; }
+        body { background-color: var(--admin-bg); color: var(--admin-text); display: flex; overflow-x: hidden; min-height: 100vh; }
+        a { text-decoration: none; color: inherit; }
 
-        body {
-            background-color: var(--bg-body);
-            color: var(--text-main);
-            display: flex;
-            overflow-x: hidden;
-            min-height: 100vh;
-        }
-
-        a {
-            text-decoration: none;
-            color: inherit;
-        }
-
-        /* Sidebar Styling */
+        /* --- Sidebar Styling --- */
         .sidebar {
-            width: 280px;
-            background-color: var(--bg-sidebar);
+            width: var(--sidebar-width);
+            background-color: var(--admin-sidebar);
             height: 100vh;
             position: fixed;
             right: 0;
             top: 0;
             z-index: 1000;
-            box-shadow: 14px 17px 40px 4px rgba(112, 144, 176, 0.08);
             display: flex;
             flex-direction: column;
-            transition: all 0.3s ease;
-        }
-
-        .sidebar-header {
-            padding: 40px 0 30px 0;
-            text-align: center;
-            border-bottom: 1px solid var(--border-color);
-            margin-bottom: 20px;
-        }
-
-            .sidebar-header h2 {
-                font-weight: 800;
-                font-size: 1.8rem;
-                color: var(--text-main);
-                letter-spacing: -0.5px;
-            }
-
-                .sidebar-header h2 span {
-                    color: var(--sidebar-active-bg);
-                }
-
-        .menu-category {
-            padding: 10px 30px;
-            font-size: 0.8rem;
-            font-weight: 700;
-            color: var(--text-muted);
-            text-transform: uppercase;
-            margin-top: 10px;
-        }
-
-        .sidebar-menu {
-            list-style: none;
-            padding: 0 15px;
-            flex-grow: 1;
+            transition: transform var(--transition-speed) cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: -5px 0 25px rgba(0,0,0,0.1);
             overflow-y: auto;
         }
+        .sidebar::-webkit-scrollbar { width: 6px; }
+        .sidebar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 10px; }
 
-            .sidebar-menu li {
-                margin-bottom: 5px;
-            }
+        .sidebar-header {
+            padding: 30px 20px;
+            text-align: center;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            position: sticky;
+            top: 0;
+            background: var(--admin-sidebar);
+            z-index: 10;
+        }
+        .sidebar-header h2 {
+            font-weight: 900;
+            font-size: 1.8rem;
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        .sidebar-header h2 i { color: var(--admin-gold); }
 
-            .sidebar-menu a {
-                display: flex;
-                align-items: center;
-                gap: 15px;
-                padding: 14px 20px;
-                border-radius: 15px;
-                font-weight: 600;
-                font-size: 1rem;
-                color: #64748b;
-                transition: all 0.3s ease;
-            }
+        .menu-category {
+            padding: 20px 25px 10px;
+            font-size: 0.8rem;
+            font-weight: 800;
+            color: #475569;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
 
-                .sidebar-menu a i {
-                    font-size: 1.2rem;
-                    width: 25px;
-                    text-align: center;
-                }
+        .sidebar-menu { list-style: none; padding: 0 15px 20px; flex-grow: 1; }
+        .sidebar-menu li { margin-bottom: 8px; }
+        .sidebar-menu a {
+            display: flex; align-items: center; gap: 15px; padding: 12px 20px;
+            border-radius: 12px; font-weight: 700; font-size: 1.05rem; color: #94a3b8;
+            transition: all var(--transition-speed);
+            position: relative;
+            overflow: hidden;
+        }
+        .sidebar-menu a i { font-size: 1.2rem; width: 25px; text-align: center; transition: transform var(--transition-speed); }
+        
+        .sidebar-menu a:hover { color: #ffffff; background: rgba(255, 255, 255, 0.05); transform: translateX(-5px); }
+        .sidebar-menu a:hover i { color: var(--admin-gold); transform: scale(1.1); }
+        
+        .sidebar-menu a.active {
+            background: linear-gradient(135deg, var(--admin-gold), #fef08a);
+            color: var(--admin-sidebar);
+            box-shadow: 0 10px 20px -5px rgba(212, 175, 55, 0.4);
+        }
+        .sidebar-menu a.active i { color: var(--admin-sidebar); }
 
-                .sidebar-menu a:hover {
-                    background-color: var(--sidebar-hover);
-                    color: var(--sidebar-active-bg);
-                    transform: translateX(-5px);
-                }
+        /* Logout Button */
+        .logout-container { padding: 20px; border-top: 1px solid rgba(255,255,255,0.05); }
+        .btn-logout {
+            width: 100%; background: rgba(239, 68, 68, 0.1); color: #ef4444;
+            border: 1px solid rgba(239, 68, 68, 0.2); padding: 12px; border-radius: 12px;
+            font-weight: 800; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px;
+            font-size: 1rem; transition: var(--transition-speed);
+        }
+        .btn-logout:hover { background: #ef4444; color: white; box-shadow: 0 5px 15px rgba(239, 68, 68, 0.3); }
 
-                .sidebar-menu a.active {
-                    background-color: var(--sidebar-active-bg);
-                    color: var(--sidebar-active-text);
-                    box-shadow: 0 10px 20px rgba(67, 24, 255, 0.2);
-                }
-
-        /* Main Content Wrapper */
+        /* --- Main Content Wrapper --- */
         .main-wrapper {
-            margin-right: 280px;
+            margin-right: var(--sidebar-width);
             flex-grow: 1;
             display: flex;
             flex-direction: column;
-            width: calc(100% - 280px);
-            transition: all 0.3s ease;
+            width: calc(100% - var(--sidebar-width));
+            transition: margin var(--transition-speed), width var(--transition-speed);
+            min-height: 100vh;
         }
 
-        /* Top Navbar */
+        /* --- Top Navbar --- */
         .top-navbar {
-            height: 90px;
+            height: var(--header-height);
             padding: 0 40px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            background: rgba(244, 247, 254, 0.9);
-            backdrop-filter: blur(10px);
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
             position: sticky;
             top: 0;
             z-index: 999;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.02);
+            border-bottom: 1px solid var(--admin-border);
         }
 
-        .page-title {
-            font-size: 2rem;
-            font-weight: 700;
-            color: var(--text-main);
+        .toggle-btn {
+            display: none; /* Hidden on desktop */
+            background: none; border: none; font-size: 1.5rem; color: var(--admin-text); cursor: pointer;
         }
 
-        .page-breadcrumb {
-            font-size: 0.9rem;
-            color: var(--text-muted);
-            font-weight: 500;
+        .page-header h1 { font-size: 1.5rem; font-weight: 900; color: var(--admin-text); margin: 0; }
+        .page-header p { font-size: 0.9rem; color: var(--admin-muted); margin: 0; font-weight: 600; }
+
+        .top-actions { display: flex; align-items: center; gap: 25px; }
+        .action-icon {
+            width: 45px; height: 45px; border-radius: 50%; background: var(--admin-bg);
+            display: flex; align-items: center; justify-content: center; color: var(--admin-muted);
+            font-size: 1.2rem; cursor: pointer; transition: 0.3s; border: 1px solid var(--admin-border);
+            position: relative;
+        }
+        .action-icon:hover { color: var(--admin-gold); border-color: var(--admin-gold); transform: translateY(-2px); box-shadow: 0 5px 15px rgba(212, 175, 55, 0.2); }
+        .action-icon .badge {
+            position: absolute; top: 0; right: 0; background: #ef4444; color: white;
+            font-size: 0.7rem; font-weight: bold; width: 18px; height: 18px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center; border: 2px solid white;
         }
 
-        .top-actions {
-            display: flex;
-            align-items: center;
-            gap: 20px;
-            background: white;
-            padding: 10px 20px;
-            border-radius: 30px;
-            box-shadow: var(--shadow-card);
+        .admin-profile {
+            display: flex; align-items: center; gap: 12px; padding: 5px 15px 5px 5px;
+            background: var(--admin-bg); border-radius: 30px; border: 1px solid var(--admin-border);
+            cursor: pointer; transition: 0.3s;
+        }
+        .admin-profile:hover { border-color: var(--admin-gold); }
+        .admin-profile img { width: 35px; height: 35px; border-radius: 50%; object-fit: cover; }
+        .admin-profile-info { display: flex; flex-direction: column; }
+        .admin-profile-info span.name { font-weight: 800; font-size: 0.95rem; color: var(--admin-text); line-height: 1.2; }
+        .admin-profile-info span.role { font-size: 0.8rem; color: var(--admin-gold); font-weight: 700; }
+
+        /* --- Content Area --- */
+        .content-area { padding: 40px; flex-grow: 1; position: relative; }
+        
+        /* Subtle Background Glow */
+        .content-area::before {
+            content: ''; position: absolute; top: 0; left: 10%; width: 400px; height: 400px;
+            background: radial-gradient(circle, rgba(212, 175, 55, 0.05) 0%, transparent 70%);
+            border-radius: 50%; pointer-events: none; z-index: -1;
         }
 
-        .search-bar {
-            display: flex;
-            align-items: center;
-            background: var(--bg-body);
-            border-radius: 20px;
-            padding: 8px 20px;
-        }
-
-            .search-bar input {
-                border: none;
-                background: transparent;
-                outline: none;
-                padding-right: 10px;
-                font-family: inherit;
-                width: 200px;
-            }
-
-            .search-bar i {
-                color: var(--text-main);
-            }
-
-        .icon-btn {
-            color: var(--text-muted);
-            font-size: 1.2rem;
-            cursor: pointer;
-            transition: 0.3s;
-        }
-
-            .icon-btn:hover {
-                color: var(--sidebar-active-bg);
-            }
-
-        .user-profile {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background: var(--sidebar-active-bg);
-            color: white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-            cursor: pointer;
-        }
-
-        /* Content Area */
-        .content-area {
-            padding: 30px 40px 60px;
-            flex-grow: 1;
-        }
-
-        /* Common Card Style for Admin Pages */
-        .admin-card {
-            background: var(--card-bg);
-            border-radius: var(--radius-box);
-            padding: 30px;
-            box-shadow: var(--shadow-card);
-            border: none;
-            margin-bottom: 30px;
-        }
-
+        /* --- Responsive Design --- */
         @@media (max-width: 1024px) {
-            .sidebar
-
-        {
-            transform: translateX(100%);
+            .sidebar { transform: translateX(100%); }
+            .sidebar.active { transform: translateX(0); }
+            .main-wrapper { margin-right: 0; width: 100%; }
+            .toggle-btn { display: block; }
+            .content-area { padding: 25px; }
+            .top-navbar { padding: 0 20px; }
+        }
+        @@media (max-width: 768px) {
+            .page-header p { display: none; }
+            .admin-profile-info { display: none; }
+            .admin-profile { padding: 5px; }
         }
 
-        .main-wrapper {
-            margin-right: 0;
-            width: 100%;
+        /* Overlay for mobile */
+        .sidebar-overlay {
+            position: fixed; inset: 0; background: rgba(11, 17, 32, 0.5); backdrop-filter: blur(4px);
+            z-index: 999; display: none; opacity: 0; transition: opacity var(--transition-speed);
         }
-
-        .top-navbar {
-            padding: 0 20px;
-        }
-
-        .content-area {
-            padding: 20px;
-        }
-
-        }
+        .sidebar-overlay.active { display: block; opacity: 1; }
     </style>
 </head>
 <body>
 
-    <!-- Sidebar -->
-    <aside class="sidebar">
-        <div class="sidebar-header">
-            <h2>أبستراكشن <span>.</span></h2>
-        </div>
+    <!-- Mobile Overlay -->
+    <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
 
+    <!-- Sidebar -->
+    <aside class="sidebar" id="adminSidebar">
+        <div class="sidebar-header">
+            <h2><i class="fa-solid fa-crown"></i> أبستراكشن</h2>
+        </div>
+        
         <ul class="sidebar-menu">
             @if (User.IsInRole("Admin"))
             {
                 <div class="menu-category">النظرة العامة</div>
-                <li><a href="/Admin/Index" class="active"><i class="fa-solid fa-house"></i> لوحة القيادة</a></li>
-
-                <div class="menu-category">العمليات التعليمية</div>
-                <li><a href="/Admin/ManageCourses"><i class="fa-solid fa-layer-group"></i> المسارات والدورات</a></li>
-                <li><a href="/Admin/RegistrationRequests"><i class="fa-solid fa-inbox"></i> طلبات الانضمام</a></li>
-                <li><a href="/Admin/Certificates"><i class="fa-solid fa-certificate"></i> إدارة الشهادات</a></li>
+                <li>
+                    <a href="/Admin/Index" class="@(ViewContext.RouteData.Values["Action"]?.ToString() == "Index" && ViewContext.RouteData.Values["Controller"]?.ToString() == "Admin" ? "active" : "")">
+                        <i class="fa-solid fa-chart-pie"></i> لوحة القيادة
+                    </a>
+                </li>
+                
+                <div class="menu-category">إدارة التدريب</div>
+                <li>
+                    <a href="/Admin/ManageCourses" class="@(ViewContext.RouteData.Values["Action"]?.ToString()?.Contains("Course") == true ? "active" : "")">
+                        <i class="fa-solid fa-layer-group"></i> الدورات والمسارات
+                    </a>
+                </li>
+                <li>
+                    <a href="/Admin/RegistrationRequests" class="@(ViewContext.RouteData.Values["Action"]?.ToString() == "RegistrationRequests" ? "active" : "")">
+                        <i class="fa-solid fa-inbox"></i> طلبات التسجيل
+                    </a>
+                </li>
+                <li>
+                    <a href="/Admin/InstructorApplications" class="@(ViewContext.RouteData.Values["Action"]?.ToString() == "InstructorApplications" ? "active" : "")">
+                        <i class="fa-solid fa-chalkboard-user"></i> توظيف المحاضرين
+                    </a>
+                </li>
+                <li>
+                    <a href="/Admin/Certificates" class="@(ViewContext.RouteData.Values["Action"]?.ToString() == "Certificates" ? "active" : "")">
+                        <i class="fa-solid fa-award"></i> اعتماد الشهادات
+                    </a>
+                </li>
 
                 <div class="menu-category">إدارة النظام</div>
-                <li><a href="/Admin/ManageUsers"><i class="fa-solid fa-users-gear"></i> المستخدمين والصلاحيات</a></li>
-
-                <li><a href="/SiteSettings/Index"><i class="fa-solid fa-palette"></i> تصميم ومحتوى الموقع</a></li>
+                <li>
+                    <a href="/Admin/ManageUsers" class="@(ViewContext.RouteData.Values["Action"]?.ToString() == "ManageUsers" ? "active" : "")">
+                        <i class="fa-solid fa-users-gear"></i> المستخدمين والصلاحيات
+                    </a>
+                </li>
+                <li>
+                    <a href="/SiteSettings/Index" class="@(ViewContext.RouteData.Values["Controller"]?.ToString() == "SiteSettings" ? "active" : "")">
+                        <i class="fa-solid fa-palette"></i> تصميم ومحتوى الموقع
+                    </a>
+                </li>
             }
             else if (User.IsInRole("Instructor"))
             {
-                <div class="menu-category">إدارة التدريب</div>
-                <li><a href="/Instructor/Dashboard" class="active"><i class="fa-solid fa-chalkboard-user"></i> دوراتي المسندة</a></li>
+                <div class="menu-category">بوابة المحاضر</div>
+                <li><a href="/Instructor/Dashboard" class="active"><i class="fa-solid fa-chalkboard-user"></i> الأكاديمية (دوراتي)</a></li>
             }
         </ul>
 
-        <div style="padding: 20px;">
+        <div class="logout-container">
             <form asp-controller="Account" asp-action="Logout" method="post">
-                <button type="submit" style="width: 100%; background: rgba(255, 59, 48, 0.1); color: #ff3b30; border: none; padding: 15px; border-radius: 15px; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; font-family: inherit; font-size: 1rem; transition: 0.3s;">
+                <button type="submit" class="btn-logout">
                     <i class="fa-solid fa-arrow-right-from-bracket"></i> تسجيل الخروج
                 </button>
             </form>
@@ -297,16 +272,49 @@
     </aside>
 
     <!-- Main Content -->
-    <div class="main-wrapper">
-        <!-- Top Navbar -->
+    <div class="main-wrapper">      
         
+        <!-- Top Navbar -->
+        <header class="top-navbar">
+            <div style="display: flex; align-items: center; gap: 20px;">
+                <button class="toggle-btn" onclick="toggleSidebar()">
+                    <i class="fa-solid fa-bars-staggered"></i>
+                </button>
+                <div class="page-header">
+                    <h1>@ViewData["Title"]</h1>
+                    <p>نظام الإدارة المتكامل | Premium Edition</p>
+                </div>
+            </div>
 
-        <!-- Dynamic Content (هذا هو السطر الذي كان مفقوداً ويسبب الخطأ) -->
-        <div class="content-area">
+            <div class="top-actions">
+                <div class="action-icon" title="الإشعارات">
+                    <i class="fa-regular fa-bell"></i>
+                    <span class="badge">3</span>
+                </div>
+                
+                <div class="admin-profile" onclick="window.location.href='/'" title="العودة للموقع">
+                    <img src="https://ui-avatars.com/api/?name=Admin&background=0b1120&color=d4af37&bold=true" alt="Admin Profile" />
+                    <div class="admin-profile-info">
+                        <span class="name">الإدارة العليا</span>
+                        <span class="role">@((User.IsInRole("Admin")) ? "System Admin" : "Instructor")</span>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Dynamic Content -->
+        <main class="content-area">
             @RenderBody()
-        </div>
+        </main>
     </div>
 
+    <!-- Script for mobile sidebar toggle -->
+    <script>
+        function toggleSidebar() {
+            document.getElementById('adminSidebar').classList.toggle('active');
+            document.getElementById('sidebarOverlay').classList.toggle('active');
+        }
+    </script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

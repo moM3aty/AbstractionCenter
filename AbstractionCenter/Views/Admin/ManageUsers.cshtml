@@ -1,166 +1,242 @@
 ﻿@model IEnumerable<AbstractionCenter.Models.Entities.ApplicationUser>
 @{
-    ViewData["Title"] = "المستخدمين والصلاحيات";
+    ViewData["Title"] = "إدارة المستخدمين والصلاحيات";
 }
 
 <style>
-    .table-card {
-        background: var(--card-bg);
-        border-radius: var(--radius-box);
-        padding: 30px;
-        box-shadow: var(--shadow-card);
+    .premium-table-card {
+        background: #ffffff;
+        border-radius: 24px;
+        padding: 35px;
+        box-shadow: 0 15px 35px -10px rgba(11, 17, 32, 0.08);
+        border: 1px solid rgba(212, 175, 55, 0.15);
     }
 
     .toolbar {
         display: flex;
         justify-content: space-between;
-        margin-bottom: 25px;
+        align-items: center;
+        margin-bottom: 35px;
+        flex-wrap: wrap;
+        gap: 20px;
     }
 
-    .search-box {
-        background: var(--bg-body);
-        border-radius: 30px;
-        padding: 10px 20px;
+    .search-box-pro {
+        background: #f8fafc;
+        border-radius: 50px;
+        padding: 12px 25px;
         display: flex;
         align-items: center;
-        width: 350px;
+        width: 100%;
+        max-width: 450px;
+        border: 2px solid #e2e8f0;
+        transition: all 0.4s ease;
     }
 
-        .search-box input {
+        .search-box-pro:focus-within {
+            border-color: #d4af37;
+            background: #ffffff;
+            box-shadow: 0 0 0 4px rgba(212, 175, 55, 0.15);
+        }
+
+        .search-box-pro input {
             border: none;
             background: transparent;
             outline: none;
-            padding-right: 10px;
+            padding-right: 15px;
             font-family: inherit;
             flex-grow: 1;
+            font-size: 1.05rem;
+            color: #0b1120;
+            font-weight: 600;
         }
 
-        .search-box i {
-            color: var(--text-muted);
+        .search-box-pro i {
+            color: #d4af37;
+            font-size: 1.2rem;
         }
 
-    .btn-add {
-        background: var(--sidebar-active-bg);
-        color: white;
-        border: none;
-        padding: 10px 25px;
-        border-radius: 30px;
-        font-weight: 700;
-        cursor: pointer;
-        box-shadow: 0 10px 20px rgba(67, 24, 255, 0.2);
+    .table-responsive {
+        width: 100%;
+        overflow-x: auto;
+        border-radius: 16px;
+        border: 1px solid #e2e8f0;
     }
 
-    .modern-table {
+    .modern-data-table {
         width: 100%;
         border-collapse: collapse;
+        white-space: nowrap;
     }
 
-        .modern-table th {
+        .modern-data-table th {
             text-align: right;
-            padding: 15px;
-            color: var(--text-muted);
-            font-size: 0.85rem;
-            border-bottom: 1px solid var(--border-color);
-        }
-
-        .modern-table td {
-            padding: 15px;
-            color: var(--text-main);
-            font-weight: 600;
+            padding: 18px 20px;
+            background: #f8fafc;
+            color: #0b1120 !important;
             font-size: 0.95rem;
-            border-bottom: 1px solid #f8fafc;
-            vertical-align: middle;
+            font-weight: 800 !important;
+            border-bottom: 2px solid #e2e8f0;
         }
 
-    .user-avatar {
-        width: 40px;
-        height: 40px;
-        border-radius: 50%;
-        background: linear-gradient(135deg, var(--sidebar-active-bg), #8b5cf6);
-        color: white;
+        .modern-data-table td {
+            padding: 18px 20px;
+            color: #1e293b;
+            font-weight: 600;
+            font-size: 1rem;
+            border-bottom: 1px solid #f1f5f9;
+            vertical-align: middle;
+            transition: background 0.3s;
+        }
+
+        .modern-data-table tbody tr:hover td {
+            background: #fcfcfd;
+        }
+
+    .user-avatar-pro {
+        width: 50px;
+        height: 50px;
+        border-radius: 16px;
+        background: linear-gradient(135deg, rgba(212, 175, 55, 0.15), rgba(212, 175, 55, 0.05));
+        color: #b48a25;
+        border: 1px solid rgba(212, 175, 55, 0.3);
         display: flex;
         align-items: center;
         justify-content: center;
-        font-weight: bold;
+        font-weight: 900;
+        font-size: 1.4rem;
+        flex-shrink: 0;
+        box-shadow: 0 4px 10px rgba(212, 175, 55, 0.1);
     }
 
-    .role-select {
-        padding: 8px 15px;
-        border: 1px solid var(--border-color);
-        border-radius: 10px;
+    .role-select-pro {
+        padding: 10px 40px 10px 15px;
+        border: 2px solid #e2e8f0;
+        border-radius: 12px;
         font-family: inherit;
-        background: var(--bg-body);
-        color: var(--text-main);
-        font-weight: 600;
+        background: #f8fafc;
+        color: #0b1120;
+        font-weight: 800;
         outline: none;
+        transition: 0.3s;
+        appearance: none;
+        background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23d4af37%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E');
+        background-repeat: no-repeat;
+        background-position: right 12px top 50%;
+        background-size: 10px auto;
+        cursor: pointer;
     }
+
+        .role-select-pro:focus {
+            border-color: #d4af37;
+            background-color: white;
+            box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.1);
+        }
+
+    .btn-confirm-pro {
+        background: #0b1120;
+        color: #d4af37;
+        border: none;
+        width: 42px;
+        height: 42px;
+        border-radius: 12px;
+        cursor: pointer;
+        transition: 0.3s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.1rem;
+    }
+
+        .btn-confirm-pro:hover {
+            background: #d4af37;
+            color: #0b1120;
+            transform: scale(1.1) rotate(5deg);
+            box-shadow: 0 5px 15px rgba(212, 175, 55, 0.4);
+        }
 </style>
 
-<div class="table-card">
+<div class="premium-table-card">
     <div class="toolbar">
-        <div class="search-box">
+        <h3 style="color: #0b1120; font-size: 1.6rem; font-weight: 900; margin: 0; display: flex; align-items: center; gap: 12px;">
+            <i class="fa-solid fa-users-gear" style="color: #d4af37;"></i> قاعدة بيانات المستخدمين
+        </h3>
+        <div class="search-box-pro">
             <i class="fa-solid fa-magnifying-glass"></i>
-            <input type="text" placeholder="ابحث بالاسم أو البريد..." id="userSearch">
+            <input type="text" placeholder="ابحث بالاسم، البريد أو ID..." id="userSearchPro">
         </div>
-        <button class="btn-add"><i class="fa-solid fa-user-plus"></i> مستخدم جديد</button>
     </div>
 
-    <table class="modern-table">
-        <thead>
-            <tr>
-                <th>المستخدم</th>
-                <th>البريد الإلكتروني</th>
-                <th>تاريخ الانضمام</th>
-                <th>إدارة الصلاحية (Role)</th>
-            </tr>
-        </thead>
-        <tbody>
-            @if (Model != null && Model.Any())
-            {
-                foreach (var user in Model)
+    <div class="table-responsive">
+        <table class="modern-data-table">
+            <thead>
+                <tr>
+                    <th>ملف المستخدم</th>
+                    <th>البريد الإلكتروني</th>
+                    <th>تاريخ التسجيل</th>
+                    <th>إدارة الصلاحيات (Role)</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model != null && Model.Any())
                 {
-                    var initial = string.IsNullOrEmpty(user.FullName) ? "?" : user.FullName.Substring(0, 1).ToUpper();
-                    <tr>
-                        <td>
-                            <div style="display: flex; align-items: center; gap: 15px;">
-                                <div class="user-avatar">@initial</div>
-                                <div>
-                                    <div style="color: var(--text-main);">@(string.IsNullOrEmpty(user.FullName) ? "غير محدد" : user.FullName)</div>
-                                    <div style="font-size: 0.8rem; color: var(--text-muted); font-weight: normal;">ID: @user.Id.Substring(0, 8)</div>
+                    foreach (var user in Model)
+                    {
+                        var initial = string.IsNullOrEmpty(user.FullName) ? "U" : user.FullName.Substring(0, 1).ToUpper();
+                        <tr>
+                            <td>
+                                <div style="display: flex; align-items: center; gap: 15px;">
+                                    <div class="user-avatar-pro">@initial</div>
+                                    <div>
+                                        <div style="color: #0b1120; font-weight: 900; font-size: 1.1rem;">@(string.IsNullOrEmpty(user.FullName) ? "غير محدد" : user.FullName)</div>
+                                        <div style="font-size: 0.85rem; color: #64748b; font-weight: normal; margin-top: 3px;"><i class="fa-solid fa-fingerprint" style="color:#d4af37;"></i> ID: @user.Id.Substring(0, 8)...</div>
+                                    </div>
                                 </div>
+                            </td>
+                            <td style="color: #475569; font-weight: 700;">
+                                <i class="fa-regular fa-envelope" style="color: #94a3b8; margin-left: 5px;"></i> @user.Email
+                            </td>
+                            <td style="color: #475569; font-weight: 700;">
+                                <i class="fa-regular fa-calendar" style="color: #94a3b8; margin-left: 5px;"></i> @user.CreatedAt.ToString("dd MMM yyyy")
+                            </td>
+                            <td>
+                                <form asp-controller="Admin" asp-action="ChangeUserRole" method="post" style="display: flex; gap: 12px; align-items: center;">
+                                    <input type="hidden" name="userId" value="@user.Id" />
+                                    <!-- Here we assume the default role is somewhat selected, you can enhance by fetching real role if needed in the view -->
+                                    <select name="newRole" class="role-select-pro">
+                                        <option value="Student">طالب (Student)</option>
+                                        <option value="Instructor">محاضر (Instructor)</option>
+                                        <option value="Admin">مدير نظام (Admin)</option>
+                                    </select>
+                                    <button type="submit" class="btn-confirm-pro" title="حفظ الصلاحية">
+                                        <i class="fa-solid fa-check-double"></i>
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="4">
+                            <div style="text-align: center; padding: 80px 20px;">
+                                <i class="fa-solid fa-users-slash" style="font-size: 4rem; color: #cbd5e1; margin-bottom: 20px;"></i>
+                                <h3 style="color: #0b1120; font-weight: 800;">لا يوجد مستخدمين مسجلين</h3>
                             </div>
-                        </td>
-                        <td style="color: var(--text-muted); font-weight: 500;">@user.Email</td>
-                        <td style="color: var(--text-muted); font-weight: 500;">@user.CreatedAt.ToString("dd MMM yyyy")</td>
-                        <td>
-                            <form asp-controller="Admin" asp-action="ChangeUserRole" method="post" style="display: flex; gap: 10px; align-items: center;">
-                                <input type="hidden" name="userId" value="@user.Id" />
-                                <select name="newRole" class="role-select">
-                                    <option value="Student">طالب (Student)</option>
-                                    <option value="Instructor">محاضر (Instructor)</option>
-                                    <option value="Admin">مدير (Admin)</option>
-                                </select>
-                                <button type="submit" style="background: var(--bg-body); border: none; width: 35px; height: 35px; border-radius: 10px; cursor: pointer; color: var(--sidebar-active-bg); transition: 0.3s;" onmouseover="this.style.background='var(--sidebar-active-bg)'; this.style.color='white';" onmouseout="this.style.background='var(--bg-body)'; this.style.color='var(--sidebar-active-bg)';">
-                                    <i class="fa-solid fa-check"></i>
-                                </button>
-                            </form>
                         </td>
                     </tr>
                 }
-            }
-            else
-            {
-                <tr><td colspan="4" style="text-align: center; padding: 40px; color: var(--text-muted);">لا يوجد مستخدمين مسجلين.</td></tr>
-            }
-        </tbody>
-    </table>
+            </tbody>
+        </table>
+    </div>
 </div>
 
 @section Scripts {
     <script>
-        document.getElementById('userSearch').addEventListener('keyup', function() {
+        document.getElementById('userSearchPro').addEventListener('keyup', function() {
             let searchValue = this.value.toLowerCase();
-            let tableRows = document.querySelectorAll('.modern-table tbody tr');
+            let tableRows = document.querySelectorAll('.modern-data-table tbody tr');
             tableRows.forEach(row => {
                 let text = row.textContent.toLowerCase();
                 row.style.display = text.includes(searchValue) ? '' : 'none';

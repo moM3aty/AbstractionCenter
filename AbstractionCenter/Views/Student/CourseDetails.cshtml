@@ -1,144 +1,358 @@
 ﻿@model AbstractionCenter.Models.Entities.Course
 @{
-    ViewData["Title"] = Model?.Title ?? "محتوى الدورة";
-    var assignments = ViewBag.Assignments as IEnumerable<AbstractionCenter.Models.Entities.Assignment>;
+    ViewData["Title"] = Model?.Title ?? "القاعة الافتراضية";
 }
 
 <style>
-    .course-nav {
-        display: flex;
-        gap: 15px;
-        margin-bottom: 30px;
-        border-bottom: 1px solid #e2e8f0;
-        padding-bottom: 15px;
+    :root {
+        --cd-primary: #0b1120;
+        --cd-gold: #d4af37;
+        --cd-surface: #ffffff;
+        --cd-bg: #f8fafc;
+        --cd-radius: 20px;
+        --cd-shadow: 0 15px 35px -10px rgba(11, 17, 32, 0.08);
     }
 
-        .course-nav button {
-            background: none;
-            border: none;
-            font-size: 1.1rem;
-            font-weight: 600;
-            color: #64748b;
-            cursor: pointer;
-            padding: 10px 20px;
-            border-radius: var(--radius-md);
-            transition: all 0.3s;
-            font-family: inherit;
-        }
+    body {
+        background: var(--cd-bg);
+    }
 
-            .course-nav button.active {
-                background: rgba(59, 130, 246, 0.1);
-                color: var(--secondary-color);
-            }
-
-    .assignment-card {
-        border-right: 4px solid var(--accent-color);
-        background: white;
-        padding: 25px;
-        border-radius: var(--radius-md);
-        box-shadow: var(--shadow-sm);
-        margin-bottom: 20px;
+    .course-header-banner {
+        background: linear-gradient(135deg, var(--cd-primary) 0%, #1e293b 100%);
+        padding: 60px 40px;
+        border-radius: var(--cd-radius);
+        margin: 30px auto;
+        color: white;
+        box-shadow: 0 20px 40px -10px rgba(11, 17, 32, 0.4);
         display: flex;
         justify-content: space-between;
-        align-items: center;
+        align-items: flex-end;
         flex-wrap: wrap;
-        gap: 20px;
+        gap: 30px;
+        border: 1px solid rgba(212, 175, 55, 0.2);
+        max-width: 1320px;
     }
 
-    .tab-content {
-        display: none;
+        .course-header-banner h1 {
+            font-size: 2.4rem;
+            font-weight: 900;
+            color: var(--cd-gold);
+            margin-bottom: 10px;
+        }
+
+    .instructor-name {
+        font-size: 1.1rem;
+        color: #cbd5e1;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 8px;
     }
 
-        .tab-content.active {
-            display: block;
-            animation: fadeIn 0.5s ease;
+        .instructor-name i {
+            color: var(--cd-gold);
         }
 
-    @@keyframes fadeIn {
-        from {
-            opacity: 0;
-            transform: translateY(10px);
+    .btn-exam {
+        background: linear-gradient(135deg, var(--cd-gold), #fef08a);
+        color: var(--cd-primary);
+        padding: 16px 35px;
+        border-radius: 14px;
+        font-weight: 900;
+        font-size: 1.1rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        text-decoration: none;
+        box-shadow: 0 10px 25px rgba(212, 175, 55, 0.3);
+        transition: 0.3s;
+    }
+
+        .btn-exam:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 35px rgba(212, 175, 55, 0.5);
         }
 
-        to {
-            opacity: 1;
-            transform: translateY(0);
+    .container-layout {
+        max-width: 1320px;
+        margin: 0 auto 80px;
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 40px;
+        padding: 0 20px;
+    }
+
+    /* --- الوحدات الدراسية --- */
+    .module-card {
+        background: var(--cd-surface);
+        border-radius: var(--cd-radius);
+        padding: 35px;
+        box-shadow: var(--cd-shadow);
+        margin-bottom: 30px;
+        border: 1px solid #e2e8f0;
+        border-right: 5px solid var(--cd-primary);
+        transition: 0.3s;
+    }
+
+        .module-card:hover {
+            box-shadow: 0 20px 40px -10px rgba(11, 17, 32, 0.12);
         }
+
+    .module-title {
+        font-size: 1.5rem;
+        font-weight: 900;
+        color: var(--cd-primary);
+        margin-bottom: 25px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+        .module-title i {
+            color: var(--cd-gold);
+        }
+
+    /* --- المحتويات --- */
+    .content-item {
+        background: #fcfcfd;
+        border: 1px solid #e2e8f0;
+        border-radius: 16px;
+        padding: 20px;
+        margin-bottom: 20px;
+        transition: 0.3s;
+    }
+
+        .content-item:hover {
+            background: white;
+            border-color: rgba(212,175,55,0.4);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.03);
+        }
+
+    .content-header {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        font-weight: 800;
+        color: var(--cd-primary);
+        font-size: 1.15rem;
+        margin-bottom: 15px;
+    }
+
+    .icon-box {
+        width: 45px;
+        height: 45px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 1.2rem;
+    }
+
+    .icon-video {
+        background: linear-gradient(135deg, #ef4444, #b91c1c);
+    }
+
+    .icon-pdf {
+        background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+    }
+
+    .icon-task {
+        background: linear-gradient(135deg, #10b981, #047857);
+    }
+
+    .video-container {
+        border-radius: 16px;
+        overflow: hidden;
+        aspect-ratio: 16/9;
+        background: #000;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    }
+
+        .video-container iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+    .btn-download {
+        background: rgba(59, 130, 246, 0.1);
+        color: #2563eb;
+        padding: 12px 25px;
+        border-radius: 12px;
+        font-weight: 800;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        transition: 0.3s;
+        border: 1px solid rgba(59, 130, 246, 0.2);
+    }
+
+        .btn-download:hover {
+            background: #2563eb;
+            color: white;
+        }
+
+    .task-box {
+        background: rgba(16, 185, 129, 0.05);
+        padding: 20px;
+        border-radius: 12px;
+        border: 1px dashed #10b981;
+        color: #0b1120;
+        font-weight: 600;
+        line-height: 1.7;
+    }
+
+    /* Alert Messages */
+    .alert-msg {
+        padding: 20px 25px;
+        border-radius: 16px;
+        font-weight: 800;
+        font-size: 1.1rem;
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        margin-bottom: 30px;
+    }
+
+    .alert-info {
+        background: rgba(245, 158, 11, 0.1);
+        color: #d97706;
+        border-left: 5px solid #f59e0b;
+    }
+
+    .alert-success {
+        background: rgba(16, 185, 129, 0.1);
+        color: #059669;
+        border-left: 5px solid #10b981;
+    }
+
+    .alert-error {
+        background: rgba(239, 68, 68, 0.1);
+        color: #dc2626;
+        border-left: 5px solid #ef4444;
+    }
+
+    @@media (max-width: 768px) {
+        .course-header-banner
+
+    {
+        flex-direction: column;
+        text-align: center;
+        align-items: center;
+        padding: 30px 20px;
+    }
+
     }
 </style>
 
-<div style="padding: 120px 0 60px; background: #f1f5f9; border-bottom: 1px solid #e2e8f0;">
-    <div class="container">
-        <a href="/Student/Dashboard" style="color: var(--secondary-color); margin-bottom: 20px; display: inline-block; font-weight: bold;">
-            <i class="fa-solid fa-arrow-right"></i> العودة للوحة التحكم
+<div class="course-header-banner">
+    <div>
+        <a href="/Student/Dashboard" style="color: #cbd5e1; text-decoration: none; font-weight: bold; margin-bottom: 15px; display: inline-block;"><i class="fa-solid fa-arrow-right"></i> العودة للوحة</a>
+        <h1>@Model?.Title</h1>
+        <div class="instructor-name"><i class="fa-solid fa-chalkboard-user"></i> إشراف المحاضر: @(Model?.RegistrarName ?? "غير محدد")</div>
+    </div>
+
+    <div>
+        <a href="/Student/TakeExam/@Model?.Id" class="btn-exam">
+            <i class="fa-solid fa-medal"></i> تقديم الاختبار النهائي
         </a>
-        <h1 style="color: var(--primary-color); margin-bottom: 10px;">@Model?.Title</h1>
-        <p style="color: #64748b; font-size: 1.1rem;"><i class="fa-solid fa-chalkboard-user"></i> المحاضر: @(Model?.RegistrarName ?? "غير محدد")</p>
     </div>
 </div>
 
-<div class="container" style="padding: 40px 0 80px; min-height: 50vh;">
-    <!-- التبويبات -->
-    <div class="course-nav">
-        <button class="tab-btn active" data-target="content-tab"><i class="fa-solid fa-photo-film"></i> المحتوى التعليمي</button>
-        <button class="tab-btn" data-target="assignments-tab"><i class="fa-solid fa-tasks"></i> الواجبات المطلوبة</button>
-    </div>
+<div class="container-layout">
+    @if (TempData["InfoMessage"] != null)
+    {
+        <div class="alert-msg alert-info"><i class="fa-solid fa-circle-info" style="font-size: 1.5rem;"></i> @TempData["InfoMessage"]</div>
+    }
 
-    <!-- قسم المحتوى -->
-    <div id="content-tab" class="tab-content active">
-        <div class="glass-card">
-            <h3 style="margin-bottom: 20px; color: var(--primary-color);"><i class="fa-solid fa-video" style="color: var(--secondary-color);"></i> المحاضرة الأولى (محتوى تجريبي)</h3>
-            <p style="color: #475569; margin-bottom: 20px;">هذا القسم مخصص لعرض المحتوى الذي يرفعه المحاضر (فيديوهات وملفات).</p>
-
-            <div style="background: #1e293b; height: 400px; border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; color: white; margin-bottom: 30px;">
-                <i class="fa-solid fa-circle-play" style="font-size: 4rem; opacity: 0.7; cursor: pointer; transition: opacity 0.3s;"></i>
-            </div>
-
-            <a href="#" class="btn btn-outline"><i class="fa-solid fa-download"></i> تحميل الملحقات (PDF)</a>
+    @if (TempData["ExamResult"] != null)
+    {
+        bool isSuccess = (bool)TempData["IsSuccess"];
+        <div class="alert-msg @(isSuccess ? "alert-success" : "alert-error")">
+            <i class="fa-solid @(isSuccess ? "fa-trophy" : "fa-triangle-exclamation")" style="font-size: 1.8rem;"></i> @TempData["ExamResult"]
         </div>
-    </div>
+    }
 
-    <!-- قسم الواجبات -->
-    <div id="assignments-tab" class="tab-content">
-        @if (assignments != null && assignments.Any())
+    @if (Model?.Lessons != null && Model.Lessons.Any())
+    {
+        foreach (var lesson in Model.Lessons.OrderBy(l => l.Order))
         {
-            foreach (var assign in assignments)
-            {
-                <div class="assignment-card">
-                    <div style="flex: 1; min-width: 250px;">
-                        <h4 style="color: var(--primary-color); margin-bottom: 8px; font-size: 1.2rem;">@assign.Title</h4>
-                        <p style="color: #475569; margin-bottom: 12px; font-size: 0.95rem;">@assign.Description</p>
-                        <div style="color: #ef4444; font-size: 0.9rem; font-weight: bold;">
-                            <i class="fa-regular fa-clock"></i> آخر موعد للتسليم: @assign.DueDate.ToString("dd MMMM yyyy")
+            <div class="module-card">
+                <h2 class="module-title"><i class="fa-solid fa-layer-group"></i> الوحدة @lesson.Order: @lesson.Title</h2>
+
+                @if (lesson.Contents != null && lesson.Contents.Any())
+                {
+                    foreach (var content in lesson.Contents.OrderBy(c => c.Order))
+                    {
+                        <div class="content-item">
+                            <div class="content-header">
+                                @if (content.Type == AbstractionCenter.Models.Entities.ContentType.Video)
+                                {
+                                    <div class="icon-box icon-video"><i class="fa-solid fa-play"></i></div>
+                                    <span>@content.Title</span>
+                                }
+                                else if (content.Type == AbstractionCenter.Models.Entities.ContentType.Pdf)
+                                {
+                                    <div class="icon-box icon-pdf"><i class="fa-solid fa-file-pdf"></i></div>
+                                    <span>@content.Title</span>
+                                }
+                                else
+                                {
+                                    <div class="icon-box icon-task"><i class="fa-solid fa-list-check"></i></div>
+                                    <span>مهمة وتكليف تطبيقي</span>
+                                }
+                            </div>
+
+                            @if (content.Type == AbstractionCenter.Models.Entities.ContentType.Video && !string.IsNullOrEmpty(content.VideoUrl))
+                            {
+                                <div class="video-container">
+                                    <!-- تحويل روابط يوتيوب إلى Embed -->
+                                    @{
+                                        string embedUrl = content.VideoUrl;
+                                        if (embedUrl.Contains("youtube.com/watch?v="))
+                                        {
+                                            embedUrl = embedUrl.Replace("watch?v=", "embed/");
+                                        }
+                                        else if (embedUrl.Contains("youtu.be/"))
+                                        {
+                                            embedUrl = embedUrl.Replace("youtu.be/", "youtube.com/embed/");
+                                        }
+                                    }
+                                    <iframe src="@embedUrl" allowfullscreen></iframe>
+                                </div>
+                            }
+
+                            @if (content.Type == AbstractionCenter.Models.Entities.ContentType.Pdf && !string.IsNullOrEmpty(content.FilePath))
+                            {
+                                <a href="@content.FilePath" target="_blank" class="btn-download">
+                                    <i class="fa-solid fa-cloud-arrow-down"></i> تحميل المرفق وتصفحه
+                                </a>
+                            }
+
+                            @if (content.Type == AbstractionCenter.Models.Entities.ContentType.Assignment && !string.IsNullOrEmpty(content.Description))
+                            {
+                                <div class="task-box">
+                                    <strong><i class="fa-solid fa-thumbtack"></i> المطلوب تنفيذه:</strong> @content.Description
+                                </div>
+                            }
                         </div>
-                    </div>
-                    <div>
-                        <button class="btn btn-primary" style="padding: 10px 25px;"><i class="fa-solid fa-cloud-arrow-up"></i> رفع الحل</button>
-                    </div>
-                </div>
-            }
-        }
-        else
-        {
-            <div class="glass-card" style="text-align: center; padding: 40px;">
-                <i class="fa-solid fa-clipboard-check" style="font-size: 3rem; color: #10b981; margin-bottom: 15px;"></i>
-                <h3 style="color: var(--primary-color);">لا توجد واجبات مطلوبة حالياً</h3>
+                    }
+                }
+                else
+                {
+                    <p style="color: #94a3b8; text-align: center; margin: 0; font-weight: 600;"><i class="fa-solid fa-hourglass-half"></i> لم يتم إدراج محتوى لهذه الوحدة بعد.</p>
+                }
             </div>
         }
-    </div>
+    }
+    else
+    {
+        <div style="background: white; border-radius: var(--cd-radius); padding: 80px 20px; text-align: center; box-shadow: var(--cd-shadow);">
+            <i class="fa-solid fa-photo-film" style="font-size: 4.5rem; color: #cbd5e1; margin-bottom: 20px;"></i>
+            <h3 style="color: var(--cd-primary); font-weight: 900; font-size: 1.8rem; margin-bottom: 10px;">لا يوجد محتوى دراسي حالياً</h3>
+            <p style="color: #64748b; font-size: 1.1rem;">يرجى الانتظار حتى يقوم المحاضر برفع المنهج الخاص بهذه الدورة.</p>
+        </div>
+    }
 </div>
-
-@section Scripts {
-    <script>
-        // تفعيل التبويبات برمجياً داخل هذه الصفحة
-        document.querySelectorAll('.tab-btn').forEach(button => {
-            button.addEventListener('click', function() {
-                document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-                document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
-
-                this.classList.add('active');
-                document.getElementById(this.getAttribute('data-target')).classList.add('active');
-            });
-        });
-    </script>
-}

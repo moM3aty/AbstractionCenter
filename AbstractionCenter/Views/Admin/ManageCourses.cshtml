@@ -4,122 +4,226 @@
 }
 
 <style>
-    .table-card {
-        background: var(--card-bg);
-        border-radius: var(--radius-box);
-        padding: 30px;
-        box-shadow: var(--shadow-card);
+    .premium-table-card {
+        background: #ffffff;
+        border-radius: 24px;
+        padding: 35px;
+        box-shadow: 0 15px 35px -10px rgba(11, 17, 32, 0.08);
+        border: 1px solid rgba(212, 175, 55, 0.15);
     }
 
     .toolbar {
         display: flex;
         justify-content: space-between;
-        margin-bottom: 25px;
+        align-items: center;
+        margin-bottom: 35px;
+        flex-wrap: wrap;
+        gap: 20px;
     }
 
-    .btn-add {
-        background: var(--sidebar-active-bg);
-        color: white;
-        border: none;
-        padding: 10px 25px;
-        border-radius: 30px;
-        font-weight: 700;
-        cursor: pointer;
-        box-shadow: 0 10px 20px rgba(67, 24, 255, 0.2);
-        text-decoration: none;
-        display: inline-block;
+    .toolbar-title {
+        color: #0b1120;
+        margin: 0;
+        font-size: 1.6rem;
+        font-weight: 900;
+        display: flex;
+        align-items: center;
+        gap: 12px;
     }
 
-    .modern-table {
-        width: 100%;
-        border-collapse: collapse;
-    }
-
-        .modern-table th {
-            text-align: right;
-            padding: 15px;
-            color: var(--text-muted);
-            font-size: 0.85rem;
-            border-bottom: 1px solid var(--border-color);
+        .toolbar-title i {
+            color: #d4af37;
         }
 
-        .modern-table td {
-            padding: 15px;
-            color: var(--text-main);
-            font-weight: 600;
+    .btn-add {
+        background: linear-gradient(135deg, #d4af37, #fef08a);
+        color: #0b1120;
+        border: none;
+        padding: 14px 35px;
+        border-radius: 50px;
+        font-weight: 900;
+        font-size: 1.05rem;
+        cursor: pointer;
+        box-shadow: 0 10px 20px -5px rgba(212, 175, 55, 0.4);
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        transition: all 0.4s ease;
+    }
+
+        .btn-add:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 30px -5px rgba(212, 175, 55, 0.6);
+        }
+
+    .table-responsive {
+        width: 100%;
+        overflow-x: auto;
+        border-radius: 16px;
+        border: 1px solid #e2e8f0;
+    }
+
+    .modern-data-table {
+        width: 100%;
+        border-collapse: collapse;
+        white-space: nowrap;
+    }
+
+        .modern-data-table th {
+            text-align: right;
+            padding: 18px 20px;
+            background: #f8fafc;
+            color: #0b1120 !important;
             font-size: 0.95rem;
-            border-bottom: 1px solid #f8fafc;
+            font-weight: 800 !important;
+            border-bottom: 2px solid #e2e8f0;
+        }
+
+        .modern-data-table td {
+            padding: 18px 20px;
+            color: #1e293b;
+            font-weight: 600;
+            font-size: 1rem;
+            border-bottom: 1px solid #f1f5f9;
+            vertical-align: middle;
+            transition: background 0.3s;
+        }
+
+        .modern-data-table tbody tr:hover td {
+            background: #fcfcfd;
         }
 
     .badge {
-        padding: 6px 12px;
+        padding: 8px 15px;
         border-radius: 10px;
-        font-size: 0.8rem;
-        font-weight: bold;
+        font-size: 0.85rem;
+        font-weight: 800;
+        display: inline-block;
     }
 
     .badge-open {
         background: rgba(16, 185, 129, 0.1);
-        color: #10b981;
+        color: #059669;
+        border: 1px solid rgba(16, 185, 129, 0.2);
     }
 
     .badge-closed {
         background: rgba(239, 68, 68, 0.1);
-        color: #ef4444;
+        color: #dc2626;
+        border: 1px solid rgba(239, 68, 68, 0.2);
     }
+
+    .btn-edit {
+        background: #0b1120;
+        color: #d4af37;
+        padding: 10px 20px;
+        border-radius: 12px;
+        font-size: 0.9rem;
+        font-weight: 800;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        border: 1px solid transparent;
+    }
+
+        .btn-edit:hover {
+            background: #d4af37;
+            color: #0b1120;
+            border-color: #d4af37;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(212, 175, 55, 0.3);
+        }
+
+    .empty-state {
+        text-align: center;
+        padding: 80px 20px;
+    }
+
+        .empty-state i {
+            font-size: 4rem;
+            color: #cbd5e1;
+            margin-bottom: 20px;
+        }
+
+        .empty-state h3 {
+            color: #0b1120;
+            font-weight: 800;
+            margin-bottom: 10px;
+        }
+
+        .empty-state p {
+            color: #64748b;
+        }
 </style>
 
-<div class="table-card">
+<div class="premium-table-card">
     <div class="toolbar">
-        <h3 style="color: var(--text-main); margin: 0;">الدورات المتاحة حالياً</h3>
-        <a href="/Admin/CreateCourse" class="btn-add"><i class="fa-solid fa-plus"></i> إضافة دورة جديدة</a>
+        <h3 class="toolbar-title"><i class="fa-solid fa-layer-group"></i> الدورات والمسارات التدريبية</h3>
+        <a href="/Admin/CreateCourse" class="btn-add"><i class="fa-solid fa-plus"></i> إنشاء دورة جديدة</a>
     </div>
 
-    <table class="modern-table">
-        <thead>
-            <tr>
-                <th>اسم الدورة</th>
-                <th>مسجل الدورة</th>
-                <th>تاريخ البدء</th>
-                <th>الحالة</th>
-                <th>إجراءات</th>
-            </tr>
-        </thead>
-        <tbody>
-            @if (Model != null && Model.Any())
-            {
-                foreach (var course in Model)
+    <div class="table-responsive">
+        <table class="modern-data-table">
+            <thead>
+                <tr>
+                    <th>معلومات الدورة</th>
+                    <th>المسؤول (المحاضر)</th>
+                    <th>تاريخ البدء</th>
+                    <th>حالة الدورة</th>
+                    <th>إجراءات الإدارة</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model != null && Model.Any())
+                {
+                    foreach (var course in Model)
+                    {
+                        <tr>
+                            <td>
+                                <div style="font-size: 1.15rem; font-weight: 900; color: #0b1120;">@course.Title</div>
+                                <div style="font-size: 0.85rem; color: #64748b; margin-top: 4px;"><i class="fa-solid fa-hashtag" style="color: #d4af37;"></i> رقم المرجع: @course.Id</div>
+                            </td>
+                            <td>
+                                <div style="font-weight: 800; color: #1e293b;">@course.RegistrarName</div>
+                                <div style="color: #64748b; font-size: 0.85rem; margin-top: 4px;">
+                                    <i class="fa-brands fa-whatsapp" style="color: #25d366; font-size: 1rem;"></i> @course.RegistrarWhatsApp
+                                </div>
+                            </td>
+                            <td style="color: #475569; font-weight: 700;">
+                                <i class="fa-regular fa-calendar-days" style="color: #d4af37; margin-left: 5px;"></i> @course.StartDate.ToString("dd MMMM yyyy")
+                            </td>
+                            <td>
+                                @if (course.Status == AbstractionCenter.Models.Entities.CourseStatus.OpenForRegistration)
+                                {
+                                    <span class="badge badge-open"><i class="fa-solid fa-door-open"></i> متاحة للتسجيل</span>
+                                }
+                                else
+                                {
+                                    <span class="badge badge-closed"><i class="fa-solid fa-lock"></i> مغلقة / قيد التنفيذ</span>
+                                }
+                            </td>
+                            <td>
+                                <a href="/Admin/EditCourse/@course.Id" class="btn-edit"><i class="fa-solid fa-pen-to-square"></i> تعديل الدورة</a>
+                            </td>
+                        </tr>
+                    }
+                }
+                else
                 {
                     <tr>
-                        <td>
-                            <div style="font-size: 1.05rem;">@course.Title</div>
-                            <div style="font-size: 0.8rem; color: var(--text-muted); font-weight: normal;">ID: #@course.Id</div>
-                        </td>
-                        <td>
-                            @course.RegistrarName <br>
-                            <span style="color: var(--text-muted); font-size: 0.85rem; font-weight: normal;"><i class="fa-brands fa-whatsapp"></i> @course.RegistrarWhatsApp</span>
-                        </td>
-                        <td style="color: var(--text-muted); font-weight: 500;">@course.StartDate.ToString("yyyy-MM-dd")</td>
-                        <td>
-                            @if (course.Status == AbstractionCenter.Models.Entities.CourseStatus.OpenForRegistration)
-                            {
-                                <span class="badge badge-open">مفتوحة</span>
-                            }
-                            else
-                            {
-                                <span class="badge badge-closed">مغلقة / قيد التنفيذ</span>
-                            }
-                        </td>
-                        <td>
-                            <a href="#" style="color: var(--sidebar-active-bg); background: rgba(67, 24, 255, 0.1); padding: 8px 15px; border-radius: 10px; font-size: 0.85rem; transition: 0.3s;"><i class="fa-solid fa-pen"></i> تعديل</a>
+                        <td colspan="5">
+                            <div class="empty-state">
+                                <i class="fa-solid fa-box-open"></i>
+                                <h3>لا توجد دورات مسجلة حالياً</h3>
+                                <p>قم بإضافة أول دورة تدريبية لتبدأ في استقبال الطلاب.</p>
+                            </div>
                         </td>
                     </tr>
                 }
-            }
-            else
-            {
-                <tr><td colspan="5" style="text-align: center; padding: 40px; color: var(--text-muted);">لا توجد دورات مسجلة حالياً.</td></tr>
-            }
-        </tbody>
-    </table>
+            </tbody>
+        </table>
+    </div>
 </div>

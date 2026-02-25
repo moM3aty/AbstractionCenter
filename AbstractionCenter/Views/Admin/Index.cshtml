@@ -1,172 +1,354 @@
 ﻿@{
-    ViewData["Title"] = "لوحة القيادة";
+    ViewData["Title"] = "لوحة القيادة الملكية";
 }
 
 <style>
-    .stats-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-        gap: 25px;
-        margin-bottom: 30px;
-    }
-
-    .stat-card {
-        background: var(--card-bg);
-        border-radius: var(--radius-box);
-        padding: 25px;
-        display: flex;
-        align-items: center;
-        gap: 20px;
-        box-shadow: var(--shadow-card);
-        transition: transform 0.3s;
-    }
-
-        .stat-card:hover {
-            transform: translateY(-5px);
-        }
-
-    .stat-icon {
-        width: 60px;
-        height: 60px;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 1.8rem;
-    }
-
-    .stat-info h4 {
-        color: var(--text-muted);
-        font-size: 0.9rem;
-        margin-bottom: 5px;
-        font-weight: 600;
-    }
-
-    .stat-info h2 {
-        color: var(--text-main);
-        font-size: 2rem;
-        font-weight: 800;
-        margin: 0;
-    }
-
-    /* Table Styles */
-    .table-card {
-        background: var(--card-bg);
-        border-radius: var(--radius-box);
-        padding: 30px;
-        box-shadow: var(--shadow-card);
-    }
-
-    .table-header {
+    /* --- Dashboard Specific Styles --- */
+    .welcome-banner {
+        background: linear-gradient(135deg, #0b1120 0%, #1e293b 100%);
+        border-radius: 24px;
+        padding: 50px 60px;
+        color: white;
         display: flex;
         justify-content: space-between;
         align-items: center;
-        margin-bottom: 20px;
+        margin-bottom: 40px;
+        box-shadow: 0 20px 40px -10px rgba(11, 17, 32, 0.4);
+        position: relative;
+        overflow: hidden;
+        border: 1px solid rgba(212, 175, 55, 0.15);
     }
 
-        .table-header h3 {
-            color: var(--text-main);
-            font-size: 1.2rem;
-            font-weight: 800;
+        /* Decorative circles in banner */
+        .welcome-banner::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -10%;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(212, 175, 55, 0.2) 0%, transparent 70%);
+            border-radius: 50%;
+            pointer-events: none;
         }
 
-    .modern-table {
-        width: 100%;
-        border-collapse: collapse;
+        .welcome-banner::after {
+            content: '';
+            position: absolute;
+            bottom: -50%;
+            left: -10%;
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, rgba(59, 130, 246, 0.15) 0%, transparent 70%);
+            border-radius: 50%;
+            pointer-events: none;
+        }
+
+    .welcome-content {
+        position: relative;
+        z-index: 10;
     }
 
-        .modern-table th {
-            text-align: right;
-            padding: 15px 10px;
-            color: var(--text-muted);
-            font-size: 0.85rem;
-            border-bottom: 1px solid var(--border-color);
+        .welcome-content h1 {
+            font-size: 2.8rem;
+            font-weight: 900;
+            margin-bottom: 15px;
+            letter-spacing: -0.5px;
+            color: white;
         }
 
-        .modern-table td {
-            padding: 15px 10px;
-            color: var(--text-main);
-            font-weight: 600;
-            font-size: 0.95rem;
-            border-bottom: 1px solid #f8fafc;
+            .welcome-content h1 span {
+                background: linear-gradient(to left, #d4af37, #fef08a);
+                -webkit-background-clip: text;
+                -webkit-text-fill-color: transparent;
+            }
+
+        .welcome-content p {
+            font-size: 1.15rem;
+            color: #cbd5e1;
+            margin: 0;
+            max-width: 550px;
+            line-height: 1.7;
         }
 
-        .modern-table tr:last-child td {
-            border-bottom: none;
+    .welcome-icon {
+        position: relative;
+        z-index: 10;
+        width: 130px;
+        height: 130px;
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 35px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 4.5rem;
+        color: #d4af37;
+        backdrop-filter: blur(10px);
+        transform: rotate(-10deg);
+        box-shadow: 0 15px 35px rgba(0,0,0,0.3);
+    }
+
+    /* --- Stats Grid --- */
+    .stats-premium-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+        gap: 30px;
+        margin-bottom: 50px;
+    }
+
+    .stat-premium-card {
+        background: white;
+        border-radius: 24px;
+        padding: 30px;
+        display: flex;
+        align-items: center;
+        gap: 25px;
+        box-shadow: 0 10px 30px -10px rgba(11, 17, 32, 0.08);
+        border: 1px solid #e2e8f0;
+        transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        position: relative;
+        overflow: hidden;
+    }
+
+        /* Hover side-line effect */
+        .stat-premium-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 4px;
+            height: 100%;
+            background: #d4af37;
+            transform: scaleY(0);
+            transition: transform 0.4s ease;
+            transform-origin: bottom;
         }
+
+        .stat-premium-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px -10px rgba(11, 17, 32, 0.15);
+            border-color: rgba(212, 175, 55, 0.3);
+        }
+
+            .stat-premium-card:hover::before {
+                transform: scaleY(1);
+            }
+
+    .stat-icon-wrapper {
+        width: 75px;
+        height: 75px;
+        border-radius: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2.2rem;
+        transition: transform 0.4s ease;
+    }
+
+    .stat-premium-card:hover .stat-icon-wrapper {
+        transform: scale(1.1) rotate(5deg);
+    }
+
+    .stat-info h4 {
+        color: #64748b;
+        font-size: 1.05rem;
+        font-weight: 700;
+        margin-bottom: 5px;
+    }
+
+    .stat-info h2 {
+        color: #0b1120;
+        font-size: 2.6rem;
+        font-weight: 900;
+        margin: 0;
+        line-height: 1;
+    }
+
+    /* Specific Icon Colors */
+    .icon-students {
+        background: rgba(59, 130, 246, 0.1);
+        color: #3b82f6;
+    }
+
+    .icon-courses {
+        background: rgba(212, 175, 55, 0.1);
+        color: #d4af37;
+    }
+
+    .icon-certs {
+        background: rgba(239, 68, 68, 0.1);
+        color: #ef4444;
+    }
+
+    .icon-staff {
+        background: rgba(16, 185, 129, 0.1);
+        color: #10b981;
+    }
+
+    /* --- Quick Actions --- */
+    .section-title {
+        color: #0b1120;
+        font-size: 1.6rem;
+        font-weight: 900;
+        margin-bottom: 30px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+        .section-title i {
+            color: #d4af37;
+        }
+
+    .actions-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 20px;
+    }
+
+    .action-btn {
+        background: white;
+        border: 1px solid #e2e8f0;
+        padding: 30px 20px;
+        border-radius: 20px;
+        text-align: center;
+        font-weight: 800;
+        font-size: 1.15rem;
+        color: #1e293b;
+        transition: all 0.4s ease;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 18px;
+        box-shadow: 0 4px 6px -1px rgba(0,0,0,0.02);
+        text-decoration: none;
+    }
+
+        .action-btn i {
+            font-size: 2.5rem;
+            color: #d4af37;
+            transition: transform 0.4s ease;
+        }
+
+        .action-btn:hover {
+            background: linear-gradient(135deg, #0b1120, #1e293b);
+            color: white;
+            border-color: #0b1120;
+            transform: translateY(-8px);
+            box-shadow: 0 15px 30px -5px rgba(11, 17, 32, 0.3);
+        }
+
+            .action-btn:hover i {
+                transform: scale(1.15);
+                color: #fef08a;
+            }
+
+    /* Responsive */
+    @@media (max-width: 768px) {
+        .welcome-banner
+
+    {
+        flex-direction: column;
+        text-align: center;
+        padding: 40px 20px;
+        gap: 30px;
+    }
+
+    .welcome-content h1 {
+        font-size: 2.2rem;
+    }
+
+    .welcome-icon {
+        transform: none;
+        width: 100px;
+        height: 100px;
+        font-size: 3rem;
+        margin: 0 auto;
+    }
+
+    }
 </style>
 
-<div class="stats-grid">
-    <div class="stat-card">
-        <div class="stat-icon" style="background: rgba(67, 24, 255, 0.1); color: var(--sidebar-active-bg);">
-            <i class="fa-solid fa-users"></i>
+<div>
+    <!-- Royal Welcome Banner -->
+    <div class="welcome-banner">
+        <div class="welcome-content">
+            <h1>مرحباً بك في <span>مركز القيادة</span></h1>
+            <p>بوابتك الذكية لإدارة منصة أبستراكشن. تابع أداء المنصة، أدر الدورات، وراجع طلبات الطلاب والمحاضرين من مكان واحد بكل سهولة واحترافية.</p>
         </div>
-        <div class="stat-info">
-            <h4>إجمالي الطلاب</h4>
-            <h2>@ViewBag.TotalStudents</h2>
-        </div>
-    </div>
-
-    <div class="stat-card">
-        <div class="stat-icon" style="background: rgba(16, 185, 129, 0.1); color: #10b981;">
-            <i class="fa-solid fa-layer-group"></i>
-        </div>
-        <div class="stat-info">
-            <h4>الدورات النشطة</h4>
-            <h2>@ViewBag.TotalCourses</h2>
+        <div class="welcome-icon">
+            <i class="fa-solid fa-chess-queen"></i>
         </div>
     </div>
 
-    <div class="stat-card">
-        <div class="stat-icon" style="background: rgba(245, 158, 11, 0.1); color: #f59e0b;">
-            <i class="fa-solid fa-certificate"></i>
+    <!-- Premium Stats Grid -->
+    <div class="stats-premium-grid">
+        <div class="stat-premium-card">
+            <div class="stat-icon-wrapper icon-students">
+                <i class="fa-solid fa-users"></i>
+            </div>
+            <div class="stat-info">
+                <h4>إجمالي الطلاب</h4>
+                <h2>@ViewBag.TotalStudents</h2>
+            </div>
         </div>
-        <div class="stat-info">
-            <h4>شهادات معلقة</h4>
-            <h2>@ViewBag.PendingCertificates</h2>
+
+        <div class="stat-premium-card">
+            <div class="stat-icon-wrapper icon-courses">
+                <i class="fa-solid fa-layer-group"></i>
+            </div>
+            <div class="stat-info">
+                <h4>الدورات النشطة</h4>
+                <h2>@ViewBag.TotalCourses</h2>
+            </div>
+        </div>
+
+        <div class="stat-premium-card">
+            <div class="stat-icon-wrapper icon-certs">
+                <i class="fa-solid fa-certificate"></i>
+            </div>
+            <div class="stat-info">
+                <h4>طلبات شهادات</h4>
+                <h2>@ViewBag.PendingCertificates</h2>
+            </div>
+        </div>
+
+        <div class="stat-premium-card">
+            <div class="stat-icon-wrapper icon-staff">
+                <i class="fa-solid fa-user-tie"></i>
+            </div>
+            <div class="stat-info">
+                <h4>هيئة التدريس</h4>
+                <h2>@ViewBag.ActiveInstructors</h2>
+            </div>
         </div>
     </div>
 
-    <div class="stat-card">
-        <div class="stat-icon" style="background: rgba(239, 68, 68, 0.1); color: #ef4444;">
-            <i class="fa-solid fa-chalkboard-user"></i>
-        </div>
-        <div class="stat-info">
-            <h4>هيئة التدريس</h4>
-            <h2>@ViewBag.ActiveInstructors</h2>
+    <!-- Quick Actions Section -->
+    <div class="quick-actions-section">
+        <h3 class="section-title"><i class="fa-solid fa-bolt"></i> الوصول السريع</h3>
+        <div class="actions-grid">
+            <a href="/Admin/CreateCourse" class="action-btn">
+                <i class="fa-solid fa-folder-plus"></i>
+                إضافة دورة جديدة
+            </a>
+            <a href="/Admin/RegistrationRequests" class="action-btn">
+                <i class="fa-solid fa-inbox"></i>
+                مراجعة طلبات التسجيل
+            </a>
+            <a href="/Admin/InstructorApplications" class="action-btn">
+                <i class="fa-solid fa-chalkboard-user"></i>
+                طلبات المحاضرين
+            </a>
+            <a href="/Admin/Certificates" class="action-btn">
+                <i class="fa-solid fa-award"></i>
+                اعتماد الشهادات
+            </a>
+            <a href="/SiteSettings/Index" class="action-btn">
+                <i class="fa-solid fa-palette"></i>
+                تخصيص الواجهة
+            </a>
         </div>
     </div>
-</div>
-
-<div class="table-card">
-    <div class="table-header">
-        <h3><i class="fa-solid fa-clock-rotate-left" style="color: var(--sidebar-active-bg); margin-left: 8px;"></i> آخر النشاطات (شهادات بانتظار الاعتماد)</h3>
-        <a href="/Admin/Certificates" style="color: var(--sidebar-active-bg); font-weight: 700; font-size: 0.9rem;">عرض الكل</a>
-    </div>
-
-    <table class="modern-table">
-        <thead>
-            <tr>
-                <th>رقم الطلب</th>
-                <th>اسم الطالب</th>
-                <th>اسم الدورة</th>
-                <th>حالة الدورة</th>
-                <th>إجراء</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <td>#10024</td>
-                <td>محمود عبد الرحمن</td>
-                <td>دبلومة تطوير واجهات الويب</td>
-                <td><span style="color: #10b981; background: rgba(16,185,129,0.1); padding: 5px 10px; border-radius: 8px; font-size: 0.8rem;">مكتملة 100%</span></td>
-                <td>
-                    <form asp-action="ApproveCertificate" method="post" style="display:inline;">
-                        <input type="hidden" name="certificateId" value="1" />
-                        <button type="submit" style="background: var(--sidebar-active-bg); color: white; border: none; padding: 6px 15px; border-radius: 8px; cursor: pointer; font-family: inherit;">اعتماد وإصدار</button>
-                    </form>
-                </td>
-            </tr>
-        </tbody>
-    </table>
 </div>

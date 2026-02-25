@@ -1,109 +1,231 @@
 ﻿@model IEnumerable<AbstractionCenter.Models.Entities.RegistrationRequest>
 @{
-    ViewData["Title"] = "طلبات الانضمام للدورات";
+    ViewData["Title"] = "طلبات تسجيل الطلاب (الفورم)";
 }
 
 <style>
-    .table-card {
-        background: var(--card-bg);
-        border-radius: var(--radius-box);
-        padding: 30px;
-        box-shadow: var(--shadow-card);
+    .premium-table-card {
+        background: #ffffff;
+        border-radius: 24px;
+        padding: 35px;
+        box-shadow: 0 15px 35px -10px rgba(11, 17, 32, 0.08);
+        border: 1px solid rgba(212, 175, 55, 0.15);
     }
 
-    .modern-table {
-        width: 100%;
-        border-collapse: collapse;
+    .toolbar-title {
+        color: #0b1120;
+        margin: 0 0 35px 0;
+        font-size: 1.6rem;
+        font-weight: 900;
+        display: flex;
+        align-items: center;
+        gap: 12px;
     }
 
-        .modern-table th {
-            text-align: right;
-            padding: 15px;
-            color: var(--text-muted);
-            font-size: 0.85rem;
-            border-bottom: 1px solid var(--border-color);
+        .toolbar-title i {
+            color: #d4af37;
         }
 
-        .modern-table td {
-            padding: 15px;
-            color: var(--text-main);
-            font-weight: 600;
+    .table-responsive {
+        width: 100%;
+        overflow-x: auto;
+        border-radius: 16px;
+        border: 1px solid #e2e8f0;
+    }
+
+    .modern-data-table {
+        width: 100%;
+        border-collapse: collapse;
+        white-space: nowrap;
+    }
+
+        .modern-data-table th {
+            text-align: right;
+            padding: 18px 20px;
+            background: #f8fafc;
+            color: #0b1120;
             font-size: 0.95rem;
-            border-bottom: 1px solid #f8fafc;
+            font-weight: 800;
+            border-bottom: 2px solid #e2e8f0;
+        }
+
+        .modern-data-table td {
+            padding: 18px 20px;
+            color: #1e293b;
+            font-weight: 600;
+            font-size: 1rem;
+            border-bottom: 1px solid #f1f5f9;
+            vertical-align: middle;
+            transition: background 0.3s;
+        }
+
+        .modern-data-table tbody tr:hover td {
+            background: #fcfcfd;
         }
 
     .badge {
-        padding: 6px 12px;
+        padding: 8px 15px;
         border-radius: 10px;
-        font-size: 0.8rem;
-        font-weight: bold;
+        font-size: 0.85rem;
+        font-weight: 800;
+        display: inline-block;
     }
 
     .badge-pending {
         background: rgba(245, 158, 11, 0.1);
-        color: #f59e0b;
+        color: #d97706;
+        border: 1px solid rgba(245, 158, 11, 0.2);
     }
 
     .badge-approved {
         background: rgba(16, 185, 129, 0.1);
-        color: #10b981;
+        color: #059669;
+        border: 1px solid rgba(16, 185, 129, 0.2);
     }
+
+    .btn-approve {
+        background: linear-gradient(135deg, #10b981, #059669);
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 12px;
+        font-weight: 800;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 5px 15px rgba(16, 185, 129, 0.3);
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 0.9rem;
+        font-family: inherit;
+    }
+
+        .btn-approve:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(16, 185, 129, 0.4);
+        }
+
+    .btn-view {
+        background: #0b1120;
+        color: #d4af37;
+        padding: 10px 20px;
+        border-radius: 12px;
+        text-decoration: none;
+        font-weight: 800;
+        font-size: 0.9rem;
+        transition: 0.3s;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+        .btn-view:hover {
+            background: #d4af37;
+            color: #0b1120;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(212, 175, 55, 0.3);
+        }
+
+    .empty-state {
+        text-align: center;
+        padding: 80px 20px;
+    }
+
+        .empty-state i {
+            font-size: 4rem;
+            color: #cbd5e1;
+            margin-bottom: 20px;
+        }
+
+        .empty-state h3 {
+            color: #0b1120;
+            font-weight: 800;
+            margin-bottom: 10px;
+        }
+
+        .empty-state p {
+            color: #64748b;
+        }
 </style>
 
-<div class="table-card">
-    <h3 style="color: var(--text-main); margin-bottom: 25px;"><i class="fa-solid fa-inbox" style="color: var(--sidebar-active-bg);"></i> صندوق الطلبات الواردة</h3>
+<div class="premium-table-card">
+    <h3 class="toolbar-title"><i class="fa-solid fa-envelope-open-text"></i> صندوق طلبات التسجيل</h3>
 
-    <table class="modern-table">
-        <thead>
-            <tr>
-                <th>الطالب</th>
-                <th>الدورة المطلوبة</th>
-                <th>تاريخ الطلب</th>
-                <th>الحالة</th>
-                <th>القرار</th>
-            </tr>
-        </thead>
-        <tbody>
-            @if (Model != null && Model.Any())
-            {
-                foreach (var request in Model)
+    <div class="table-responsive">
+        <table class="modern-data-table">
+            <thead>
+                <tr>
+                    <th>بيانات الطالب</th>
+                    <th>الدورة المطلوبة</th>
+                    <th>تاريخ الطلب</th>
+                    <th>حالة الطلب</th>
+                    <th>الإجراءات</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model != null && Model.Any())
+                {
+                    foreach (var request in Model)
+                    {
+                        <tr>
+                            <td>
+                                <div style="font-weight: 900; color: #0b1120; font-size: 1.1rem;">@(request.Student?.FullName ?? request.Student?.Email)</div>
+                                <div style="font-size: 0.85rem; color: #64748b; margin-top: 4px;">المستوى: @(request.Level ?? "غير محدد")</div>
+                            </td>
+                            <td>
+                                <div style="color: #1e293b; font-weight: 800;">@(request.Course?.Title)</div>
+                            </td>
+                            <td style="color: #64748b; font-weight: 700;">
+                                <i class="fa-regular fa-clock" style="color: #d4af37; margin-left: 5px;"></i> @request.RequestDate.ToString("dd MMM yyyy, hh:mm tt")
+                            </td>
+                            <td>
+                                @if (request.Status == AbstractionCenter.Models.Entities.RequestStatus.Pending)
+                                {
+                                    <span class="badge badge-pending">قيد المراجعة</span>
+                                }
+                                else
+                                {
+                                    <span class="badge badge-approved">تمت الموافقة</span>
+                                }
+                            </td>
+                            <td>
+                                <div style="display: flex; gap: 10px;">
+                                    @if (request.Status == AbstractionCenter.Models.Entities.RequestStatus.Pending)
+                                    {
+                                        <form asp-action="ApproveRequest" method="post">
+                                            <input type="hidden" name="requestId" value="@request.Id" />
+                                            <button type="submit" class="btn-approve" title="تفعيل الدورة للطالب فوراً">
+                                                <i class="fa-solid fa-user-check"></i> قبول
+                                            </button>
+                                        </form>
+                                    }
+                                    else
+                                    {
+                                        <span style="color: #059669; background: rgba(16, 185, 129, 0.1); padding: 10px 15px; border-radius: 12px; font-weight: 800; font-size: 0.9rem; display: inline-flex; align-items: center; gap: 5px;">
+                                            <i class="fa-solid fa-lock"></i> تم الإدراج
+                                        </span>
+                                    }
+                                    <a href="/Admin/RegistrationDetails/@request.Id" class="btn-view">
+                                        <i class="fa-solid fa-eye"></i> التفاصيل
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                }
+                else
                 {
                     <tr>
-                        <td>@(request.Student?.FullName ?? request.Student?.Email)</td>
-                        <td style="color: var(--text-muted); font-weight: 500;">@(request.Course?.Title)</td>
-                        <td style="color: var(--text-muted); font-weight: 500;">@request.RequestDate.ToString("yyyy-MM-dd")</td>
-                        <td>
-                            @if (request.Status == AbstractionCenter.Models.Entities.RequestStatus.Pending)
-                            {
-                                <span class="badge badge-pending">قيد المراجعة</span>
-                            }
-                            else
-                            {
-                                <span class="badge badge-approved">تمت الموافقة</span>
-                            }
-                        </td>
-                        <td>
-                            @if (request.Status == AbstractionCenter.Models.Entities.RequestStatus.Pending)
-                            {
-                                <form asp-action="ApproveRequest" method="post" style="display:inline;">
-                                    <input type="hidden" name="requestId" value="@request.Id" />
-                                    <button type="submit" style="background: rgba(16, 185, 129, 0.1); color: #10b981; border: none; padding: 8px 15px; border-radius: 10px; font-weight: bold; cursor: pointer; font-family: inherit;">
-                                        <i class="fa-solid fa-check"></i> قبول الطالب
-                                    </button>
-                                </form>
-                            }
-                            else
-                            {
-                                <span style="color: var(--text-muted); font-size: 0.85rem;"><i class="fa-solid fa-lock"></i> تم القرار</span>
-                            }
+                        <td colspan="5">
+                            <div class="empty-state">
+                                <i class="fa-solid fa-inbox"></i>
+                                <h3>لا توجد طلبات تسجيل معلقة</h3>
+                                <p>كل الطلبات تمت مراجعتها أو لا توجد طلبات جديدة.</p>
+                            </div>
                         </td>
                     </tr>
                 }
-            }
-            else
-            {
-                <tr><td colspan="5" style="text-align: center; padding: 40px; color: var(--text-muted);">لا توجد طلبات تسجيل حالياً.</td></tr>
-            }
-        </tbody>
-    </table>
+            </tbody>
+        </table>
+    </div>
 </div>

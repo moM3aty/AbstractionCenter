@@ -1,0 +1,126 @@
+﻿@model AbstractionCenter.Models.Entities.Course
+@{
+    ViewData["Title"] = "التسجيل في: " + Model.Title;
+}
+
+<style>
+    .form-wrapper {
+        background: #f8fafc;
+        min-height: 80vh;
+        padding: 140px 20px 80px;
+    }
+
+    .form-card {
+        background: white; border-radius: 24px; padding: 60px;
+        box-shadow: 0 25px 50px -12px rgba(11, 17, 32, 0.15);
+        max-width: 900px; margin: 0 auto;
+        border: 1px solid rgba(212, 175, 55, 0.2);
+        border-top: 8px solid var(--secondary-color);
+    }
+
+    .course-header-card {
+        background: linear-gradient(135deg, var(--primary-color), #1e293b);
+        color: white; padding: 40px; border-radius: 20px;
+        margin-bottom: 40px; text-align: center;
+        box-shadow: 0 15px 30px rgba(11, 17, 32, 0.2);
+    }
+    .course-header-card h2 { color: var(--secondary-color); font-weight: 900; font-size: 2.2rem; margin-bottom: 15px; }
+
+    .form-group { margin-bottom: 25px; }
+    .form-group label { display: block; margin-bottom: 10px; font-weight: 800; color: var(--primary-color); font-size: 1.05rem; }
+    
+    .form-control {
+        width: 100%; padding: 16px 20px; border: 2px solid #e2e8f0;
+        border-radius: 16px; font-family: inherit; font-size: 1.05rem; background: #fcfcfd; transition: 0.3s;
+    }
+    .form-control:focus { outline: none; border-color: var(--secondary-color); background: white; box-shadow: 0 0 0 4px rgba(212, 175, 55, 0.15); }
+
+    .section-title {
+        color: var(--primary-color); font-size: 1.5rem; font-weight: 900; margin: 40px 0 25px;
+        border-bottom: 2px solid #e2e8f0; padding-bottom: 15px; display: flex; align-items: center; gap: 10px;
+    }
+    .section-title i { color: var(--secondary-color); }
+
+    .btn-submit-reg {
+        background: linear-gradient(135deg, var(--secondary-color), #fef08a);
+        color: var(--primary-color); border: none; padding: 20px; width: 100%;
+        border-radius: 50px; font-weight: 900; font-size: 1.25rem; cursor: pointer;
+        box-shadow: 0 15px 30px rgba(212, 175, 55, 0.3); transition: all 0.4s ease;
+        display: flex; align-items: center; justify-content: center; gap: 10px; margin-top: 40px;
+    }
+    .btn-submit-reg:hover { transform: translateY(-5px); box-shadow: 0 20px 40px rgba(212, 175, 55, 0.5); }
+
+    @@media (max-width: 768px) { .form-card { padding: 40px 20px; } }
+</style>
+
+<div class="form-wrapper">
+    <div class="form-card">
+        <div class="course-header-card">
+            <h2>@Model.Title</h2>
+            <p style="margin: 0; color: #cbd5e1; font-size: 1.15rem;">يرجى ملء الاستمارة التالية بدقة ليتم اعتماد انضمامك للدورة ومراجعتها من قبل الإدارة.</p>
+        </div>
+
+        <form asp-action="SubmitRegistration" method="post">
+            <input type="hidden" name="courseId" value="@Model.Id" />
+
+            <h3 class="section-title"><i class="fa-solid fa-address-card"></i> البيانات الأساسية</h3>
+
+            <div class="form-group">
+                <label>الاسم رباعي (كما سيظهر في الشهادة)</label>
+                <input type="text" name="fullName" class="form-control" placeholder="أدخل اسمك بالكامل..." required />
+            </div>
+
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;">
+                <div class="form-group">
+                    <label>التخصص (الدراسي أو المهني)</label>
+                    <input type="text" name="specialization" class="form-control" placeholder="مثال: طالب حاسبات، مهندس..." required />
+                </div>
+                <div class="form-group">
+                    <label>مستواك الحالي في هذا المجال</label>
+                    <select name="level" class="form-control" required>
+                        <option value="">-- اختر مستواك --</option>
+                        <option value="مبتدئ">مبتدئ</option>
+                        <option value="متوسط">متوسط</option>
+                        <option value="متقدم">متقدم</option>
+                    </select>
+                </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;">
+                <div class="form-group">
+                    <label>رقم الواتساب <i class="fa-brands fa-whatsapp" style="color:#25d366;"></i></label>
+                    <input type="text" name="whatsAppNumber" class="form-control" placeholder="مثال: 0100000000" required />
+                </div>
+                <div class="form-group">
+                    <label>رقم تلغرام (اختياري) <i class="fa-brands fa-telegram" style="color:#3b82f6;"></i></label>
+                    <input type="text" name="telegramNumber" class="form-control" placeholder="إذا وجد..." />
+                </div>
+            </div>
+
+            @if (Model.CustomQuestions != null && Model.CustomQuestions.Any())
+            {
+                <h3 class="section-title"><i class="fa-solid fa-clipboard-question"></i> تفاصيل إضافية خاصة بالدورة</h3>
+                
+                foreach (var q in Model.CustomQuestions.OrderBy(q => q.Order))
+                {
+                    <div class="form-group">
+                        <label>
+                            @q.QuestionText 
+                            @if(q.IsRequired){ <span style="color: #ef4444; font-size: 0.9rem;">(مطلوب)</span> }
+                        </label>
+                        <textarea name="customAnswers[@q.Id]" class="form-control" rows="2" @(q.IsRequired ? "required" : "")></textarea>
+                    </div>
+                }
+            }
+
+            <div class="form-group" style="margin-top: 30px;">
+                <label>رسالة أو ملاحظة لإدارة المركز (اختياري)</label>
+                <textarea name="message" class="form-control" rows="3" placeholder="هل لديك أي استفسار أو ملاحظة إضافية تود إخبارنا بها؟"></textarea>
+            </div>
+
+            <button type="submit" class="btn-submit-reg">
+                تأكيد وإرسال طلب التسجيل <i class="fa-solid fa-check-circle"></i>
+            </button>
+        </form>
+    </div>
+</div>

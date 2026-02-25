@@ -1,7 +1,9 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using AbstractionCenter.Models.Entities;
+using AbstractionCenter.Services;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 
 namespace AbstractionCenter.Controllers
 {
@@ -9,14 +11,15 @@ namespace AbstractionCenter.Controllers
     {
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly UserManager<ApplicationUser> _userManager;
+        private readonly IFileUploaderService _fileUploader; // خدمة رفع الملفات
 
-        public AccountController(SignInManager<ApplicationUser> signInManager, UserManager<ApplicationUser> userManager)
+        public AccountController(SignInManager<ApplicationUser> signInManager, UserManager<ApplicationUser> userManager, IFileUploaderService fileUploader)
         {
             _signInManager = signInManager;
             _userManager = userManager;
+            _fileUploader = fileUploader;
         }
 
-        // --- دوال تسجيل الدخول ---
         [HttpGet]
         public IActionResult Login()
         {
@@ -31,24 +34,28 @@ namespace AbstractionCenter.Controllers
         {
             if (ModelState.IsValid)
             {
-                var result = await _signInManager.PasswordSignInAsync(email, password, rememberMe, lockoutOnFailure: false);
-
-                if (result.Succeeded)
+                var user = await _userManager.FindByEmailAsync(email);
+                if (user != null)
                 {
-                    var user = await _userManager.FindByEmailAsync(email);
-                    var roles = await _userManager.GetRolesAsync(user);
+                    // --- تنفيذ ميزة الطرد للجهزة الأخرى ---
+                    // بتحديث الـ SecurityStamp يتم إبطال مفعول كل الجلسات السابقة (Cookies) المفتوحة لهذا الحساب
+                    await _userManager.UpdateSecurityStampAsync(user);
 
-                    if (roles.Contains("Admin")) return RedirectToAction("Index", "Admin");
-                    if (roles.Contains("Instructor")) return RedirectToAction("Dashboard", "Instructor");
-                    return RedirectToAction("Dashboard", "Student");
+                    var result = await _signInManager.PasswordSignInAsync(user, password, rememberMe, lockoutOnFailure: false);
+
+                    if (result.Succeeded)
+                    {
+                        var roles = await _userManager.GetRolesAsync(user);
+                        if (roles.Contains("Admin")) return RedirectToAction("Index", "Admin");
+                        if (roles.Contains("Instructor")) return RedirectToAction("Dashboard", "Instructor");
+                        return RedirectToAction("Dashboard", "Student");
+                    }
                 }
-
                 ModelState.AddModelError(string.Empty, "البريد الإلكتروني أو كلمة المرور غير صحيحة.");
             }
             return View();
         }
 
-        // --- دوال إنشاء حساب جديد (التي كانت ناقصة) ---
         [HttpGet]
         public IActionResult Register()
         {
@@ -59,7 +66,8 @@ namespace AbstractionCenter.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Register(string fullName, string email, string password, string confirmPassword)
+        // تم إضافة استقبال الصورة الشخصية ProfilePictureFile
+        public async Task<IActionResult> Register(string fullName, string email, string password, string confirmPassword, IFormFile? profilePictureFile)
         {
             if (password != confirmPassword)
             {
@@ -69,11 +77,19 @@ namespace AbstractionCenter.Controllers
 
             if (ModelState.IsValid)
             {
+                // رفع الصورة إذا وجدت
+                string profilePicPath = null;
+                if (profilePictureFile != null)
+                {
+                    profilePicPath = await _fileUploader.UploadFileAsync(profilePictureFile, "profiles");
+                }
+
                 var user = new ApplicationUser
                 {
                     UserName = email,
                     Email = email,
                     FullName = fullName,
+                    ProfilePicture = profilePicPath, // حفظ مسار الصورة
                     CreatedAt = System.DateTime.Now
                 };
 
@@ -81,15 +97,11 @@ namespace AbstractionCenter.Controllers
 
                 if (result.Succeeded)
                 {
-                    // إعطاء صلاحية "طالب" افتراضياً لأي حساب جديد يتم إنشاؤه من واجهة الموقع
                     await _userManager.AddToRoleAsync(user, "Student");
-
-                    // تسجيل الدخول مباشرة بعد إنشاء الحساب
                     await _signInManager.SignInAsync(user, isPersistent: false);
                     return RedirectToAction("Dashboard", "Student");
                 }
 
-                // عرض الأخطاء في حال فشل الإنشاء (مثل البريد مسجل مسبقاً أو كلمة المرور ضعيفة)
                 foreach (var error in result.Errors)
                 {
                     ModelState.AddModelError(string.Empty, error.Description);
@@ -98,7 +110,6 @@ namespace AbstractionCenter.Controllers
             return View();
         }
 
-        // --- دوال تسجيل الخروج والصلاحيات ---
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Logout()

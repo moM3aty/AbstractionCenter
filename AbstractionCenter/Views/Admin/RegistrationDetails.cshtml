@@ -1,0 +1,241 @@
+﻿@model AbstractionCenter.Models.Entities.RegistrationRequest
+@{
+    ViewData["Title"] = "تفاصيل طلب التسجيل";
+}
+
+<style>
+    .details-premium-card {
+        background: #ffffff;
+        border-radius: 24px;
+        padding: 40px;
+        box-shadow: 0 15px 35px -10px rgba(11, 17, 32, 0.08);
+        border: 1px solid rgba(212, 175, 55, 0.15);
+        margin-bottom: 30px;
+    }
+
+    .info-group {
+        margin-bottom: 25px;
+        padding-bottom: 20px;
+        border-bottom: 1px solid #e2e8f0;
+    }
+
+    .info-label {
+        color: #64748b;
+        font-size: 1rem;
+        font-weight: 700;
+        margin-bottom: 8px;
+    }
+
+    .info-value {
+        color: #0b1120;
+        font-size: 1.2rem;
+        font-weight: 900;
+    }
+
+    .qa-box {
+        background: #f8fafc;
+        padding: 25px 30px;
+        border-radius: 16px;
+        margin-bottom: 20px;
+        border-right: 5px solid #d4af37;
+        border-left: 1px solid #e2e8f0;
+        border-top: 1px solid #e2e8f0;
+        border-bottom: 1px solid #e2e8f0;
+    }
+
+    .qa-question {
+        color: #0b1120;
+        font-weight: 900;
+        margin-bottom: 15px;
+        font-size: 1.15rem;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+        .qa-question i {
+            color: #d4af37;
+        }
+
+    .qa-answer {
+        color: #1e293b;
+        line-height: 1.8;
+        font-size: 1.1rem;
+        background: white;
+        padding: 20px;
+        border-radius: 12px;
+        border: 1px dashed #cbd5e1;
+    }
+
+    .decision-panel {
+        background: rgba(11, 17, 32, 0.02);
+        border-radius: 24px;
+        padding: 40px;
+        text-align: center;
+        border: 1px solid #e2e8f0;
+    }
+
+    .btn-action-lg {
+        padding: 18px 45px;
+        font-size: 1.2rem;
+        border-radius: 50px;
+        font-weight: 900;
+        cursor: pointer;
+        transition: all 0.4s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        border: none;
+        font-family: inherit;
+    }
+
+    .btn-approve-lg {
+        background: linear-gradient(135deg, #10b981, #059669);
+        color: white;
+        box-shadow: 0 10px 25px rgba(16, 185, 129, 0.3);
+    }
+
+        .btn-approve-lg:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(16, 185, 129, 0.5);
+        }
+
+    .btn-reject-lg {
+        background: white;
+        color: #ef4444;
+        border: 2px solid #ef4444;
+    }
+
+        .btn-reject-lg:hover {
+            background: #ef4444;
+            color: white;
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(239, 68, 68, 0.3);
+        }
+</style>
+
+<div>
+    <a href="/Admin/RegistrationRequests" style="color: #d4af37; font-weight: 900; font-size: 1.1rem; margin-bottom: 30px; display: inline-flex; align-items: center; gap: 10px; text-decoration: none; background: #0b1120; padding: 12px 25px; border-radius: 15px;">
+        <i class="fa-solid fa-arrow-right"></i> العودة لقائمة الطلبات
+    </a>
+
+    <!-- بيانات الطالب -->
+    <div class="details-premium-card">
+        <h2 style="color: #0b1120; margin-bottom: 35px; border-bottom: 2px solid #d4af37; padding-bottom: 15px; display: inline-flex; align-items: center; gap: 12px;">
+            <i class="fa-solid fa-address-card" style="color: #d4af37;"></i> الاستمارة الأساسية للمتدرب
+        </h2>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 0 40px;">
+            <div class="info-group">
+                <div class="info-label">اسم الدورة المطلوبة</div>
+                <div class="info-value">@Model.Course.Title</div>
+            </div>
+            <div class="info-group">
+                <div class="info-label">تاريخ وتوقيت الطلب</div>
+                <div class="info-value">@Model.RequestDate.ToString("dd MMMM yyyy - hh:mm tt")</div>
+            </div>
+            <div class="info-group">
+                <div class="info-label">الاسم الرباعي للمتدرب</div>
+                <div class="info-value">@Model.FullName</div>
+            </div>
+            <div class="info-group">
+                <div class="info-label">البريد الإلكتروني للحساب</div>
+                <div class="info-value" style="font-family: monospace; font-size: 1.1rem;">@Model.Student.Email</div>
+            </div>
+            <div class="info-group">
+                <div class="info-label">التخصص</div>
+                <div class="info-value">@Model.Specialization</div>
+            </div>
+            <div class="info-group">
+                <div class="info-label">مستوى الخبرة</div>
+                <div class="info-value">@Model.Level</div>
+            </div>
+            <div class="info-group">
+                <div class="info-label">رقم الواتساب</div>
+                <div class="info-value">
+                    <a href="https://wa.me/@Model.WhatsAppNumber" target="_blank" style="color: #25d366; text-decoration: none; font-family: monospace;">
+                        <i class="fa-brands fa-whatsapp"></i> @Model.WhatsAppNumber
+                    </a>
+                </div>
+            </div>
+            <div class="info-group">
+                <div class="info-label">رقم تليجرام</div>
+                <div class="info-value" style="font-family: monospace;">
+                    @(!string.IsNullOrEmpty(Model.TelegramNumber) ? Model.TelegramNumber : "غير متوفر")
+                </div>
+            </div>
+        </div>
+
+        @if (!string.IsNullOrEmpty(Model.Message))
+        {
+            <div class="info-group" style="border: none; margin-top: 10px;">
+                <div class="info-label">ملاحظة المتدرب الإضافية</div>
+                <div class="info-value" style="background: rgba(212, 175, 55, 0.05); padding: 25px; border-radius: 16px; border: 1px solid rgba(212, 175, 55, 0.2); line-height: 1.8;">
+                    @Model.Message
+                </div>
+            </div>
+        }
+    </div>
+
+    <!-- إجابات الأسئلة المخصصة -->
+    <div class="details-premium-card">
+        <h2 style="color: #0b1120; margin-bottom: 35px; border-bottom: 2px solid #d4af37; padding-bottom: 15px; display: inline-flex; align-items: center; gap: 12px;">
+            <i class="fa-solid fa-clipboard-question" style="color: #d4af37;"></i> إجابات أسئلة التقييم المخصصة
+        </h2>
+
+        @if (Model.Answers != null && Model.Answers.Any())
+        {
+            foreach (var answer in Model.Answers)
+            {
+                <div class="qa-box">
+                    <div class="qa-question"><i class="fa-solid fa-circle-question"></i> @answer.CourseQuestion.QuestionText</div>
+                    <div class="qa-answer">@answer.AnswerText</div>
+                </div>
+            }
+        }
+        else
+        {
+            <div style="text-align: center; padding: 40px; background: #f8fafc; border-radius: 20px; border: 2px dashed #e2e8f0;">
+                <i class="fa-solid fa-file-signature" style="font-size: 3.5rem; color: #cbd5e1; margin-bottom: 15px;"></i>
+                <h3 style="color: #64748b; font-weight: 800;">لا توجد إجابات لأسئلة مخصصة</h3>
+                <p style="color: #94a3b8; margin: 0;">هذه الدورة لم تتضمن أسئلة إضافية أثناء التسجيل.</p>
+            </div>
+        }
+    </div>
+
+    <!-- لوحة اتخاذ القرار -->
+    <div class="decision-panel">
+        <h3 style="color: #0b1120; font-size: 1.8rem; font-weight: 900; margin-bottom: 35px;">لوحة القرار الإداري</h3>
+
+        @if (Model.Status == AbstractionCenter.Models.Entities.RequestStatus.Pending)
+        {
+            <div style="display: flex; justify-content: center; gap: 25px; flex-wrap: wrap;">
+                <form asp-controller="Admin" asp-action="ApproveRequest" method="post">
+                    <input type="hidden" name="requestId" value="@Model.Id" />
+                    <button type="submit" class="btn-action-lg btn-approve-lg">
+                        <i class="fa-solid fa-user-check"></i> قبول واعتماد المتدرب
+                    </button>
+                </form>
+
+                <form asp-controller="Admin" asp-action="RejectRequest" method="post" onsubmit="return confirm('هل أنت متأكد من رغبتك في رفض هذا الطلب؟')">
+                    <input type="hidden" name="requestId" value="@Model.Id" />
+                    <button type="submit" class="btn-action-lg btn-reject-lg">
+                        <i class="fa-solid fa-user-xmark"></i> رفض الطلب
+                    </button>
+                </form>
+            </div>
+        }
+        else if (Model.Status == AbstractionCenter.Models.Entities.RequestStatus.Approved)
+        {
+            <div style="color: #059669; font-size: 1.4rem; font-weight: 900; background: rgba(16, 185, 129, 0.1); padding: 25px 40px; border-radius: 20px; display: inline-block; border: 2px solid #10b981;">
+                <i class="fa-solid fa-circle-check" style="font-size: 2rem; vertical-align: middle; margin-left: 10px;"></i> تم قبول الطلب والطالب مسجل في الدورة حالياً.
+            </div>
+        }
+        else
+        {
+            <div style="color: #dc2626; font-size: 1.4rem; font-weight: 900; background: rgba(239, 68, 68, 0.1); padding: 25px 40px; border-radius: 20px; display: inline-block; border: 2px solid #ef4444;">
+                <i class="fa-solid fa-circle-xmark" style="font-size: 2rem; vertical-align: middle; margin-left: 10px;"></i> تم رفض هذا الطلب من قبل الإدارة.
+            </div>
+        }
+    </div>
+</div>

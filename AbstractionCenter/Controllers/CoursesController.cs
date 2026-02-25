@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using AbstractionCenter.Data;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authorization;
+using System.Collections.Generic;
 
 namespace AbstractionCenter.Controllers
 {
@@ -32,46 +33,85 @@ namespace AbstractionCenter.Controllers
             return View(openCourses);
         }
 
-        // استقبال طلب التسجيل الداخلي
-        [HttpPost]
+        // --- الميزة الجديدة: فتح فورم التسجيل الديناميكي للطالب ---
         [Authorize]
-        public async Task<IActionResult> SubmitRegistration(int courseId)
+        [HttpGet]
+        public async Task<IActionResult> Register(int id)
+        {
+            // جلب الدورة والأسئلة الخاصة بها
+            var course = await _context.Courses
+                .Include(c => c.CustomQuestions)
+                .FirstOrDefaultAsync(c => c.Id == id);
+
+            if (course == null || course.Status != CourseStatus.OpenForRegistration)
+                return NotFound();
+
+            var user = await _userManager.GetUserAsync(User);
+
+            // منع الطالب من فتح الفورم إذا كان مسجلاً بالفعل
+            var isAlreadyEnrolled = await _context.StudentCourses.AnyAsync(sc => sc.CourseId == id && sc.StudentId == user.Id);
+            if (isAlreadyEnrolled)
+            {
+                TempData["InfoMessage"] = "أنت مسجل بالفعل في هذه الدورة.";
+                return RedirectToAction("Open");
+            }
+
+            var hasPendingRequest = await _context.RegistrationRequests.AnyAsync(r => r.CourseId == id && r.StudentId == user.Id && r.Status == RequestStatus.Pending);
+            if (hasPendingRequest)
+            {
+                TempData["InfoMessage"] = "لديك طلب مسبق قيد المراجعة لهذه الدورة.";
+                return RedirectToAction("Open");
+            }
+
+            return View(course); // إرسال الدورة (بما فيها الأسئلة) للفورم
+        }
+
+        // --- استقبال بيانات التسجيل والإجابات ---
+        [Authorize]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> SubmitRegistration(int courseId, string fullName, string specialization, string level, string whatsAppNumber, string telegramNumber, string message, Dictionary<int, string> customAnswers)
         {
             var user = await _userManager.GetUserAsync(User);
             if (user == null) return RedirectToAction("Login", "Account");
 
-            // منع الطالب من تقديم طلب لدورة هو مسجل فيها بالفعل
-            var isAlreadyEnrolled = await _context.StudentCourses
-                .AnyAsync(sc => sc.CourseId == courseId && sc.StudentId == user.Id);
-
-            if (isAlreadyEnrolled)
+            // إنشاء الطلب الأساسي
+            var newRequest = new RegistrationRequest
             {
-                TempData["InfoMessage"] = "أنت مسجل بالفعل في هذه الدورة ويمكنك الوصول إليها عبر لوحة التحكم الخاصة بك.";
-                return RedirectToAction("Open");
-            }
+                CourseId = courseId,
+                StudentId = user.Id,
+                FullName = fullName,
+                Specialization = specialization,
+                Level = level,
+                WhatsAppNumber = whatsAppNumber,
+                TelegramNumber = telegramNumber,
+                Message = message,
+                Status = RequestStatus.Pending,
+                RequestDate = System.DateTime.Now
+            };
 
-            // التحقق من عدم وجود طلب مسبق قيد المراجعة
-            var existingRequest = await _context.Set<RegistrationRequest>()
-                .FirstOrDefaultAsync(r => r.CourseId == courseId && r.StudentId == user.Id);
+            _context.RegistrationRequests.Add(newRequest);
+            await _context.SaveChangesAsync(); // للحصول على Id الطلب لربط الإجابات به
 
-            if (existingRequest == null)
+            // حفظ إجابات الأسئلة المخصصة إن وجدت
+            if (customAnswers != null && customAnswers.Any())
             {
-                var newRequest = new RegistrationRequest
+                foreach (var answer in customAnswers)
                 {
-                    CourseId = courseId,
-                    StudentId = user.Id,
-                    Message = "أرغب في الانضمام إلى هذه الدورة."
-                };
-                _context.Set<RegistrationRequest>().Add(newRequest);
+                    if (!string.IsNullOrWhiteSpace(answer.Value))
+                    {
+                        _context.RegistrationAnswers.Add(new RegistrationAnswer
+                        {
+                            RegistrationRequestId = newRequest.Id,
+                            CourseQuestionId = answer.Key,
+                            AnswerText = answer.Value
+                        });
+                    }
+                }
                 await _context.SaveChangesAsync();
-
-                TempData["SuccessMessage"] = "تم إرسال طلب التسجيل بنجاح! سيتم مراجعته وإضافتك للدورة قريباً.";
-            }
-            else
-            {
-                TempData["InfoMessage"] = "لديك طلب مسبق قيد المراجعة لهذه الدورة.";
             }
 
+            TempData["SuccessMessage"] = "تم إرسال طلب التسجيل بنجاح! سيتم مراجعة بياناتك وإضافتك للدورة قريباً.";
             return RedirectToAction("Open");
         }
     }

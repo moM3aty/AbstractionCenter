@@ -1,123 +1,270 @@
 ﻿@model IEnumerable<AbstractionCenter.Models.Entities.Certificate>
 @{
-    ViewData["Title"] = "إدارة واعتماد الشهادات";
+    ViewData["Title"] = "الاعتماد المركزي للشهادات";
 }
 
 <style>
-    .table-card {
-        background: var(--card-bg);
-        border-radius: var(--radius-box);
-        padding: 30px;
-        box-shadow: var(--shadow-card);
+    .premium-table-card {
+        background: #ffffff;
+        border-radius: 24px;
+        padding: 35px;
+        box-shadow: 0 15px 35px -10px rgba(11, 17, 32, 0.08);
+        border: 1px solid rgba(212, 175, 55, 0.15);
     }
 
-    .modern-table {
+    .toolbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 35px;
+        flex-wrap: wrap;
+        gap: 20px;
+    }
+
+    .toolbar-title {
+        color: #0b1120;
+        margin: 0;
+        font-size: 1.6rem;
+        font-weight: 900;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+        .toolbar-title i {
+            color: #d4af37;
+        }
+
+    .btn-print {
+        background: linear-gradient(135deg, #0b1120, #1e293b);
+        color: #d4af37;
+        border: none;
+        padding: 14px 35px;
+        border-radius: 50px;
+        font-weight: 900;
+        font-size: 1.05rem;
+        cursor: pointer;
+        box-shadow: 0 10px 20px -5px rgba(11, 17, 32, 0.4);
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        transition: all 0.4s ease;
+        font-family: inherit;
+    }
+
+        .btn-print:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 30px -5px rgba(11, 17, 32, 0.6);
+            color: white;
+        }
+
+    .table-responsive {
+        width: 100%;
+        overflow-x: auto;
+        border-radius: 16px;
+        border: 1px solid #e2e8f0;
+    }
+
+    .modern-data-table {
         width: 100%;
         border-collapse: collapse;
+        white-space: nowrap;
     }
 
-        .modern-table th {
+        .modern-data-table th {
             text-align: right;
-            padding: 15px;
-            color: var(--text-muted);
-            font-size: 0.85rem;
-            border-bottom: 1px solid var(--border-color);
+            padding: 18px 20px;
+            background: #f8fafc;
+            color: #0b1120;
+            font-size: 0.95rem;
+            font-weight: 800;
+            border-bottom: 2px solid #e2e8f0;
         }
 
-        .modern-table td {
-            padding: 15px;
-            color: var(--text-main);
+        .modern-data-table td {
+            padding: 18px 20px;
+            color: #1e293b;
             font-weight: 600;
-            font-size: 0.95rem;
-            border-bottom: 1px solid #f8fafc;
+            font-size: 1rem;
+            border-bottom: 1px solid #f1f5f9;
+            vertical-align: middle;
+            transition: background 0.3s;
         }
+
+        .modern-data-table tbody tr:hover td {
+            background: #fcfcfd;
+        }
+
+    .serial-box {
+        background: rgba(212, 175, 55, 0.1);
+        padding: 8px 15px;
+        border-radius: 10px;
+        font-family: monospace;
+        letter-spacing: 2px;
+        color: #0b1120;
+        font-weight: 900;
+        border: 1px dashed rgba(212, 175, 55, 0.4);
+        display: inline-block;
+        font-size: 1.05rem;
+    }
 
     .badge {
-        padding: 6px 12px;
+        padding: 8px 15px;
         border-radius: 10px;
-        font-size: 0.8rem;
-        font-weight: bold;
+        font-size: 0.85rem;
+        font-weight: 800;
+        display: inline-block;
     }
 
     .badge-pending {
         background: rgba(245, 158, 11, 0.1);
-        color: #f59e0b;
+        color: #d97706;
+        border: 1px solid rgba(245, 158, 11, 0.2);
     }
 
     .badge-approved {
         background: rgba(16, 185, 129, 0.1);
-        color: #10b981;
+        color: #059669;
+        border: 1px solid rgba(16, 185, 129, 0.2);
     }
 
-    .serial-number {
-        background: #f1f5f9;
-        padding: 5px 10px;
-        border-radius: 6px;
-        font-family: monospace;
-        letter-spacing: 1px;
-        color: #475569;
+    .btn-approve {
+        background: #d4af37;
+        color: #0b1120;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 12px;
+        font-weight: 900;
+        cursor: pointer;
+        font-family: inherit;
+        transition: 0.3s;
+        box-shadow: 0 5px 15px rgba(212, 175, 55, 0.3);
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 0.95rem;
     }
+
+        .btn-approve:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(212, 175, 55, 0.5);
+            background: #fef08a;
+        }
+
+    .btn-view {
+        background: #0b1120;
+        color: #d4af37;
+        padding: 10px 20px;
+        border-radius: 12px;
+        text-decoration: none;
+        font-weight: 800;
+        font-size: 0.95rem;
+        transition: 0.3s;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+        .btn-view:hover {
+            background: #d4af37;
+            color: #0b1120;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(212, 175, 55, 0.3);
+        }
+
+    .empty-state {
+        text-align: center;
+        padding: 80px 20px;
+    }
+
+        .empty-state i {
+            font-size: 4rem;
+            color: #cbd5e1;
+            margin-bottom: 20px;
+        }
+
+        .empty-state h3 {
+            color: #0b1120;
+            font-weight: 800;
+            margin-bottom: 10px;
+        }
+
+        .empty-state p {
+            color: #64748b;
+        }
 </style>
 
-<div class="table-card">
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;">
-        <h3 style="color: var(--text-main); margin: 0;"><i class="fa-solid fa-certificate" style="color: var(--sidebar-active-bg);"></i> السجل العام للشهادات</h3>
-        <button class="btn-add" style="background: var(--sidebar-active-bg); color: white; border: none; padding: 10px 20px; border-radius: 15px; cursor: pointer;"><i class="fa-solid fa-print"></i> طباعة السجل</button>
+<div class="premium-table-card">
+    <div class="toolbar">
+        <h3 class="toolbar-title"><i class="fa-solid fa-award"></i> السجل المركزي للشهادات</h3>
+        <button class="btn-print" onclick="window.print()"><i class="fa-solid fa-print"></i> طباعة السجل</button>
     </div>
 
-    <table class="modern-table">
-        <thead>
-            <tr>
-                <th>الرقم التسلسلي</th>
-                <th>اسم الطالب</th>
-                <th>الدورة / المسار</th>
-                <th>تاريخ الإصدار</th>
-                <th>الحالة</th>
-                <th>إجراءات</th>
-            </tr>
-        </thead>
-        <tbody>
-            @if (Model != null && Model.Any())
-            {
-                foreach (var cert in Model)
+    <div class="table-responsive">
+        <table class="modern-data-table">
+            <thead>
+                <tr>
+                    <th>الرقم المرجعي (Serial)</th>
+                    <th>اسم المتدرب</th>
+                    <th>الدورة التدريبية</th>
+                    <th>تاريخ الإصدار</th>
+                    <th>الاعتماد (ختم الإدارة)</th>
+                    <th>إجراءات</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model != null && Model.Any())
+                {
+                    foreach (var cert in Model)
+                    {
+                        <tr>
+                            <td><span class="serial-box">@cert.UniqueSerialNumber</span></td>
+                            <td style="font-weight: 900; color: #0b1120;">@(cert.Student?.FullName ?? cert.Student?.Email)</td>
+                            <td style="color: #1e293b; font-weight: 700;">@(cert.Course?.Title)</td>
+                            <td style="color: #64748b; font-weight: 600;">@cert.IssueDate.ToString("dd MMMM yyyy")</td>
+                            <td>
+                                @if (cert.IsApproved)
+                                {
+                                    <span class="badge badge-approved"><i class="fa-solid fa-check-circle"></i> معتمدة وموثقة</span>
+                                }
+                                else
+                                {
+                                    <span class="badge badge-pending"><i class="fa-solid fa-circle-pause"></i> قيد المراجعة الإدارية</span>
+                                }
+                            </td>
+                            <td>
+                                @if (!cert.IsApproved)
+                                {
+                                    <form asp-action="ApproveCertificate" method="post" style="display:inline;">
+                                        <input type="hidden" name="certificateId" value="@cert.Id" />
+                                        <button type="submit" class="btn-approve">
+                                            <i class="fa-solid fa-stamp"></i> اعتماد الشهادة
+                                        </button>
+                                    </form>
+                                }
+                                else
+                                {
+                                    <a href="/Home/VerifyCertificate?serialNumber=@cert.UniqueSerialNumber" target="_blank" class="btn-view">
+                                        <i class="fa-solid fa-file-contract"></i> عرض الوثيقة
+                                    </a>
+                                }
+                            </td>
+                        </tr>
+                    }
+                }
+                else
                 {
                     <tr>
-                        <td><span class="serial-number">@cert.UniqueSerialNumber</span></td>
-                        <td>@(cert.Student?.FullName ?? cert.Student?.Email)</td>
-                        <td style="color: var(--text-muted);">@(cert.Course?.Title)</td>
-                        <td>@cert.IssueDate.ToString("yyyy-MM-dd")</td>
-                        <td>
-                            @if (cert.IsApproved)
-                            {
-                                <span class="badge badge-approved">معتمدة</span>
-                            }
-                            else
-                            {
-                                <span class="badge badge-pending">بانتظار الاعتماد</span>
-                            }
-                        </td>
-                        <td>
-                            @if (!cert.IsApproved)
-                            {
-                                <form asp-action="ApproveCertificate" method="post" style="display:inline;">
-                                    <input type="hidden" name="certificateId" value="@cert.Id" />
-                                    <button type="submit" style="background: rgba(16, 185, 129, 0.1); color: #10b981; border: none; padding: 6px 15px; border-radius: 8px; font-weight: bold; cursor: pointer;">
-                                        <i class="fa-solid fa-check"></i> اعتماد
-                                    </button>
-                                </form>
-                            }
-                            else
-                            {
-                                <a href="/Home/VerifyCertificate?serialNumber=@cert.UniqueSerialNumber" target="_blank" style="color: var(--sidebar-active-bg); text-decoration: none; font-size: 0.9rem; background: rgba(67, 24, 255, 0.1); padding: 6px 15px; border-radius: 8px;"><i class="fa-solid fa-eye"></i> عرض</a>
-                            }
+                        <td colspan="6">
+                            <div class="empty-state">
+                                <i class="fa-solid fa-certificate"></i>
+                                <h3>لا توجد شهادات مصدرة حالياً</h3>
+                                <p>عندما يجتاز الطلاب الاختبارات النهائية، ستظهر الشهادات هنا لاعتمادها.</p>
+                            </div>
                         </td>
                     </tr>
                 }
-            }
-            else
-            {
-                <tr><td colspan="6" style="text-align: center; padding: 40px; color: var(--text-muted);">لا توجد شهادات مصدرة حالياً.</td></tr>
-            }
-        </tbody>
-    </table>
+            </tbody>
+        </table>
+    </div>
 </div>

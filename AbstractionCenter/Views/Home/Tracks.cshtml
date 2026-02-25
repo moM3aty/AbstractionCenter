@@ -6,27 +6,27 @@
 }
 
 <style>
-    .tracks-header {
+    .tracks-hero {
         background: linear-gradient(135deg, var(--primary-color), #1e293b);
         position: relative;
-        padding: 140px 0 80px;
+        padding: 160px 0 100px;
         text-align: center;
         color: white;
         overflow: hidden;
     }
 
-        .tracks-header::after {
+        .tracks-hero::after {
             content: '';
             position: absolute;
             inset: 0;
-            background-image: url('data:image/svg+xml,%3Csvg width=\'60\' height=\'60\' viewBox=\'0 0 60 60\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cg fill=\'none\' fill-rule=\'evenodd\'%3E%3Cg fill=\'%23cda434\' fill-opacity=\'0.05\'%3E%3Cpath d=\'M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z\'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E');
+            background-image: url('data:image/svg+xml,%3Csvg width=\'60\' height=\'60\' viewBox=\'0 0 60 60\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cg fill=\'none\' fill-rule=\'evenodd\'%3E%3Cg fill=\'%23d4af37\' fill-opacity=\'0.05\'%3E%3Cpath d=\'M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z\'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E');
         }
 
     .track-icon-wrapper {
         width: 90px;
         height: 90px;
-        background: rgba(205, 164, 52, 0.1);
-        border: 1px solid rgba(205, 164, 52, 0.3);
+        background: rgba(212, 175, 55, 0.1);
+        border: 1px solid rgba(212, 175, 55, 0.3);
         border-radius: 25px;
         display: flex;
         align-items: center;
@@ -34,7 +34,7 @@
         font-size: 2.5rem;
         color: var(--secondary-color);
         margin: 0 auto 25px;
-        transition: transform 0.4s ease;
+        transition: transform 0.4s ease, background 0.4s ease;
     }
 
     .glass-card:hover .track-icon-wrapper {
@@ -44,14 +44,14 @@
     }
 </style>
 
-<section class="tracks-header">
+<section class="tracks-hero">
     <div class="container" style="position: relative; z-index: 10;">
         <h1 style="font-size: 3.5rem; color: white; margin-bottom: 20px; font-weight: 900;">@GetSetting("Tracks_HeroTitle", "المسارات التدريبية")</h1>
         <p style="color: #cbd5e1; font-size: 1.2rem; max-width: 700px; margin: 0 auto;">@GetSetting("Tracks_HeroSubtitle", "نقدم مجموعة متنوعة من المسارات التي تغطي أهم متطلبات سوق العمل الحالي والمستقبلي، مصممة بعناية فائقة.")</p>
     </div>
 </section>
 
-<section style="padding: 80px 0 100px; background: #f8fafc;">
+<section style="padding: 100px 0; background: #f8fafc;">
     <div class="container">
         <div class="grid-3">
             <!-- Track 1 -->
@@ -59,8 +59,8 @@
                 <div class="track-icon-wrapper">
                     <i class="@GetSetting("Track1_Icon", "fa-solid fa-code")"></i>
                 </div>
-                <h3 style="color: var(--primary-color); font-weight: 800; font-size: 1.5rem; margin-bottom: 15px;">@GetSetting("Track1_Title", "هندسة البرمجيات والتقنية")</h3>
-                <p style="color: #475569; line-height: 1.7;">@GetSetting("Track1_Desc", "تطوير الويب، الذكاء الاصطناعي، الأمن السيبراني، وبرمجة تطبيقات الهواتف الذكية بأحدث التقنيات.")</p>
+                <h3 style="color: var(--primary-color); font-weight: 900; font-size: 1.6rem; margin-bottom: 15px;">@GetSetting("Track1_Title", "هندسة البرمجيات والتقنية")</h3>
+                <p style="color: #64748b; line-height: 1.8; font-size: 1.05rem;">@GetSetting("Track1_Desc", "تطوير الويب، الذكاء الاصطناعي، الأمن السيبراني، وبرمجة تطبيقات الهواتف الذكية بأحدث التقنيات.")</p>
             </div>
 
             <!-- Track 2 -->
@@ -68,8 +68,8 @@
                 <div class="track-icon-wrapper">
                     <i class="@GetSetting("Track2_Icon", "fa-solid fa-chart-line")"></i>
                 </div>
-                <h3 style="color: var(--primary-color); font-weight: 800; font-size: 1.5rem; margin-bottom: 15px;">@GetSetting("Track2_Title", "الإدارة والأعمال")</h3>
-                <p style="color: #475569; line-height: 1.7;">@GetSetting("Track2_Desc", "التسويق الرقمي، إدارة المشاريع (PMP)، الموارد البشرية، وتحليل الأعمال وريادة المشاريع.")</p>
+                <h3 style="color: var(--primary-color); font-weight: 900; font-size: 1.6rem; margin-bottom: 15px;">@GetSetting("Track2_Title", "الإدارة والأعمال")</h3>
+                <p style="color: #64748b; line-height: 1.8; font-size: 1.05rem;">@GetSetting("Track2_Desc", "التسويق الرقمي، إدارة المشاريع (PMP)، الموارد البشرية، وتحليل الأعمال وريادة المشاريع.")</p>
             </div>
 
             <!-- Track 3 -->
@@ -77,9 +77,15 @@
                 <div class="track-icon-wrapper">
                     <i class="@GetSetting("Track3_Icon", "fa-solid fa-language")"></i>
                 </div>
-                <h3 style="color: var(--primary-color); font-weight: 800; font-size: 1.5rem; margin-bottom: 15px;">@GetSetting("Track3_Title", "اللغات والمهارات الناعمة")</h3>
-                <p style="color: #475569; line-height: 1.7;">@GetSetting("Track3_Desc", "اللغة الإنجليزية المهنية، مهارات التواصل، القيادة، والتحضير لاجتياز المقابلات الشخصية بنجاح.")</p>
+                <h3 style="color: var(--primary-color); font-weight: 900; font-size: 1.6rem; margin-bottom: 15px;">@GetSetting("Track3_Title", "اللغات والمهارات الناعمة")</h3>
+                <p style="color: #64748b; line-height: 1.8; font-size: 1.05rem;">@GetSetting("Track3_Desc", "اللغة الإنجليزية المهنية، مهارات التواصل، القيادة، والتحضير لاجتياز المقابلات الشخصية بنجاح.")</p>
             </div>
+        </div>
+
+        <div style="text-align: center; margin-top: 60px;">
+            <a href="/Courses/Open" class="btn btn-primary" style="padding: 18px 40px; font-size: 1.15rem;">
+                تصفح جميع البرامج المتاحة للتسجيل <i class="fa-solid fa-arrow-left"></i>
+            </a>
         </div>
     </div>
 </section>

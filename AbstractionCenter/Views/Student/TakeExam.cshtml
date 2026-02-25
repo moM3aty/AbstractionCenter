@@ -1,0 +1,281 @@
+﻿@model AbstractionCenter.Models.Entities.Course
+@{
+    ViewData["Title"] = "الاختبار النهائي: " + Model.Title;
+    int questionNumber = 1;
+}
+
+<style>
+    /* --- Premium Exam UI --- */
+    :root {
+        --ex-primary: #0b1120;
+        --ex-primary-light: #1e293b;
+        --ex-gold: #d4af37;
+        --ex-bg: #f4f7f6;
+        --ex-surface: #ffffff;
+        --ex-text: #0f172a;
+        --ex-muted: #64748b;
+        --ex-radius: 20px;
+    }
+
+    body {
+        background-color: var(--ex-bg);
+    }
+
+    .exam-wrapper {
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 40px 20px 80px;
+    }
+
+    .exam-header {
+        background: linear-gradient(135deg, var(--ex-primary), var(--ex-primary-light));
+        border-radius: var(--ex-radius);
+        padding: 50px 40px;
+        color: white;
+        text-align: center;
+        margin-bottom: 40px;
+        box-shadow: 0 20px 40px -10px rgba(11, 17, 32, 0.4);
+        position: relative;
+        overflow: hidden;
+        border: 1px solid rgba(212, 175, 55, 0.2);
+    }
+
+        .exam-header::before {
+            content: '';
+            position: absolute;
+            top: -50px;
+            left: -50px;
+            width: 200px;
+            height: 200px;
+            background: radial-gradient(circle, rgba(212, 175, 55, 0.15) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+
+        .exam-header h1 {
+            color: var(--ex-gold);
+            font-weight: 900;
+            font-size: 2.2rem;
+            margin-bottom: 15px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .exam-header p {
+            color: #cbd5e1;
+            font-size: 1.15rem;
+            margin-bottom: 20px;
+            position: relative;
+            z-index: 2;
+        }
+
+    .score-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: rgba(212, 175, 55, 0.15);
+        color: #fef08a;
+        padding: 10px 25px;
+        border-radius: 30px;
+        font-weight: 800;
+        border: 1px solid rgba(212, 175, 55, 0.3);
+        position: relative;
+        z-index: 2;
+    }
+
+    .question-card {
+        background: var(--ex-surface);
+        border-radius: var(--ex-radius);
+        padding: 40px;
+        margin-bottom: 30px;
+        box-shadow: 0 15px 35px -10px rgba(11, 17, 32, 0.08);
+        border: 1px solid #e2e8f0;
+        transition: all 0.3s ease;
+    }
+
+        .question-card:hover {
+            border-color: var(--ex-gold);
+            box-shadow: 0 20px 40px -10px rgba(212, 175, 55, 0.15);
+        }
+
+    .q-title {
+        color: var(--ex-primary);
+        font-size: 1.3rem;
+        font-weight: 900;
+        margin-bottom: 30px;
+        display: flex;
+        gap: 15px;
+        line-height: 1.5;
+    }
+
+    .q-num {
+        background: linear-gradient(135deg, var(--ex-gold), #fef08a);
+        color: var(--ex-primary);
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 12px;
+        font-size: 1.2rem;
+        font-weight: 900;
+        flex-shrink: 0;
+        box-shadow: 0 5px 15px rgba(212, 175, 55, 0.3);
+    }
+
+    .options-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 15px;
+    }
+
+    .option-label {
+        background: #f8fafc;
+        border: 2px solid #e2e8f0;
+        padding: 18px 25px;
+        border-radius: 15px;
+        cursor: pointer;
+        font-size: 1.05rem;
+        font-weight: 700;
+        color: var(--ex-text);
+        transition: all 0.3s;
+        display: flex;
+        align-items: center;
+        gap: 15px;
+    }
+
+        .option-label:hover {
+            background: #ffffff;
+            border-color: var(--ex-gold);
+            box-shadow: 0 5px 15px rgba(212, 175, 55, 0.1);
+        }
+
+        .option-label input[type="radio"] {
+            width: 22px;
+            height: 22px;
+            accent-color: var(--ex-gold);
+            cursor: pointer;
+        }
+
+        .option-label:has(input[type="radio"]:checked) {
+            background: rgba(212, 175, 55, 0.05);
+            border-color: var(--ex-gold);
+            box-shadow: 0 10px 20px rgba(212, 175, 55, 0.15);
+        }
+
+            .option-label:has(input[type="radio"]:checked) span {
+                color: var(--ex-primary);
+                font-weight: 900;
+            }
+
+    .btn-submit-exam {
+        background: linear-gradient(135deg, var(--ex-primary), var(--ex-primary-light));
+        color: var(--ex-gold);
+        border: none;
+        padding: 20px;
+        width: 100%;
+        border-radius: 16px;
+        font-size: 1.25rem;
+        font-weight: 900;
+        cursor: pointer;
+        box-shadow: 0 15px 30px rgba(11, 17, 32, 0.3);
+        transition: all 0.4s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 12px;
+        margin-top: 20px;
+        font-family: inherit;
+    }
+
+        .btn-submit-exam:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(11, 17, 32, 0.5);
+            color: #ffffff;
+        }
+
+    .warning-text {
+        text-align: center;
+        color: var(--ex-muted);
+        margin-bottom: 25px;
+        font-size: 1.05rem;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+    }
+</style>
+
+<div class="exam-wrapper">
+    <div class="exam-header">
+        <h1>التقييم النهائي للمسار</h1>
+        <p>@Model.Title</p>
+        <div class="score-badge">
+            <i class="fa-solid fa-medal"></i> نسبة الاجتياز المطلوبة: @Model.FinalExam.PassingScorePercentage%
+        </div>
+    </div>
+
+    <form action="/Student/SubmitExam" method="post" id="examForm">
+        @Html.AntiForgeryToken()
+        <input type="hidden" name="courseId" value="@Model.Id" />
+
+        @foreach (var q in Model.FinalExam.Questions)
+        {
+            <div class="question-card">
+                <div class="q-title">
+                    <span class="q-num">@questionNumber</span>
+                    <span>@q.QuestionText</span>
+                </div>
+
+                <div class="options-grid">
+                    <label class="option-label">
+                        <input type="radio" name="answers[@q.Id]" value="1" required />
+                        <span>@q.Option1</span>
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="answers[@q.Id]" value="2" required />
+                        <span>@q.Option2</span>
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="answers[@q.Id]" value="3" required />
+                        <span>@q.Option3</span>
+                    </label>
+                    <label class="option-label">
+                        <input type="radio" name="answers[@q.Id]" value="4" required />
+                        <span>@q.Option4</span>
+                    </label>
+                </div>
+            </div>
+            questionNumber++;
+        }
+
+        <div style="margin-top: 50px;">
+            <div class="warning-text">
+                <i class="fa-solid fa-circle-exclamation" style="color: #f59e0b;"></i> تأكد من مراجعة كافة إجاباتك جيداً قبل الاعتماد النهائي.
+            </div>
+            <button type="button" class="btn-submit-exam" onclick="confirmSubmit()">
+                اعتماد الإجابات وإنهاء الاختبار <i class="fa-solid fa-paper-plane"></i>
+            </button>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    <script>
+        function confirmSubmit() {
+            const form = document.getElementById('examForm');
+            if (!form.checkValidity()) {
+                form.reportValidity();
+                return;
+            }
+
+            if(confirm('هل أنت متأكد من رغبتك في تسليم الاختبار؟ لن تتمكن من التعديل بعد ذلك.')) {
+                const btn = document.querySelector('.btn-submit-exam');
+                btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> جاري تصحيح الاختبار...';
+                btn.style.opacity = '0.8';
+                btn.disabled = true;
+                form.submit();
+            }
+        }
+    </script>
+}

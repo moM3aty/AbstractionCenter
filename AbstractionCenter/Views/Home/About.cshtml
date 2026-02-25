@@ -1,95 +1,259 @@
 ﻿@inject AbstractionCenter.Data.ApplicationDbContext DbContext
 @{
-    ViewData["Title"] = "قصتنا ومن نحن";
-
-    // جلب الإعدادات من قاعدة البيانات لجعل الصفحة ديناميكية بالكامل
+    ViewData["Title"] = "من نحن";
     var settings = DbContext.SiteSettings.ToDictionary(s => s.Key, s => s.Value);
     string GetSetting(string key, string fallback = "") => settings.ContainsKey(key) ? settings[key] : fallback;
 }
 
 <style>
-    .about-header {
-        background: url('@GetSetting("About_HeroImage", "https://images.unsplash.com/photo-1541339907198-e08756dedf3f?auto=format&fit=crop&w=1920&q=80")') center/cover;
+    .about-hero {
+        background: url('@GetSetting("About_HeroImage", "https://images.unsplash.com/photo-1541339907198-e08756dedf3f?auto=format&fit=crop&w=1920&q=80")') center/cover no-repeat;
         position: relative;
-        padding: 160px 0 100px;
+        padding: 200px 0 120px;
         text-align: center;
         color: white;
     }
 
-        .about-header::before {
+        .about-hero::before {
             content: '';
             position: absolute;
             inset: 0;
-            background: linear-gradient(to bottom, rgba(15,23,42,0.9), rgba(15,23,42,0.95));
+            background: linear-gradient(to bottom, rgba(11,17,32,0.85), rgba(11,17,32,0.95));
         }
 
-    .about-content {
+    .about-hero-content {
         position: relative;
         z-index: 10;
-        max-width: 800px;
+        max-width: 850px;
         margin: 0 auto;
+    }
+
+    .icon-top {
+        width: 90px;
+        height: 90px;
+        background: rgba(212, 175, 55, 0.15);
+        border: 1px solid rgba(212, 175, 55, 0.4);
+        color: var(--secondary-color);
+        border-radius: 25px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2.5rem;
+        margin: 0 auto 25px;
+        transform: rotate(10deg);
+        box-shadow: 0 10px 30px rgba(212,175,55,0.2);
+    }
+
+    .story-section {
+        padding: 100px 0;
+        background: var(--background-light);
+    }
+
+    .story-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 60px;
+        align-items: center;
+    }
+
+    .image-block {
+        position: relative;
+    }
+
+        .image-block img {
+            width: 100%;
+            border-radius: 30px;
+            box-shadow: var(--shadow-premium);
+            position: relative;
+            z-index: 2;
+        }
+
+        .image-block::before {
+            content: '';
+            position: absolute;
+            top: -20px;
+            right: -20px;
+            width: 150px;
+            height: 150px;
+            background: var(--secondary-color);
+            border-radius: 30px;
+            z-index: 1;
+            opacity: 0.3;
+        }
+
+        .image-block::after {
+            content: '';
+            position: absolute;
+            bottom: -30px;
+            left: -30px;
+            width: 200px;
+            height: 200px;
+            background: var(--primary-color);
+            border-radius: 50%;
+            z-index: 1;
+            opacity: 0.1;
+        }
+
+    .text-block h2 {
+        font-size: 2.8rem;
+        font-weight: 900;
+        color: var(--primary-color);
+        margin-bottom: 20px;
+    }
+
+    .text-block .divider {
+        width: 80px;
+        height: 5px;
+        background: var(--secondary-color);
+        border-radius: 5px;
+        margin-bottom: 30px;
+    }
+
+    .vm-card {
+        background: white;
+        padding: 30px;
+        border-radius: 20px;
+        margin-bottom: 20px;
+        border: 1px solid #e2e8f0;
+        border-right: 4px solid var(--secondary-color);
+        box-shadow: var(--shadow-sm);
+    }
+
+        .vm-card h3 {
+            color: var(--primary-color);
+            font-size: 1.4rem;
+            font-weight: 900;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .vm-card p {
+            color: #64748b;
+            font-size: 1.1rem;
+            line-height: 1.8;
+            margin: 0;
+        }
+
+    /* Values */
+    .values-section {
+        background: var(--primary-color);
+        padding: 100px 0;
+        color: white;
+        text-align: center;
+    }
+
+    .values-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 30px;
+        margin-top: 50px;
+    }
+
+    .value-box {
+        background: rgba(255,255,255,0.05);
+        padding: 50px 30px;
+        border-radius: 24px;
+        border: 1px solid rgba(255,255,255,0.1);
+        transition: 0.3s;
+    }
+
+        .value-box:hover {
+            background: rgba(212,175,55,0.1);
+            border-color: var(--secondary-color);
+            transform: translateY(-10px);
+        }
+
+        .value-box i {
+            font-size: 3rem;
+            color: var(--secondary-color);
+            margin-bottom: 20px;
+        }
+
+        .value-box h3 {
+            color: white;
+            font-size: 1.4rem;
+            margin-bottom: 15px;
+            font-weight: 800;
+        }
+
+        .value-box p {
+            color: #cbd5e1;
+            line-height: 1.7;
+        }
+
+    @@media (max-width: 992px) {
+        .story-grid
+
+    {
+        grid-template-columns: 1fr;
+        text-align: center;
+    }
+
+    .text-block .divider {
+        margin: 0 auto 30px;
+    }
+
+    .vm-card {
+        text-align: right;
+    }
+
     }
 </style>
 
-<section class="about-header">
-    <div class="container about-content">
-        <div style="width: 80px; height: 80px; background: rgba(245, 158, 11, 0.2); border: 2px solid var(--accent-color); color: var(--accent-color); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 2rem; margin: 0 auto 20px;">
-            <i class="fa-solid fa-landmark-dome"></i>
-        </div>
-        <h1 style="font-size: 3.5rem; font-weight: 900; margin-bottom: 20px; color: white;">@GetSetting("About_HeroTitle", "قصتنا في أبستراكشن")</h1>
-        <p style="font-size: 1.3rem; color: #cbd5e1; line-height: 1.8;">
-            @GetSetting("About_HeroSubtitle", "نحن لسنا مجرد مركز تدريب، بل صرح تعليمي وُلد من رحم الحاجة العربية لبناء عقول شابة قادرة على قيادة المستقبل ومواكبة الثورة الصناعية الرابعة.")
+<section class="about-hero">
+    <div class="container about-hero-content">
+        <div class="icon-top"><i class="fa-solid fa-landmark-dome"></i></div>
+        <h1 style="font-size: 3.5rem; font-weight: 900; margin-bottom: 20px;">@GetSetting("About_HeroTitle", "قصتنا في أبستراكشن")</h1>
+        <p style="font-size: 1.25rem; color: #cbd5e1; line-height: 1.9;">
+            @GetSetting("About_HeroSubtitle", "نحن صرح تعليمي وُلد من رحم الحاجة العربية لبناء عقول شابة قادرة على قيادة المستقبل ومواكبة التطورات.")
         </p>
     </div>
 </section>
 
-<section class="arabic-pattern" style="padding: 80px 0;">
-    <div class="container">
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 60px; align-items: center;">
-            <div style="position: relative;">
-                <div style="position: absolute; top: -20px; right: -20px; width: 100px; height: 100px; background: var(--secondary-color); border-radius: 20px; z-index: 0; opacity: 0.2;"></div>
-                <img src="@GetSetting("About_TeamImage", "https://images.unsplash.com/photo-1531482615713-2afd69097998?auto=format&fit=crop&w=800&q=80")" alt="فريق العمل" style="width: 100%; border-radius: 20px; box-shadow: var(--shadow-premium); position: relative; z-index: 1;" />
-                <div style="position: absolute; bottom: -20px; left: -20px; width: 100px; height: 100px; background: var(--accent-color); border-radius: 50%; z-index: 0; opacity: 0.2;"></div>
+<section class="story-section">
+    <div class="container story-grid">
+        <div class="image-block">
+            <img src="@GetSetting("About_TeamImage", "https://images.unsplash.com/photo-1531482615713-2afd69097998?auto=format&fit=crop&w=800&q=80")" alt="فريق العمل" />
+        </div>
+        <div class="text-block">
+            <h2>رؤيتنا ورسالتنا</h2>
+            <div class="divider"></div>
+
+            <div class="vm-card">
+                <h3><i class="fa-solid fa-eye" style="color: var(--secondary-color);"></i> الرؤية</h3>
+                <p>@GetSetting("About_Vision", "أن نكون المنصة الأولى الموثوقة في سد الفجوة بين التعليم الأكاديمي واحتياجات سوق العمل الحقيقية.")</p>
             </div>
 
-            <div>
-                <h2 style="font-size: 2.5rem; color: var(--primary-color); font-weight: 900; margin-bottom: 20px;">رسالتنا ورؤيتنا</h2>
-                <div style="width: 60px; height: 4px; background: var(--accent-color); margin-bottom: 30px; border-radius: 2px;"></div>
-
-                <h3 style="color: var(--secondary-color); font-size: 1.5rem; margin-bottom: 10px;"><i class="fa-solid fa-eye"></i> الرؤية (Vision)</h3>
-                <p style="color: #475569; font-size: 1.1rem; line-height: 1.8; margin-bottom: 30px;">
-                    @GetSetting("About_Vision", "أن نكون المنصة العربية الأولى الموثوقة والمعتمدة محلياً ودولياً في سد الفجوة بين التعليم الأكاديمي والاحتياجات الفعلية لسوق العمل، لنُخرّج جيلاً يمتلك المهارة ويتحلى بالأخلاق المهنية.")
-                </p>
-
-                <h3 style="color: var(--secondary-color); font-size: 1.5rem; margin-bottom: 10px;"><i class="fa-solid fa-bullseye"></i> الرسالة (Mission)</h3>
-                <p style="color: #475569; font-size: 1.1rem; line-height: 1.8;">
-                    @GetSetting("About_Mission", "تقديم برامج تدريبية وتأهيلية مُبتكرة، مبنية على أسس التطبيق العملي والمشاريع الحقيقية، يديرها نخبة من أمهر الخبراء والممارسين، مع توفير بيئة تعليمية ذكية تسهل رحلة الطالب.")
-                </p>
+            <div class="vm-card" style="border-right-color: #3b82f6;">
+                <h3><i class="fa-solid fa-bullseye" style="color: #3b82f6;"></i> الرسالة</h3>
+                <p>@GetSetting("About_Mission", "تقديم برامج تدريبية وتأهيلية مُبتكرة مبنية على أسس التطبيق العملي والمشاريع الحقيقية.")</p>
             </div>
         </div>
     </div>
 </section>
 
-<!-- Values Section -->
-<section style="background: var(--primary-color); padding: 80px 0; color: white;">
-    <div class="container text-center" style="text-align: center;">
-        <h2 style="font-size: 2.5rem; font-weight: 800; margin-bottom: 50px; color: white;">@GetSetting("About_ValuesTitle", "قيمنا المؤسسية")</h2>
+<section class="values-section">
+    <div class="container">
+        <h2 style="font-size: 2.8rem; font-weight: 900; color: white;">@GetSetting("About_ValuesTitle", "قيمنا المؤسسية")</h2>
+        <div style="width: 60px; height: 4px; background: var(--secondary-color); margin: 20px auto 0; border-radius: 2px;"></div>
 
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 30px;">
-            <div style="background: rgba(255,255,255,0.05); padding: 40px 20px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.1);">
-                <i class="fa-solid fa-handshake-angle" style="font-size: 2.5rem; color: var(--accent-color); margin-bottom: 20px;"></i>
-                <h3 style="font-size: 1.3rem; margin-bottom: 10px;">@GetSetting("About_Value1_Title", "الأمانة والنزاهة")</h3>
-                <p style="color: #94a3b8;">@GetSetting("About_Value1_Desc", "نلتزم بتقديم محتوى علمي دقيق بشفافية تامة.")</p>
+        <div class="values-grid">
+            <div class="value-box">
+                <i class="fa-solid fa-handshake-angle"></i>
+                <h3>@GetSetting("About_Value1_Title", "الأمانة والنزاهة")</h3>
+                <p>@GetSetting("About_Value1_Desc", "نلتزم بتقديم محتوى علمي دقيق بشفافية تامة ومصداقية مطلقة.")</p>
             </div>
-            <div style="background: rgba(255,255,255,0.05); padding: 40px 20px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.1);">
-                <i class="fa-solid fa-lightbulb" style="font-size: 2.5rem; color: var(--accent-color); margin-bottom: 20px;"></i>
-                <h3 style="font-size: 1.3rem; margin-bottom: 10px;">@GetSetting("About_Value2_Title", "التطور المستمر")</h3>
-                <p style="color: #94a3b8;">@GetSetting("About_Value2_Desc", "تحديث دائم لمساراتنا لمواكبة تسارع التكنولوجيا.")</p>
+            <div class="value-box">
+                <i class="fa-solid fa-lightbulb"></i>
+                <h3>@GetSetting("About_Value2_Title", "التطور المستمر")</h3>
+                <p>@GetSetting("About_Value2_Desc", "تحديث دائم لمساراتنا لمواكبة تسارع التكنولوجيا ومتطلبات العصر.")</p>
             </div>
-            <div style="background: rgba(255,255,255,0.05); padding: 40px 20px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.1);">
-                <i class="fa-solid fa-people-group" style="font-size: 2.5rem; color: var(--accent-color); margin-bottom: 20px;"></i>
-                <h3 style="font-size: 1.3rem; margin-bottom: 10px;">@GetSetting("About_Value3_Title", "المجتمع الواحد")</h3>
-                <p style="color: #94a3b8;">@GetSetting("About_Value3_Desc", "نبني شبكة علاقات قوية بين الطلاب والمحاضرين.")</p>
+            <div class="value-box">
+                <i class="fa-solid fa-people-group"></i>
+                <h3>@GetSetting("About_Value3_Title", "المجتمع الواحد")</h3>
+                <p>@GetSetting("About_Value3_Desc", "نبني شبكة علاقات قوية وتفاعلية بين الطلاب والمدربين وسوق العمل.")</p>
             </div>
         </div>
     </div>

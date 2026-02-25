@@ -1,21 +1,22 @@
 ﻿using AbstractionCenter.Data;
 using AbstractionCenter.Models.Entities;
+using AbstractionCenter.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using System;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// 1. إعداد الاتصال بقاعدة البيانات (يجب إضافة نص الاتصال DefaultConnection في appsettings.json)
+// 1. إعداد الاتصال بقاعدة البيانات
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
     ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(connectionString));
 
-// 2. إعداد نظام الـ Identity مع تحديد ApplicationUser و IdentityRole
+// 2. إعداد نظام الـ Identity
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
 {
-    // إعدادات كلمة المرور (يمكنك تخفيفها حسب الحاجة)
     options.Password.RequireDigit = false;
     options.Password.RequireLowercase = false;
     options.Password.RequireNonAlphanumeric = false;
@@ -25,19 +26,29 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
 .AddEntityFrameworkStores<ApplicationDbContext>()
 .AddDefaultTokenProviders();
 
-// 3. إعداد مسارات تسجيل الدخول والرفض
+// --- التعديل الجوهري لمنع الدخول المتعدد ---
+// هذا الإعداد يجبر النظام على التحقق من الـ SecurityStamp مع كل طلب
+// بالتالي عند تسجيل الدخول من جهاز جديد، سيتم تغيير الختم وطرد الجهاز القديم فوراً
+builder.Services.Configure<SecurityStampValidatorOptions>(options =>
+{
+    options.ValidationInterval = TimeSpan.Zero;
+});
+
+// 3. إعداد مسارات تسجيل الدخول
 builder.Services.ConfigureApplicationCookie(options =>
 {
     options.LoginPath = "/Account/Login";
     options.AccessDeniedPath = "/Account/AccessDenied";
 });
 
-// إضافة خدمات الـ MVC
+// 4. تسجيل خدمة رفع الملفات (التعديل الجديد)
+builder.Services.AddScoped<IFileUploaderService, FileUploaderService>();
+
 builder.Services.AddControllersWithViews();
 
 var app = builder.Build();
 
-// 4. تهيئة الأدوار (Roles) والمستخدم الإداري الأول عند بدء تشغيل التطبيق
+// 5. تهيئة الأدوار والمستخدم الإداري
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
@@ -52,7 +63,6 @@ using (var scope = app.Services.CreateScope())
     }
 }
 
-// إعداد مسار الطلبات (HTTP Request Pipeline)
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
@@ -64,7 +74,6 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
-// تفعيل المصادقة والتفويض
 app.UseAuthentication();
 app.UseAuthorization();
 

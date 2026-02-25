@@ -4,145 +4,248 @@
 }
 
 <style>
-    .courses-header {
+    .courses-hero {
         background: linear-gradient(135deg, var(--primary-color), #1e293b);
-        position: relative;
-        padding: 140px 0 80px;
+        padding: 160px 0 100px;
         text-align: center;
         color: white;
+        position: relative;
     }
 
-    .course-card {
+        .courses-hero::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background-image: url('data:image/svg+xml,%3Csvg width=\'60\' height=\'60\' viewBox=\'0 0 60 60\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cg fill=\'none\' fill-rule=\'evenodd\'%3E%3Cg fill=\'%23d4af37\' fill-opacity=\'0.05\'%3E%3Cpath d=\'M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z\'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E');
+        }
+
+    .course-card-pro {
+        background: white;
+        border-radius: var(--radius-lg);
+        overflow: hidden;
+        border: 1px solid #e2e8f0;
+        box-shadow: var(--shadow-md);
+        transition: all 0.4s ease;
         display: flex;
         flex-direction: column;
-        justify-content: space-between;
-        padding: 0;
+        position: relative;
+    }
+
+        .course-card-pro:hover {
+            transform: translateY(-10px);
+            box-shadow: var(--shadow-premium);
+            border-color: var(--secondary-color);
+        }
+
+    .card-img-wrapper {
+        height: 220px;
+        position: relative;
         overflow: hidden;
-        border: 1px solid var(--glass-border);
-    }
-
-    .course-header {
         background: var(--primary-color);
-        border-bottom: 3px solid var(--secondary-color);
-        color: white;
-        padding: 35px 20px;
-        text-align: center;
     }
 
-    .course-body {
+        .card-img-wrapper img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+            opacity: 0.9;
+        }
+
+    .course-card-pro:hover .card-img-wrapper img {
+        transform: scale(1.08);
+        opacity: 1;
+    }
+
+    .card-img-wrapper .overlay {
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(to top, rgba(11,17,32,0.9), transparent);
+    }
+
+    .card-badge {
+        position: absolute;
+        top: 15px;
+        right: 15px;
+        background: rgba(11, 17, 32, 0.8);
+        color: var(--secondary-color);
+        padding: 8px 18px;
+        border-radius: 30px;
+        font-size: 0.9rem;
+        font-weight: 800;
+        backdrop-filter: blur(5px);
+        border: 1px solid rgba(212, 175, 55, 0.3);
+        z-index: 2;
+    }
+
+    .card-body-pro {
         padding: 30px;
         flex-grow: 1;
-        background: white;
+        display: flex;
+        flex-direction: column;
+        position: relative;
+        z-index: 5;
+        margin-top: -50px;
     }
 
-    .course-date {
-        font-size: 0.95rem;
+    .card-title-pro {
+        font-size: 1.4rem;
+        font-weight: 900;
+        color: white;
+        margin-bottom: 20px;
+        line-height: 1.5;
+        text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+    }
+
+    .card-date {
         color: var(--secondary-color);
-        font-weight: 700;
+        font-weight: 800;
+        font-size: 0.95rem;
         margin-bottom: 15px;
         display: flex;
         align-items: center;
         gap: 8px;
     }
 
-    .course-actions {
-        padding: 20px 30px;
-        border-top: 1px solid #e2e8f0;
+    .card-desc {
+        color: #475569;
+        line-height: 1.7;
+        margin-bottom: 25px;
+        flex-grow: 1;
+        font-size: 1.05rem;
+    }
+
+    .card-footer-pro {
         display: flex;
+        align-items: center;
         justify-content: space-between;
-        align-items: center;
-        background: #f8fafc;
+        gap: 15px;
+        padding-top: 20px;
+        border-top: 1px solid #e2e8f0;
     }
 
-    .btn-whatsapp {
-        background-color: transparent;
-        border: 2px solid #25d366;
-        color: #25d366;
-        width: 45px;
-        height: 45px;
-        border-radius: 50%;
-        display: flex;
+    .btn-register-pro {
+        background: linear-gradient(135deg, var(--secondary-color), #fef08a);
+        color: var(--primary-color);
+        padding: 12px 25px;
+        border-radius: 12px;
+        font-weight: 900;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        transition: 0.3s;
+        box-shadow: 0 5px 15px rgba(212, 175, 55, 0.3);
+        flex-grow: 1;
         justify-content: center;
-        align-items: center;
-        font-size: 1.5rem;
-        transition: all 0.3s ease;
     }
 
-        .btn-whatsapp:hover {
-            background-color: #25d366;
-            color: white;
-            transform: scale(1.1) rotate(-10deg);
-            box-shadow: 0 5px 15px rgba(37, 211, 102, 0.3);
+        .btn-register-pro:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(212, 175, 55, 0.5);
         }
 
-    .registrar-info {
-        font-size: 0.9rem;
-        color: #475569;
-        margin-top: 15px;
-        text-align: center;
-        font-weight: 600;
+    .btn-whatsapp-pro {
+        width: 48px;
+        height: 48px;
+        border-radius: 12px;
+        background: rgba(37, 211, 102, 0.1);
+        color: #25d366;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        transition: 0.3s;
+        border: 1px solid rgba(37, 211, 102, 0.3);
+        flex-shrink: 0;
     }
+
+        .btn-whatsapp-pro:hover {
+            background: #25d366;
+            color: white;
+            transform: translateY(-2px) rotate(-10deg);
+            box-shadow: 0 5px 15px rgba(37, 211, 102, 0.4);
+        }
+
+    .instructor-tag {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        color: #64748b;
+        font-size: 0.9rem;
+        font-weight: 700;
+        margin-top: 15px;
+    }
+
+        .instructor-tag i {
+            color: var(--primary-color);
+        }
 </style>
 
-<section class="courses-header">
-    <div class="container">
-        <h1 style="font-size: 3.5rem; font-weight: 900; margin-bottom: 15px;">البرامج <span style="color: var(--secondary-color);">التدريبية</span></h1>
-        <p style="color: #cbd5e1; font-size: 1.2rem; max-width: 700px; margin: 0 auto;">استثمر في مستقبلك وسجل الآن في أحدث الدورات المتاحة لتطوير مهاراتك.</p>
+<section class="courses-hero">
+    <div class="container" style="position: relative; z-index: 10;">
+        <div style="width: 80px; height: 80px; background: rgba(212,175,55,0.1); border: 1px solid rgba(212,175,55,0.3); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 2.2rem; color: var(--secondary-color); margin: 0 auto 20px;">
+            <i class="fa-solid fa-graduation-cap"></i>
+        </div>
+        <h1 style="font-size: 3.5rem; font-weight: 900; margin-bottom: 20px;">البرامج <span style="color: var(--secondary-color);">التدريبية</span></h1>
+        <p style="color: #cbd5e1; font-size: 1.2rem; max-width: 700px; margin: 0 auto;">استثمر في مستقبلك وسجل الآن في أحدث الدورات المتاحة لتطوير مهاراتك ومواكبة سوق العمل.</p>
 
         @if (TempData["SuccessMessage"] != null)
         {
-            <div style="background: rgba(16, 185, 129, 0.2); border: 1px solid #10b981; color: white; padding: 15px; border-radius: var(--radius-md); margin: 30px auto 0; max-width: 600px; font-weight: bold;">
-                <i class="fa-solid fa-circle-check" style="color: #10b981;"></i> @TempData["SuccessMessage"]
+            <div style="background: rgba(16, 185, 129, 0.2); border: 1px solid #10b981; color: white; padding: 15px 25px; border-radius: 16px; margin: 30px auto 0; max-width: 600px; font-weight: 800; font-size: 1.1rem; display: flex; align-items: center; justify-content: center; gap: 10px;">
+                <i class="fa-solid fa-circle-check" style="color: #10b981; font-size: 1.5rem;"></i> @TempData["SuccessMessage"]
             </div>
         }
         @if (TempData["InfoMessage"] != null)
         {
-            <div style="background: rgba(245, 158, 11, 0.2); border: 1px solid var(--accent-color); color: white; padding: 15px; border-radius: var(--radius-md); margin: 30px auto 0; max-width: 600px; font-weight: bold;">
-                <i class="fa-solid fa-circle-info" style="color: var(--accent-color);"></i> @TempData["InfoMessage"]
+            <div style="background: rgba(245, 158, 11, 0.2); border: 1px solid var(--secondary-color); color: white; padding: 15px 25px; border-radius: 16px; margin: 30px auto 0; max-width: 600px; font-weight: 800; font-size: 1.1rem; display: flex; align-items: center; justify-content: center; gap: 10px;">
+                <i class="fa-solid fa-circle-info" style="color: var(--secondary-color); font-size: 1.5rem;"></i> @TempData["InfoMessage"]
             </div>
         }
     </div>
 </section>
 
-<section style="padding: 80px 0 100px; background: #f1f5f9;">
+<section style="padding: 100px 0; background: #f8fafc;">
     <div class="container">
         <div class="grid-3">
             @if (Model != null && Model.Any())
             {
                 foreach (var course in Model)
                 {
-                    <div class="glass-card course-card">
-                        <div class="course-header">
-                            <i class="fa-solid fa-award" style="font-size: 3rem; color: var(--secondary-color); margin-bottom: 15px;"></i>
-                            <h3 style="font-size: 1.4rem; font-weight: 800; margin: 0;">@course.Title</h3>
-                        </div>
-
-                        <div class="course-body">
-                            <div class="course-date">
-                                <i class="fa-regular fa-calendar-days"></i>
-                                تبدأ في: @course.StartDate.ToString("dd MMMM yyyy")
-                            </div>
-                            <p style="color: #475569; line-height: 1.7;">@course.Description</p>
-                        </div>
-
-                        <div class="course-actions">
-                            <form asp-controller="Courses" asp-action="SubmitRegistration" method="post" style="flex-grow: 1; margin-left: 15px;">
-                                <input type="hidden" name="courseId" value="@course.Id" />
-                                <button type="submit" class="btn btn-primary" style="width: 100%; font-size: 1rem;">
-                                    <i class="fa-solid fa-paper-plane"></i> طلب انضمام
-                                </button>
-                            </form>
-
-                            @if (!string.IsNullOrEmpty(course.RegistrarWhatsApp))
+                    <div class="course-card-pro">
+                        <div class="card-img-wrapper">
+                            <div class="card-badge"><i class="fa-solid fa-door-open"></i> متاح للتسجيل</div>
+                            @if (!string.IsNullOrEmpty(course.ImageUrl))
                             {
-                                <a href="https://wa.me/@course.RegistrarWhatsApp" target="_blank" class="btn-whatsapp" title="تواصل مع مسجل الدورة">
-                                    <i class="fa-brands fa-whatsapp"></i>
-                                </a>
+                                <img src="@course.ImageUrl" alt="@course.Title" />
                             }
+                            else
+                            {
+                                <div style="width:100%; height:100%; display:flex; align-items:center; justify-content:center;">
+                                    <i class="fa-solid fa-award" style="font-size: 5rem; color: rgba(255,255,255,0.1);"></i>
+                                </div>
+                            }
+                            <div class="overlay"></div>
                         </div>
-                        <div style="background: #f8fafc; padding-bottom: 20px;">
-                            <div class="registrar-info">
-                                إشراف: <strong style="color: var(--primary-color);">@course.RegistrarName</strong>
+
+                        <div class="card-body-pro">
+                            <h3 class="card-title-pro">@course.Title</h3>
+                            <div class="card-date"><i class="fa-regular fa-calendar-days"></i> موعد البدء: @course.StartDate.ToString("dd MMMM yyyy")</div>
+                            <p class="card-desc">@course.Description</p>
+
+                            <div class="card-footer-pro">
+                                <a href="/Courses/Register/@course.Id" class="btn-register-pro">
+                                    <i class="fa-solid fa-pen-to-square"></i> سجل في الدورة
+                                </a>
+                                @if (!string.IsNullOrEmpty(course.RegistrarWhatsApp))
+                                {
+                                    <a href="https://wa.me/@course.RegistrarWhatsApp" target="_blank" class="btn-whatsapp-pro" title="استفسر عبر واتساب">
+                                        <i class="fa-brands fa-whatsapp"></i>
+                                    </a>
+                                }
+                            </div>
+                            <div class="instructor-tag">
+                                <i class="fa-solid fa-chalkboard-user"></i> إشراف: @course.RegistrarName
                             </div>
                         </div>
                     </div>
@@ -150,10 +253,10 @@
             }
             else
             {
-                <div style="grid-column: 1 / -1; text-align: center; padding: 60px; background: white; border-radius: var(--radius-lg); box-shadow: var(--shadow-sm);">
-                    <i class="fa-solid fa-box-open" style="font-size: 4rem; color: #cbd5e1; margin-bottom: 20px;"></i>
-                    <h3 style="color: var(--primary-color); font-weight: 800;">لا توجد دورات مفتوحة للتسجيل حالياً</h3>
-                    <p style="color: #64748b;">يرجى متابعة المنصة قريباً للاطلاع على أحدث المسارات التدريبية المتاحة.</p>
+                <div style="grid-column: 1 / -1; text-align: center; padding: 80px 20px; background: white; border-radius: var(--radius-lg); box-shadow: var(--shadow-sm); border: 2px dashed #e2e8f0;">
+                    <i class="fa-solid fa-box-open" style="font-size: 5rem; color: #cbd5e1; margin-bottom: 25px;"></i>
+                    <h3 style="color: var(--primary-color); font-weight: 900; font-size: 1.8rem; margin-bottom: 15px;">لا توجد دورات مفتوحة للتسجيل حالياً</h3>
+                    <p style="color: #64748b; font-size: 1.1rem;">يرجى متابعة المنصة قريباً للاطلاع على أحدث المسارات التدريبية المتاحة.</p>
                 </div>
             }
         </div>

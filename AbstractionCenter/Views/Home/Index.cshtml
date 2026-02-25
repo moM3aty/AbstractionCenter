@@ -5,92 +5,341 @@
     string GetSetting(string key, string fallback = "") => settings.ContainsKey(key) ? settings[key] : fallback;
 }
 
-<!-- Premium Hero Section with Arabic Identity & Elegant Colors -->
-<section class="hero-arabic" style="padding: 140px 0 100px; min-height: 85vh; display: flex; align-items: center; position: relative; overflow: hidden; background-color: #0f172a;">
-    <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background-image: url('data:image/svg+xml,%3Csvg width=\'60\' height=\'60\' viewBox=\'0 0 60 60\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cg fill=\'none\' fill-rule=\'evenodd\'%3E%3Cg fill=\'%23cda434\' fill-opacity=\'0.05\'%3E%3Cpath d=\'M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z\'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E'); opacity: 0.6;"></div>
-    <div style="position: absolute; top: -150px; right: -150px; width: 500px; height: 500px; background: rgba(205, 164, 52, 0.15); border-radius: 50%; filter: blur(80px);"></div>
-    <div style="position: absolute; bottom: -150px; left: -150px; width: 400px; height: 400px; background: rgba(59, 130, 246, 0.15); border-radius: 50%; filter: blur(80px);"></div>
+<style>
+    /* --- Premium Hero Section --- */
+    .hero-premium {
+        padding: 160px 0 120px;
+        min-height: 90vh;
+        display: flex;
+        align-items: center;
+        position: relative;
+        overflow: hidden;
+        background-color: var(--primary-color);
+    }
 
-    <div class="container" style="display: grid; grid-template-columns: 1fr 1fr; gap: 60px; align-items: center; position: relative; z-index: 10;">
+        /* Abstract Shapes Background */
+        .hero-premium::before {
+            content: '';
+            position: absolute;
+            top: -150px;
+            right: -100px;
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, rgba(212, 175, 55, 0.15) 0%, transparent 70%);
+            border-radius: 50%;
+            filter: blur(60px);
+        }
+
+        .hero-premium::after {
+            content: '';
+            position: absolute;
+            bottom: -100px;
+            left: -100px;
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, rgba(59, 130, 246, 0.1) 0%, transparent 70%);
+            border-radius: 50%;
+            filter: blur(60px);
+        }
+
+    .hero-grid {
+        display: grid;
+        grid-template-columns: 1.1fr 0.9fr;
+        gap: 60px;
+        align-items: center;
+        position: relative;
+        z-index: 10;
+    }
+
+    .hero-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 20px;
+        background: rgba(212, 175, 55, 0.1);
+        color: var(--secondary-color);
+        border-radius: 30px;
+        font-weight: 800;
+        margin-bottom: 25px;
+        border: 1px solid rgba(212, 175, 55, 0.3);
+        font-size: 0.95rem;
+    }
+
+    .hero-title {
+        font-size: 4.5rem;
+        font-weight: 900;
+        line-height: 1.2;
+        margin-bottom: 25px;
+        color: white;
+    }
+
+        .hero-title span {
+            background: linear-gradient(to left, var(--secondary-color), #fef08a);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+    .hero-subtitle {
+        font-size: 1.25rem;
+        color: #cbd5e1;
+        margin-bottom: 45px;
+        line-height: 1.8;
+        max-width: 90%;
+    }
+
+    .hero-image-wrapper {
+        position: relative;
+        border-radius: 30px;
+        overflow: hidden;
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        border: 1px solid rgba(212, 175, 55, 0.3);
+        transform: perspective(1000px) rotateY(-5deg);
+        transition: transform 0.5s ease;
+    }
+
+        .hero-image-wrapper:hover {
+            transform: perspective(1000px) rotateY(0deg);
+        }
+
+        .hero-image-wrapper img {
+            width: 100%;
+            height: 600px;
+            object-fit: cover;
+            display: block;
+        }
+
+        .hero-image-wrapper .overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to top, rgba(11,17,32,0.8), transparent);
+        }
+
+    /* --- Features Section --- */
+    .features-section {
+        padding: 120px 0;
+        background: #f8fafc;
+        position: relative;
+    }
+
+    .feature-card {
+        background: white;
+        padding: 50px 40px;
+        border-radius: var(--radius-lg);
+        text-align: center;
+        border: 1px solid #e2e8f0;
+        box-shadow: 0 10px 30px rgba(11, 17, 32, 0.05);
+        transition: all 0.4s ease;
+    }
+
+        .feature-card:hover {
+            transform: translateY(-15px);
+            box-shadow: 0 25px 50px -12px rgba(11, 17, 32, 0.1);
+            border-color: var(--secondary-color);
+        }
+
+    .feature-icon {
+        width: 90px;
+        height: 90px;
+        background: rgba(212, 175, 55, 0.1);
+        color: var(--secondary-color);
+        border-radius: 25px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2.5rem;
+        margin: 0 auto 30px;
+        transform: rotate(10deg);
+        transition: 0.4s;
+    }
+
+    .feature-card:hover .feature-icon {
+        transform: rotate(0deg) scale(1.1);
+        background: var(--secondary-color);
+        color: var(--primary-color);
+    }
+
+    .feature-card h3 {
+        font-size: 1.5rem;
+        font-weight: 900;
+        color: var(--primary-color);
+        margin-bottom: 15px;
+    }
+
+    .feature-card p {
+        color: #64748b;
+        line-height: 1.7;
+        font-size: 1.05rem;
+    }
+
+    /* --- CTA Section --- */
+    .cta-section {
+        padding: 80px 0;
+        background: white;
+    }
+
+    .cta-card {
+        background: linear-gradient(135deg, var(--primary-color), #1e293b);
+        border-radius: 30px;
+        overflow: hidden;
+        display: grid;
+        grid-template-columns: 1.2fr 1fr;
+        box-shadow: 0 25px 50px -12px rgba(11, 17, 32, 0.3);
+        border: 1px solid rgba(212, 175, 55, 0.2);
+    }
+
+    .cta-content {
+        padding: 80px 60px;
+        color: white;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    }
+
+        .cta-content h2 {
+            font-size: 2.8rem;
+            font-weight: 900;
+            margin-bottom: 20px;
+            color: var(--secondary-color);
+        }
+
+        .cta-content p {
+            font-size: 1.2rem;
+            color: #cbd5e1;
+            margin-bottom: 35px;
+            line-height: 1.8;
+        }
+
+    .cta-image {
+        position: relative;
+    }
+
+        .cta-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            opacity: 0.8;
+        }
+
+        .cta-image::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to right, #1e293b, transparent);
+        }
+
+    @@media (max-width: 992px) {
+        .hero-grid
+
+    {
+        grid-template-columns: 1fr;
+        text-align: center;
+    }
+
+    .hero-title {
+        font-size: 3.5rem;
+    }
+
+    .hero-subtitle {
+        max-width: 100%;
+        margin: 0 auto 40px;
+    }
+
+    .hero-image-wrapper {
+        transform: none;
+    }
+
+    .cta-card {
+        grid-template-columns: 1fr;
+    }
+
+    .cta-image {
+        display: none;
+    }
+
+    .cta-content {
+        text-align: center;
+        padding: 50px 30px;
+    }
+
+    }
+</style>
+
+<!-- Hero Section -->
+<section class="hero-premium">
+    <div class="container hero-grid">
         <div class="hero-text">
-            <div style="display: inline-block; padding: 8px 20px; background: rgba(205, 164, 52, 0.15); color: #cda434; border-radius: 30px; font-weight: bold; margin-bottom: 25px; font-size: 0.95rem; border: 1px solid rgba(205, 164, 52, 0.3);">
-                <i class="fa-solid fa-star"></i> @GetSetting("HeroBadge")
+            <div class="hero-badge">
+                <i class="fa-solid fa-crown"></i> @GetSetting("HeroBadge", "منصة الكفاءات العربية الأولى")
             </div>
-            <h1 style="font-size: 4rem; font-weight: 900; line-height: 1.3; margin-bottom: 25px; color: white;">
-                @GetSetting("HeroTitle") <br>
-                <span style="background: linear-gradient(to left, #cda434, #fef08a); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">@GetSetting("SiteName")</span>
+            <h1 class="hero-title">
+                @GetSetting("HeroTitle", "نصنع قادة المستقبل في") <br>
+                <span>@GetSetting("SiteName", "أبستراكشن")</span>
             </h1>
-            <p style="font-size: 1.2rem; color: #cbd5e1; margin-bottom: 45px; line-height: 1.9;">
-                @GetSetting("HeroSubtitle")
+            <p class="hero-subtitle">
+                @GetSetting("HeroSubtitle", "رؤية طموحة لتمكين الشباب بالمهارات التقنية والإدارية الحديثة. نجمع بين أصالة القيم وحداثة التكنولوجيا لنضعك على طريق النجاح.")
             </p>
-            <div style="display: flex; gap: 20px;">
-                <a href="/Courses/Open" class="btn" style="background: #cda434; color: #0f172a; padding: 15px 40px; font-size: 1.1rem; font-weight: 800; border-radius: 30px; transition: 0.3s; box-shadow: 0 10px 25px rgba(205, 164, 52, 0.3); text-decoration: none; display: flex; align-items: center;">
-                    استكشف برامجنا <i class="fa-solid fa-arrow-left" style="margin-right: 8px;"></i>
+            <div style="display: flex; gap: 20px; flex-wrap: wrap; justify-content: center;">
+                <a href="/Courses/Open" class="btn btn-primary" style="font-size: 1.15rem; padding: 18px 40px;">
+                    استكشف برامجنا <i class="fa-solid fa-arrow-left"></i>
+                </a>
+                <a href="/Home/About" class="btn btn-outline" style="border-color: rgba(255,255,255,0.3); color: white; font-size: 1.15rem; padding: 18px 40px;">
+                    تعرف علينا <i class="fa-solid fa-play"></i>
                 </a>
             </div>
         </div>
 
-        <div style="position: relative;">
-            <div style="position: relative; border-radius: 30px; overflow: hidden; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); border: 1px solid rgba(205, 164, 52, 0.3);">
-                <!-- الصورة أصبحت ديناميكية -->
-                <img src="@GetSetting("HeroImage")" alt="القسم الترحيبي" style="width: 100%; height: 550px; object-fit: cover; display: block;" />
-                <div style="position: absolute; inset: 0; background: linear-gradient(to top, rgba(15,23,42,0.9), transparent);"></div>
+        <div class="hero-image-wrapper">
+            <img src="@GetSetting("HeroImage", "https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=1920&q=80")" alt="ترحيب" />
+            <div class="overlay"></div>
+        </div>
+    </div>
+</section>
+
+<!-- Features Section -->
+<section class="features-section">
+    <div class="container">
+        <div style="text-align: center; margin-bottom: 70px; max-width: 800px; margin-left: auto; margin-right: auto;">
+            <h2 style="font-size: 2.8rem; color: var(--primary-color); margin-bottom: 20px; font-weight: 900;">@GetSetting("FeaturesTitle", "لماذا نحن خيارك الأفضل؟")</h2>
+            <p style="color: #64748b; font-size: 1.2rem; line-height: 1.8;">@GetSetting("FeaturesSubtitle", "نقدم تجربة تعليمية فريدة صُممت لتلبي احتياجات سوق العمل بمعايير جودة عالمية.")</p>
+        </div>
+
+        <div class="grid-3">
+            <div class="feature-card">
+                <div class="feature-icon"><i class="fa-solid fa-laptop-code"></i></div>
+                <h3>@GetSetting("F1_Title", "أصالة وابتكار")</h3>
+                <p>@GetSetting("F1_Desc", "محتوى تدريبي متطور يُقدم بأحدث أساليب التكنولوجيا والذكاء الاصطناعي.")</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon" style="background: rgba(59, 130, 246, 0.1); color: #3b82f6;"><i class="fa-solid fa-user-tie"></i></div>
+                <h3>@GetSetting("F2_Title", "نخبة الخبراء")</h3>
+                <p>@GetSetting("F2_Desc", "تتلمذ على يد قامات مهنية تنقل لك خبراتها الحقيقية من سوق العمل.")</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon" style="background: rgba(16, 185, 129, 0.1); color: #10b981;"><i class="fa-solid fa-certificate"></i></div>
+                <h3>@GetSetting("F3_Title", "شهادات موثقة")</h3>
+                <p>@GetSetting("F3_Desc", "احصل على شهادات إتمام قابلة للتحقق الفوري تدعم سيرتك الذاتية.")</p>
             </div>
         </div>
     </div>
 </section>
 
-<!-- Features Section (Dynamic) -->
-<section class="arabic-pattern" style="padding: 100px 0; background: #f8fafc;">
+<!-- Call to Action -->
+<section class="cta-section">
     <div class="container">
-        <div style="text-align: center; margin-bottom: 70px; max-width: 700px; margin-left: auto; margin-right: auto;">
-            <h2 style="font-size: 2.8rem; color: #0f172a; margin-bottom: 15px; font-weight: 900;">@GetSetting("FeaturesTitle")</h2>
-            <p style="color: #475569; font-size: 1.2rem; line-height: 1.8;">@GetSetting("FeaturesSubtitle")</p>
-        </div>
-
-        <div class="grid-3" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 30px;">
-            <div class="glass-card" style="text-align: center; padding: 50px 30px; background: white; border: 1px solid #e2e8f0; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); transition: transform 0.3s ease;">
-                <div style="width: 80px; height: 80px; background: rgba(59, 130, 246, 0.1); color: #3b82f6; border-radius: 25px; display: flex; align-items: center; justify-content: center; font-size: 2.2rem; margin: 0 auto 25px; transform: rotate(10deg);">
-                    <i class="fa-solid fa-book-open-reader" style="transform: rotate(-10deg);"></i>
-                </div>
-                <h3 style="margin-bottom: 15px; color: #0f172a; font-size: 1.4rem; font-weight: 800;">@GetSetting("F1_Title")</h3>
-                <p style="color: #64748b; line-height: 1.7;">@GetSetting("F1_Desc")</p>
-            </div>
-
-            <div class="glass-card" style="text-align: center; padding: 50px 30px; background: white; border: 1px solid #e2e8f0; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); transition: transform 0.3s ease;">
-                <div style="width: 80px; height: 80px; background: rgba(205, 164, 52, 0.1); color: #cda434; border-radius: 25px; display: flex; align-items: center; justify-content: center; font-size: 2.2rem; margin: 0 auto 25px; transform: rotate(10deg);">
-                    <i class="fa-solid fa-users-viewfinder" style="transform: rotate(-10deg);"></i>
-                </div>
-                <h3 style="margin-bottom: 15px; color: #0f172a; font-size: 1.4rem; font-weight: 800;">@GetSetting("F2_Title")</h3>
-                <p style="color: #64748b; line-height: 1.7;">@GetSetting("F2_Desc")</p>
-            </div>
-
-            <div class="glass-card" style="text-align: center; padding: 50px 30px; background: white; border: 1px solid #e2e8f0; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); transition: transform 0.3s ease;">
-                <div style="width: 80px; height: 80px; background: rgba(16, 185, 129, 0.1); color: #10b981; border-radius: 25px; display: flex; align-items: center; justify-content: center; font-size: 2.2rem; margin: 0 auto 25px; transform: rotate(10deg);">
-                    <i class="fa-solid fa-file-signature" style="transform: rotate(-10deg);"></i>
-                </div>
-                <h3 style="margin-bottom: 15px; color: #0f172a; font-size: 1.4rem; font-weight: 800;">@GetSetting("F3_Title")</h3>
-                <p style="color: #64748b; line-height: 1.7;">@GetSetting("F3_Desc")</p>
-            </div>
-        </div>
-    </div>
-</section>
-
-<!-- Call to Action Section (Dynamic) -->
-<section style="padding: 80px 0; background: white;">
-    <div class="container">
-        <div style="background: linear-gradient(135deg, #0f172a, #1e293b); border-radius: 30px; overflow: hidden; display: grid; grid-template-columns: 1.2fr 1fr; box-shadow: 0 25px 50px -12px rgba(15, 23, 42, 0.3);">
-            <div style="padding: 70px 60px; color: white; display: flex; flex-direction: column; justify-content: center;">
-                <h2 style="font-size: 2.5rem; font-weight: 800; margin-bottom: 20px; color: #cda434;">@GetSetting("CTATitle")</h2>
-                <p style="font-size: 1.2rem; color: #cbd5e1; margin-bottom: 30px; line-height: 1.8;">@GetSetting("CTASubtitle")</p>
+        <div class="cta-card">
+            <div class="cta-content">
+                <h2>@GetSetting("CTATitle", "جاهز للانطلاق نحو القمة؟")</h2>
+                <p>@GetSetting("CTASubtitle", "لا تضيع المزيد من الوقت. انضم إلى عائلتنا اليوم، وابدأ في بناء قدراتك لكي تكون الخيار الأول في سوق العمل التنافسي.")</p>
                 <div>
-                    <a href="/Account/Register" class="btn" style="background: white; color: #0f172a; padding: 15px 40px; font-size: 1.1rem; font-weight: 800; border-radius: 30px; display: inline-block; text-decoration: none; transition: background 0.3s ease;">@GetSetting("CTABtnText")</a>
+                    <a href="/Account/Register" class="btn" style="background: white; color: var(--primary-color); padding: 18px 45px; font-size: 1.2rem; font-weight: 900; border-radius: 50px;">
+                        @GetSetting("CTABtnText", "سجل حسابك مجاناً") <i class="fa-solid fa-rocket" style="margin-right: 8px;"></i>
+                    </a>
                 </div>
             </div>
-            <div style="position: relative;">
-                <!-- الصورة أصبحت ديناميكية -->
-                <img src="@GetSetting("CTAImage")" alt="تسجيل الحساب" style="width: 100%; height: 100%; object-fit: cover; opacity: 0.85;" />
-                <div style="position: absolute; inset: 0; background: linear-gradient(to right, #1e293b, transparent);"></div>
+            <div class="cta-image">
+                <img src="@GetSetting("CTAImage", "https://images.unsplash.com/photo-1519389950473-47ba0277781c?auto=format&fit=crop&w=800&q=80")" alt="Join Us" />
             </div>
         </div>
     </div>

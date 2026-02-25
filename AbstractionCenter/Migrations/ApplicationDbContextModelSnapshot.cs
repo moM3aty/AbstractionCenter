@@ -37,6 +37,9 @@ namespace AbstractionCenter.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
+                    b.Property<string>("CurrentSessionId")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Email")
                         .HasMaxLength(256)
                         .HasColumnType("nvarchar(256)");
@@ -181,11 +184,9 @@ namespace AbstractionCenter.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ImageUrl")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("RegistrarName")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("RegistrarUserId")
@@ -193,11 +194,6 @@ namespace AbstractionCenter.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("RegistrarWhatsApp")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("RegistrationFormUrl")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("StartDate")
@@ -215,6 +211,233 @@ namespace AbstractionCenter.Migrations
                     b.ToTable("Courses");
                 });
 
+            modelBuilder.Entity("AbstractionCenter.Models.Entities.CourseQuestion", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("CourseId")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsRequired")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("Order")
+                        .HasColumnType("int");
+
+                    b.Property<string>("QuestionText")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CourseId");
+
+                    b.ToTable("CourseQuestions");
+                });
+
+            modelBuilder.Entity("AbstractionCenter.Models.Entities.ExamQuestion", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("CorrectOption")
+                        .HasColumnType("int");
+
+                    b.Property<int>("FinalExamId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Option1")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Option2")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Option3")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Option4")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("QuestionText")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("FinalExamId");
+
+                    b.ToTable("ExamQuestions");
+                });
+
+            modelBuilder.Entity("AbstractionCenter.Models.Entities.FinalExam", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("CourseId")
+                        .HasColumnType("int");
+
+                    b.Property<double>("PassingScorePercentage")
+                        .HasColumnType("float");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CourseId")
+                        .IsUnique();
+
+                    b.ToTable("FinalExams");
+                });
+
+            modelBuilder.Entity("AbstractionCenter.Models.Entities.InstructorApplication", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("AppliedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CVPath")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("FullName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PhoneNumber")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ProfilePicturePath")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Specialization")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("InstructorApplications");
+                });
+
+            modelBuilder.Entity("AbstractionCenter.Models.Entities.Lesson", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("CourseId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("Order")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CourseId");
+
+                    b.ToTable("Lessons");
+                });
+
+            modelBuilder.Entity("AbstractionCenter.Models.Entities.LessonContent", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("FilePath")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("LessonId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Order")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Type")
+                        .HasColumnType("int");
+
+                    b.Property<string>("VideoUrl")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("LessonId");
+
+                    b.ToTable("LessonContents");
+                });
+
+            modelBuilder.Entity("AbstractionCenter.Models.Entities.RegistrationAnswer", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("AnswerText")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("CourseQuestionId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("RegistrationRequestId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CourseQuestionId");
+
+                    b.HasIndex("RegistrationRequestId");
+
+                    b.ToTable("RegistrationAnswers");
+                });
+
             modelBuilder.Entity("AbstractionCenter.Models.Entities.RegistrationRequest", b =>
                 {
                     b.Property<int>("Id")
@@ -226,12 +449,23 @@ namespace AbstractionCenter.Migrations
                     b.Property<int>("CourseId")
                         .HasColumnType("int");
 
-                    b.Property<string>("Message")
+                    b.Property<string>("FullName")
                         .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Level")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Message")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("RequestDate")
                         .HasColumnType("datetime2");
+
+                    b.Property<string>("Specialization")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("Status")
                         .HasColumnType("int");
@@ -239,6 +473,13 @@ namespace AbstractionCenter.Migrations
                     b.Property<string>("StudentId")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("TelegramNumber")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("WhatsAppNumber")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
@@ -466,6 +707,80 @@ namespace AbstractionCenter.Migrations
                     b.Navigation("Student");
                 });
 
+            modelBuilder.Entity("AbstractionCenter.Models.Entities.CourseQuestion", b =>
+                {
+                    b.HasOne("AbstractionCenter.Models.Entities.Course", "Course")
+                        .WithMany("CustomQuestions")
+                        .HasForeignKey("CourseId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Course");
+                });
+
+            modelBuilder.Entity("AbstractionCenter.Models.Entities.ExamQuestion", b =>
+                {
+                    b.HasOne("AbstractionCenter.Models.Entities.FinalExam", "FinalExam")
+                        .WithMany("Questions")
+                        .HasForeignKey("FinalExamId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("FinalExam");
+                });
+
+            modelBuilder.Entity("AbstractionCenter.Models.Entities.FinalExam", b =>
+                {
+                    b.HasOne("AbstractionCenter.Models.Entities.Course", "Course")
+                        .WithOne("FinalExam")
+                        .HasForeignKey("AbstractionCenter.Models.Entities.FinalExam", "CourseId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Course");
+                });
+
+            modelBuilder.Entity("AbstractionCenter.Models.Entities.Lesson", b =>
+                {
+                    b.HasOne("AbstractionCenter.Models.Entities.Course", "Course")
+                        .WithMany("Lessons")
+                        .HasForeignKey("CourseId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Course");
+                });
+
+            modelBuilder.Entity("AbstractionCenter.Models.Entities.LessonContent", b =>
+                {
+                    b.HasOne("AbstractionCenter.Models.Entities.Lesson", "Lesson")
+                        .WithMany("Contents")
+                        .HasForeignKey("LessonId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Lesson");
+                });
+
+            modelBuilder.Entity("AbstractionCenter.Models.Entities.RegistrationAnswer", b =>
+                {
+                    b.HasOne("AbstractionCenter.Models.Entities.CourseQuestion", "CourseQuestion")
+                        .WithMany()
+                        .HasForeignKey("CourseQuestionId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("AbstractionCenter.Models.Entities.RegistrationRequest", "RegistrationRequest")
+                        .WithMany("Answers")
+                        .HasForeignKey("RegistrationRequestId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("CourseQuestion");
+
+                    b.Navigation("RegistrationRequest");
+                });
+
             modelBuilder.Entity("AbstractionCenter.Models.Entities.RegistrationRequest", b =>
                 {
                     b.HasOne("AbstractionCenter.Models.Entities.Course", "Course")
@@ -553,6 +868,30 @@ namespace AbstractionCenter.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("AbstractionCenter.Models.Entities.Course", b =>
+                {
+                    b.Navigation("CustomQuestions");
+
+                    b.Navigation("FinalExam");
+
+                    b.Navigation("Lessons");
+                });
+
+            modelBuilder.Entity("AbstractionCenter.Models.Entities.FinalExam", b =>
+                {
+                    b.Navigation("Questions");
+                });
+
+            modelBuilder.Entity("AbstractionCenter.Models.Entities.Lesson", b =>
+                {
+                    b.Navigation("Contents");
+                });
+
+            modelBuilder.Entity("AbstractionCenter.Models.Entities.RegistrationRequest", b =>
+                {
+                    b.Navigation("Answers");
                 });
 #pragma warning restore 612, 618
         }

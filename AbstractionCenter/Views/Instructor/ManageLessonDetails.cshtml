@@ -1,0 +1,356 @@
+﻿@model AbstractionCenter.Models.Entities.Lesson
+@{
+    ViewData["Title"] = "إدارة محتوى الوحدة";
+}
+
+<style>
+    :root {
+        --md-primary: #0b1120;
+        --md-gold: #d4af37;
+        --md-surface: #ffffff;
+        --md-bg: #f4f7f6;
+        --md-border: #e2e8f0;
+        --md-radius: 20px;
+    }
+
+    .page-header-card {
+        background: linear-gradient(135deg, var(--md-primary) 0%, #1e293b 100%);
+        border-radius: var(--md-radius);
+        padding: 40px;
+        color: white;
+        margin-bottom: 40px;
+        box-shadow: 0 20px 40px -10px rgba(11, 17, 32, 0.3);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border: 1px solid rgba(212,175,55,0.2);
+    }
+
+        .page-header-card h1 {
+            font-size: 1.8rem;
+            font-weight: 900;
+            margin-bottom: 5px;
+            color: var(--md-gold);
+        }
+
+    .btn-back {
+        background: rgba(255, 255, 255, 0.05);
+        color: white;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        padding: 10px 20px;
+        border-radius: 12px;
+        font-weight: 700;
+        transition: 0.3s;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+        .btn-back:hover {
+            background: var(--md-gold);
+            color: var(--md-primary);
+            border-color: var(--md-gold);
+        }
+
+    .content-grid {
+        display: grid;
+        grid-template-columns: 1fr 1.5fr;
+        gap: 30px;
+        align-items: start;
+    }
+
+    .premium-panel {
+        background: var(--md-surface);
+        border-radius: var(--md-radius);
+        padding: 35px;
+        box-shadow: 0 15px 35px -10px rgba(11, 17, 32, 0.05);
+        border: 1px solid var(--md-border);
+    }
+
+    .panel-title {
+        color: var(--md-primary);
+        font-size: 1.3rem;
+        font-weight: 900;
+        margin-bottom: 25px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        border-bottom: 2px solid #f8fafc;
+        padding-bottom: 15px;
+    }
+
+        .panel-title i {
+            color: var(--md-gold);
+        }
+
+    .form-group {
+        margin-bottom: 20px;
+    }
+
+        .form-group label {
+            display: block;
+            font-weight: 800;
+            color: var(--md-primary);
+            margin-bottom: 8px;
+            font-size: 0.95rem;
+        }
+
+    .form-control {
+        width: 100%;
+        padding: 14px 18px;
+        border: 2px solid #e2e8f0;
+        border-radius: 12px;
+        font-family: inherit;
+        font-size: 1rem;
+        background: #f8fafc;
+        transition: 0.3s;
+        color: var(--md-primary);
+    }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--md-gold);
+            background: white;
+            box-shadow: 0 0 0 4px rgba(212, 175, 55, 0.1);
+        }
+
+    .btn-submit {
+        background: var(--md-primary);
+        color: var(--md-gold);
+        border: none;
+        padding: 15px 30px;
+        border-radius: 12px;
+        font-weight: 900;
+        font-size: 1.05rem;
+        cursor: pointer;
+        width: 100%;
+        transition: 0.3s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        margin-top: 10px;
+    }
+
+        .btn-submit:hover {
+            background: var(--md-gold);
+            color: var(--md-primary);
+            box-shadow: 0 10px 20px rgba(212, 175, 55, 0.2);
+        }
+
+    .dynamic-fields {
+        display: none;
+        animation: fadeIn 0.4s ease;
+        background: #f8fafc;
+        padding: 20px;
+        border-radius: 12px;
+        border: 1px solid #e2e8f0;
+        margin-bottom: 20px;
+    }
+
+        .dynamic-fields.active {
+            display: block;
+        }
+    @@keyframes fadeIn {
+        from
+
+    {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+
+    }
+
+    /* Content Items List */
+    .content-item {
+        background: #ffffff;
+        padding: 20px;
+        border-radius: 16px;
+        margin-bottom: 15px;
+        border: 1px solid #e2e8f0;
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.02);
+    }
+
+    .content-icon {
+        width: 50px;
+        height: 50px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        color: white;
+        flex-shrink: 0;
+    }
+
+    .icon-video {
+        background: linear-gradient(135deg, #ef4444, #b91c1c);
+    }
+
+    .icon-pdf {
+        background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+    }
+
+    .icon-task {
+        background: linear-gradient(135deg, #10b981, #047857);
+    }
+
+    @@media (max-width: 992px) {
+        .content-grid
+
+    {
+        grid-template-columns: 1fr;
+    }
+
+    }
+</style>
+
+<div>
+    <div class="page-header-card">
+        <div>
+            <h1 style="font-size: 1.3rem; color: #cbd5e1; font-weight: normal; margin-bottom: 5px;">الوحدة @Model.Order</h1>
+            <h2 style="font-size: 2rem; font-weight: 900; margin: 0; color: var(--md-gold);">@Model.Title</h2>
+        </div>
+        <a href="/Instructor/ManageCourse/@Model.CourseId" class="btn-back">عودة للمنهج <i class="fa-solid fa-arrow-left"></i></a>
+    </div>
+
+    <div class="content-grid">
+        <!-- نموذج الإضافة -->
+        <div class="premium-panel">
+            <h3 class="panel-title"><i class="fa-solid fa-cloud-arrow-up"></i> رفع مادة علمية</h3>
+            <form action="/Instructor/AddLessonContent" method="post" enctype="multipart/form-data">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="lessonId" value="@Model.Id" />
+
+                <div class="form-group">
+                    <label>نوع المحتوى</label>
+                    <select name="type" id="contentTypeSelect" class="form-control" onchange="toggleFields()" required>
+                        <option value="0">مقطع فيديو (يوتيوب أو رابط خارجي)</option>
+                        <option value="1">ملف مرفق (PDF للملخصات)</option>
+                        <option value="2">مهمة تقييم / واجب تطبيقي</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>العنوان المعروض للطالب</label>
+                    <input type="text" name="title" class="form-control" placeholder="مثال: الدرس الأول - تعريفيات عامة" required />
+                </div>
+
+                <div class="form-group">
+                    <label>ترتيب العرض</label>
+                    <input type="number" name="order" class="form-control" value="@((Model.Contents?.Count ?? 0) + 1)" required />
+                </div>
+
+                <!-- حقول ديناميكية -->
+                <div id="field-video" class="dynamic-fields active">
+                    <div class="form-group" style="margin: 0;">
+                        <label><i class="fa-brands fa-youtube" style="color: #ef4444;"></i> رابط الفيديو</label>
+                        <input type="url" name="videoUrl" class="form-control" placeholder="https://youtube.com/..." dir="ltr" />
+                    </div>
+                </div>
+
+                <div id="field-pdf" class="dynamic-fields">
+                    <div class="form-group" style="margin: 0;">
+                        <label><i class="fa-solid fa-file-pdf" style="color: #3b82f6;"></i> اختر ملف الـ PDF</label>
+                        <input type="file" name="uploadedFile" class="form-control" accept=".pdf" />
+                    </div>
+                </div>
+
+                <div id="field-task" class="dynamic-fields">
+                    <div class="form-group" style="margin: 0;">
+                        <label><i class="fa-solid fa-list-check" style="color: #10b981;"></i> وصف الواجب أو المهمة</label>
+                        <textarea name="description" class="form-control" rows="3" placeholder="اشرح للطالب ما يجب عليه فعله..."></textarea>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-submit"><i class="fa-solid fa-upload"></i> رفع المحتوى للوحدة</button>
+            </form>
+        </div>
+
+        <!-- قائمة المحتويات -->
+        <div class="premium-panel">
+            <h3 class="panel-title"><i class="fa-solid fa-box-archive"></i> المحتويات المدرجة</h3>
+            <div>
+                @if (Model.Contents != null && Model.Contents.Any())
+                {
+                    foreach (var item in Model.Contents.OrderBy(c => c.Order))
+                    {
+                        <div class="content-item">
+                            <div class="content-icon @(item.Type == AbstractionCenter.Models.Entities.ContentType.Video ? "icon-video" : item.Type == AbstractionCenter.Models.Entities.ContentType.Pdf ? "icon-pdf" : "icon-task")">
+                                @if (item.Type == AbstractionCenter.Models.Entities.ContentType.Video)
+                                {
+                                    <i class="fa-solid fa-play"></i>
+                                }
+                                else if (item.Type == AbstractionCenter.Models.Entities.ContentType.Pdf)
+                                {
+
+                                    <i class="fa-solid fa-file-pdf"></i>
+                                }
+                                else
+                                {
+
+                                    <i class="fa-solid fa-list-check"></i>
+                                }
+                            </div>
+                            <div style="flex-grow: 1;">
+                                <strong style="color: var(--md-primary); font-size: 1.1rem; display: block;">@item.Title</strong>
+                                <span style="color: var(--md-muted); font-size: 0.85rem; font-weight: 600;">
+                                    @if (item.Type == AbstractionCenter.Models.Entities.ContentType.Video)
+                                    {
+                                        <span>فيديو تعليمي</span>
+                                    }
+                                    else if (item.Type == AbstractionCenter.Models.Entities.ContentType.Pdf)
+                                    {
+
+                                        <span>مرفق بصيغة PDF</span>
+                                    }
+                                    else
+                                    {
+
+                                        <span>مهمة تقييمية</span>
+                                    }
+                                </span>
+                            </div>
+                        </div>
+                    }
+                }
+                else
+                {
+                    <div style="text-align: center; padding: 50px; color: #94a3b8;">
+                        <i class="fa-solid fa-inbox" style="font-size: 3.5rem; opacity: 0.3; margin-bottom: 15px;"></i>
+                        <h4 style="color: var(--md-primary); font-weight: 800;">الوحدة فارغة حالياً</h4>
+                        <p>استخدم النموذج لإضافة الفيديوهات والملفات.</p>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function toggleFields() {
+            var type = document.getElementById('contentTypeSelect').value;
+            document.querySelectorAll('.dynamic-fields').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.dynamic-fields input, .dynamic-fields textarea').forEach(el => el.removeAttribute('required'));
+
+            if(type === "0") {
+                document.getElementById('field-video').classList.add('active');
+                document.querySelector('input[name="videoUrl"]').setAttribute('required', 'required');
+            } else if(type === "1") {
+                document.getElementById('field-pdf').classList.add('active');
+                document.querySelector('input[name="uploadedFile"]').setAttribute('required', 'required');
+            } else if(type === "2") {
+                document.getElementById('field-task').classList.add('active');
+                document.querySelector('textarea[name="description"]').setAttribute('required', 'required');
+            }
+        }
+        document.addEventListener("DOMContentLoaded", toggleFields);
+    </script>
+}

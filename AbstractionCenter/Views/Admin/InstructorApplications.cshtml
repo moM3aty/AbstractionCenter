@@ -1,0 +1,322 @@
+﻿@model IEnumerable<AbstractionCenter.Models.Entities.InstructorApplication>
+@{
+    ViewData["Title"] = "طلبات توظيف المحاضرين";
+}
+
+<style>
+    .premium-table-card {
+        background: #ffffff;
+        border-radius: 24px;
+        padding: 35px;
+        box-shadow: 0 15px 35px -10px rgba(11, 17, 32, 0.08);
+        border: 1px solid rgba(212, 175, 55, 0.15);
+    }
+
+    .toolbar-title {
+        color: #0b1120;
+        margin: 0 0 35px 0;
+        font-size: 1.6rem;
+        font-weight: 900;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+        .toolbar-title i {
+            color: #d4af37;
+        }
+
+    .table-responsive {
+        width: 100%;
+        overflow-x: auto;
+        border-radius: 16px;
+        border: 1px solid #e2e8f0;
+    }
+
+    .modern-data-table {
+        width: 100%;
+        border-collapse: collapse;
+        white-space: nowrap;
+    }
+
+        .modern-data-table th {
+            text-align: right;
+            padding: 18px 20px;
+            background: #f8fafc;
+            color: #0b1120;
+            font-size: 0.95rem;
+            font-weight: 800;
+            border-bottom: 2px solid #e2e8f0;
+        }
+
+        .modern-data-table td {
+            padding: 18px 20px;
+            color: #1e293b;
+            font-weight: 600;
+            font-size: 1rem;
+            border-bottom: 1px solid #f1f5f9;
+            vertical-align: middle;
+            transition: background 0.3s;
+        }
+
+        .modern-data-table tbody tr:hover td {
+            background: #fcfcfd;
+        }
+
+    .applicant-info {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+    }
+
+    .applicant-avatar {
+        width: 55px;
+        height: 55px;
+        border-radius: 16px;
+        object-fit: cover;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        border: 2px solid #f8fafc;
+    }
+
+    .avatar-placeholder {
+        width: 55px;
+        height: 55px;
+        border-radius: 16px;
+        background: rgba(212,175,55,0.1);
+        color: #d4af37;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        border: 1px solid rgba(212,175,55,0.3);
+    }
+
+    .contact-item {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 0.9rem;
+        color: #64748b;
+        margin-bottom: 4px;
+    }
+
+        .contact-item i {
+            width: 16px;
+            text-align: center;
+        }
+
+    .badge {
+        padding: 8px 15px;
+        border-radius: 10px;
+        font-size: 0.85rem;
+        font-weight: 800;
+        display: inline-block;
+    }
+
+    .badge-pending {
+        background: rgba(245, 158, 11, 0.1);
+        color: #d97706;
+        border: 1px solid rgba(245, 158, 11, 0.2);
+    }
+
+    .badge-approved {
+        background: rgba(16, 185, 129, 0.1);
+        color: #059669;
+        border: 1px solid rgba(16, 185, 129, 0.2);
+    }
+
+    .badge-rejected {
+        background: rgba(239, 68, 68, 0.1);
+        color: #dc2626;
+        border: 1px solid rgba(239, 68, 68, 0.2);
+    }
+
+    .btn-action {
+        border: none;
+        padding: 10px 20px;
+        border-radius: 12px;
+        font-weight: 800;
+        font-family: inherit;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 0.9rem;
+    }
+
+    .btn-approve {
+        background: #10b981;
+        color: white;
+        box-shadow: 0 5px 15px rgba(16, 185, 129, 0.3);
+    }
+
+        .btn-approve:hover {
+            background: #059669;
+            transform: translateY(-2px);
+        }
+
+    .btn-reject {
+        background: white;
+        color: #ef4444;
+        border: 1px solid #ef4444;
+    }
+
+        .btn-reject:hover {
+            background: #ef4444;
+            color: white;
+            box-shadow: 0 5px 15px rgba(239, 68, 68, 0.3);
+            transform: translateY(-2px);
+        }
+
+    .btn-cv {
+        background: rgba(59, 130, 246, 0.1);
+        color: #2563eb;
+        padding: 8px 15px;
+        border-radius: 10px;
+        text-decoration: none;
+        font-size: 0.9rem;
+        font-weight: 800;
+        transition: 0.3s;
+        border: 1px solid rgba(59, 130, 246, 0.2);
+    }
+
+        .btn-cv:hover {
+            background: #2563eb;
+            color: white;
+        }
+
+    .empty-state {
+        text-align: center;
+        padding: 80px 20px;
+    }
+
+        .empty-state i {
+            font-size: 4rem;
+            color: #cbd5e1;
+            margin-bottom: 20px;
+        }
+
+        .empty-state h3 {
+            color: #0b1120;
+            font-weight: 800;
+            margin-bottom: 10px;
+        }
+
+        .empty-state p {
+            color: #64748b;
+        }
+</style>
+
+<div class="premium-table-card">
+    <h3 class="toolbar-title"><i class="fa-solid fa-user-tie"></i> طلبات الانضمام لهيئة التدريس</h3>
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div style="background: rgba(16, 185, 129, 0.1); color: #059669; border: 1px solid #10b981; padding: 15px 25px; border-radius: 16px; margin-bottom: 25px; font-weight: 800; display: flex; align-items: center; gap: 10px;">
+            <i class="fa-solid fa-circle-check" style="font-size: 1.5rem;"></i> @TempData["SuccessMessage"]
+        </div>
+    }
+
+    <div class="table-responsive">
+        <table class="modern-data-table">
+            <thead>
+                <tr>
+                    <th>مقدم الطلب والتخصص</th>
+                    <th>بيانات الاتصال</th>
+                    <th>السيرة الذاتية</th>
+                    <th>حالة الطلب</th>
+                    <th>اتخاذ القرار</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model != null && Model.Any())
+                {
+                    foreach (var app in Model)
+                    {
+                        <tr>
+                            <td>
+                                <div class="applicant-info">
+                                    @if (!string.IsNullOrEmpty(app.ProfilePicturePath))
+                                    {
+                                        <img src="@app.ProfilePicturePath" class="applicant-avatar" alt="Profile" />
+                                    }
+                                    else
+                                    {
+                                        <div class="avatar-placeholder"><i class="fa-solid fa-user"></i></div>
+                                    }
+                                    <div>
+                                        <div style="font-weight: 900; color: #0b1120; font-size: 1.1rem;">@app.FullName</div>
+                                        <div style="font-size: 0.9rem; color: #d4af37; font-weight: 800;">@app.Specialization</div>
+                                        <div style="font-size: 0.8rem; color: #94a3b8; margin-top: 4px;">تاريخ التقديم: @app.AppliedAt.ToString("dd MMM yyyy")</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="contact-item"><i class="fa-solid fa-envelope" style="color: #3b82f6;"></i> @app.Email</div>
+                                <div class="contact-item"><i class="fa-brands fa-whatsapp" style="color: #25d366; font-size: 1.1rem;"></i> @app.PhoneNumber</div>
+                            </td>
+                            <td>
+                                @if (!string.IsNullOrEmpty(app.CVPath))
+                                {
+                                    <a href="@app.CVPath" target="_blank" class="btn-cv"><i class="fa-solid fa-file-pdf"></i> استعراض الـ CV</a>
+                                }
+                                else
+                                {
+                                    <span style="color: #94a3b8; font-size: 0.9rem; background: #f1f5f9; padding: 6px 12px; border-radius: 8px;">لم يُرفق</span>
+                                }
+                            </td>
+                            <td>
+                                @if (app.Status == AbstractionCenter.Models.Entities.RequestStatus.Pending)
+                                {
+                                    <span class="badge badge-pending"><i class="fa-solid fa-hourglass-half"></i> قيد المراجعة</span>
+                                }
+                                else if (app.Status == AbstractionCenter.Models.Entities.RequestStatus.Approved)
+                                {
+                                    <span class="badge badge-approved"><i class="fa-solid fa-check"></i> تم القبول</span>
+                                }
+                                else
+                                {
+                                    <span class="badge badge-rejected"><i class="fa-solid fa-xmark"></i> مرفوض</span>
+                                }
+                            </td>
+                            <td>
+                                @if (app.Status == AbstractionCenter.Models.Entities.RequestStatus.Pending)
+                                {
+                                    <div style="display: flex; gap: 10px;">
+                                        <form asp-action="ApproveInstructor" method="post">
+                                            <input type="hidden" name="id" value="@app.Id" />
+                                            <button type="submit" class="btn-action btn-approve" title="إنشاء حساب وتعيينه كمحاضر"><i class="fa-solid fa-check"></i> قبول</button>
+                                        </form>
+                                        <form asp-action="RejectInstructor" method="post">
+                                            <input type="hidden" name="id" value="@app.Id" />
+                                            <button type="submit" class="btn-action btn-reject" title="رفض الطلب"><i class="fa-solid fa-ban"></i> رفض</button>
+                                        </form>
+                                    </div>
+                                }
+                                else
+                                {
+                                    <span style="color: #94a3b8; font-size: 0.9rem; font-weight: 700;">
+                                        <i class="fa-solid fa-lock" style="margin-left: 5px;"></i> القرار مُتخذ
+                                    </span>
+                                }
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="5">
+                            <div class="empty-state">
+                                <i class="fa-solid fa-inbox"></i>
+                                <h3>لا توجد طلبات توظيف حالياً</h3>
+                                <p>عندما يقوم شخص بالتقديم عبر الموقع، ستظهر بياناته هنا لمراجعتها.</p>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

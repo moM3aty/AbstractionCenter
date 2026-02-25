@@ -1,5 +1,8 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Http;
+using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace AbstractionCenter.Models.Entities
 {
@@ -16,16 +19,17 @@ namespace AbstractionCenter.Models.Entities
         public string Description { get; set; }
 
         [Display(Name = "صورة الدورة")]
-        public string ImageUrl { get; set; }
+        public string? ImageUrl { get; set; }
+
+        [NotMapped]
+        [Display(Name = "اختر صورة الدورة")]
+        public IFormFile? ImageFile { get; set; }
 
         [Display(Name = "اسم مسجل الدورة")]
-        public string RegistrarName { get; set; }
+        public string? RegistrarName { get; set; }
 
         [Display(Name = "رقم واتساب المسجل")]
-        public string RegistrarWhatsApp { get; set; }
-
-        [Display(Name = "رابط فورم التسجيل")]
-        public string RegistrationFormUrl { get; set; }
+        public string? RegistrarWhatsApp { get; set; }
 
         public string RegistrarUserId { get; set; }
 
@@ -37,20 +41,20 @@ namespace AbstractionCenter.Models.Entities
 
         [Display(Name = "تاريخ الإنشاء")]
         public DateTime CreatedAt { get; set; } = DateTime.Now;
+
+        // --- العلاقات ---
+        public ICollection<Lesson>? Lessons { get; set; }
+        public ICollection<CourseQuestion>? CustomQuestions { get; set; }
+
+        // ربط الاختبار النهائي بالدورة
+        public FinalExam? FinalExam { get; set; }
     }
 
     public enum CourseStatus
     {
-        [Display(Name = "مفتوحة للتسجيل")]
-        OpenForRegistration,
-
-        [Display(Name = "قيد التنفيذ")]
-        InProgress,
-
-        [Display(Name = "مكتملة")]
-        Completed,
-
-        [Display(Name = "مغلقة")]
-        Closed
+        [Display(Name = "مفتوحة للتسجيل")] OpenForRegistration,
+        [Display(Name = "قيد التنفيذ")] InProgress,
+        [Display(Name = "مكتملة")] Completed,
+        [Display(Name = "مغلقة")] Closed
     }
 }
