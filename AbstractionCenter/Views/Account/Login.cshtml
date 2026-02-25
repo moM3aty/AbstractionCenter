@@ -1,45 +1,54 @@
 ﻿@{
     ViewData["Title"] = "تسجيل الدخول";
-    Layout = "~/Views/Shared/_Layout.cshtml"; // استخدام الهيكل الرئيسي
 }
 
 <style>
-    .login-container {
-        min-height: 80vh;
+    .auth-container {
+        min-height: 100vh;
         display: flex;
         align-items: center;
         justify-content: center;
         padding: 120px 20px 60px;
-        background: radial-gradient(circle at center, rgba(59, 130, 246, 0.05), transparent 60%);
+        background: url('data:image/svg+xml,%3Csvg width=\'60\' height=\'60\' viewBox=\'0 0 60 60\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cg fill=\'none\' fill-rule=\'evenodd\'%3E%3Cg fill=\'%23cda434\' fill-opacity=\'0.05\'%3E%3Cpath d=\'M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z\'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E') #f8fafc;
     }
 
-    .login-card {
+    .auth-card {
         display: flex;
-        max-width: 900px;
+        max-width: 950px;
         width: 100%;
-        background: rgba(255, 255, 255, 0.85);
-        backdrop-filter: blur(20px);
-        border: 1px solid var(--glass-border);
-        border-radius: var(--radius-lg);
-        box-shadow: var(--shadow-premium);
+        background: white;
+        border-radius: 30px;
+        box-shadow: 0 25px 50px -12px rgba(15, 23, 42, 0.25);
         overflow: hidden;
+        border: 1px solid var(--glass-border);
     }
 
-    .login-form-section {
-        flex: 1;
-        padding: 50px 40px;
+    .auth-form-section {
+        flex: 1.2;
+        padding: 60px 50px;
     }
 
-    .login-image-section {
-        flex: 1;
-        background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    .auth-image-section {
+        flex: 0.8;
+        background: linear-gradient(135deg, var(--primary-color), #1e293b);
         color: white;
-        padding: 50px 40px;
+        padding: 60px 40px;
         display: flex;
         flex-direction: column;
         justify-content: center;
         text-align: center;
+        position: relative;
     }
+
+        .auth-image-section::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            width: 5px;
+            background: var(--secondary-color);
+        }
 
     .form-group {
         margin-bottom: 25px;
@@ -48,15 +57,15 @@
         .form-group label {
             display: block;
             margin-bottom: 8px;
-            font-weight: 600;
+            font-weight: 700;
             color: var(--text-dark);
         }
 
     .form-control {
         width: 100%;
-        padding: 15px;
+        padding: 15px 20px;
         border: 2px solid #e2e8f0;
-        border-radius: var(--radius-md);
+        border-radius: 15px;
         font-family: inherit;
         font-size: 1rem;
         transition: all 0.3s ease;
@@ -67,10 +76,10 @@
             outline: none;
             border-color: var(--secondary-color);
             background: white;
-            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+            box-shadow: 0 0 0 4px rgba(205, 164, 52, 0.15);
         }
 
-    .login-btn {
+    .auth-btn {
         width: 100%;
         padding: 15px;
         font-size: 1.1rem;
@@ -78,23 +87,33 @@
     }
 
     @@media (max-width: 768px) {
-        .login-card {
+        .auth-card {
             flex-direction: column;
         }
 
-        .login-image-section {
-            display: none; /* إخفاء الصورة في الشاشات الصغيرة لتوفير المساحة */
+        .auth-image-section {
+            display: none;
+        }
+
+        .auth-form-section {
+            padding: 40px 25px;
         }
     }
 </style>
 
-<div class="login-container">
-    <div class="login-card">
+<div class="auth-container">
+    <div class="auth-card">
 
-        <!-- قسم النموذج -->
-        <div class="login-form-section">
-            <h2 style="font-size: 2rem; color: var(--primary-color); margin-bottom: 10px;">مرحباً بعودتك!</h2>
-            <p style="color: #64748b; margin-bottom: 30px;">قم بتسجيل الدخول للوصول إلى منصتك التعليمية.</p>
+        <div class="auth-form-section">
+            <h2 style="font-size: 2.2rem; color: var(--primary-color); margin-bottom: 10px; font-weight: 900;">مرحباً بعودتك!</h2>
+            <p style="color: #64748b; margin-bottom: 35px; font-size: 1.05rem;">قم بتسجيل الدخول للوصول إلى منصتك التعليمية الملكية.</p>
+
+            @if (!ViewData.ModelState.IsValid)
+            {
+                <div style="background: rgba(239, 68, 68, 0.1); color: #ef4444; padding: 15px; border-radius: 12px; margin-bottom: 25px; font-weight: 700; border: 1px solid rgba(239, 68, 68, 0.2);">
+                    @Html.ValidationSummary(false, "", new { @style = "list-style-type: none; margin: 0; padding: 0;" })
+                </div>
+            }
 
             <form asp-controller="Account" asp-action="Login" method="post">
                 @Html.AntiForgeryToken()
@@ -110,19 +129,22 @@
                 </div>
 
                 <div class="form-group" style="display: flex; align-items: center; gap: 10px;">
-                    <input type="checkbox" id="rememberMe" name="rememberMe" style="width: 18px; height: 18px; accent-color: var(--secondary-color);" />
-                    <label for="rememberMe" style="margin: 0; font-weight: normal; cursor: pointer;">تذكرني</label>
+                    <input type="checkbox" id="rememberMe" name="rememberMe" style="width: 18px; height: 18px; accent-color: var(--secondary-color); cursor: pointer;" />
+                    <label for="rememberMe" style="margin: 0; font-weight: 600; cursor: pointer;">تذكر بياناتي</label>
                 </div>
 
-                <button type="submit" class="btn btn-primary login-btn">تسجيل الدخول <i class="fa-solid fa-arrow-left-to-bracket" style="margin-right: 8px;"></i></button>
+                <button type="submit" class="btn btn-primary auth-btn">تسجيل الدخول <i class="fa-solid fa-arrow-left-to-bracket" style="margin-right: 8px;"></i></button>
+
+                <p style="text-align: center; margin-top: 25px; color: #64748b; font-weight: 600;">
+                    مستخدم جديد؟ <a href="/Account/Register" style="color: var(--primary-color); border-bottom: 2px solid var(--secondary-color); padding-bottom: 2px;">أنشئ حسابك الآن</a>
+                </p>
             </form>
         </div>
 
-        <!-- قسم الترحيب / الصورة -->
-        <div class="login-image-section">
-            <i class="fa-solid fa-graduation-cap" style="font-size: 5rem; margin-bottom: 20px; color: var(--accent-color);"></i>
-            <h3 style="font-size: 1.8rem; margin-bottom: 15px;">مركز ابستراكشن</h3>
-            <p style="font-size: 1.1rem; opacity: 0.9;">بوابتك نحو التميز الأكاديمي والمهني. تابع تقدمك وتفاعل مع دوراتك في مكان واحد.</p>
+        <div class="auth-image-section">
+            <i class="fa-solid fa-crown" style="font-size: 5rem; margin-bottom: 25px; color: var(--secondary-color);"></i>
+            <h3 style="font-size: 2rem; margin-bottom: 15px; font-weight: 900;">ابستراكشن سنتر</h3>
+            <p style="font-size: 1.1rem; color: #cbd5e1; line-height: 1.8;">بوابتك نحو التميز الأكاديمي والمهني. تابع تقدمك وتفاعل مع دوراتك في بيئة تعليمية راقية.</p>
         </div>
 
     </div>

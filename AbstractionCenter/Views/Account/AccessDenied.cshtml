@@ -1,0 +1,21 @@
+﻿@{
+    ViewData["Title"] = "صلاحيات غير كافية";
+}
+
+<div class="container" style="padding: 150px 0 80px; text-align: center; min-height: 60vh;">
+    <div class="glass-card" style="max-width: 600px; margin: 0 auto; padding: 50px;">
+        <i class="fa-solid fa-lock" style="font-size: 5rem; color: #ef4444; margin-bottom: 20px;"></i>
+        <h1 style="color: var(--primary-color); margin-bottom: 15px;">صلاحيات غير كافية</h1>
+        <p style="color: #64748b; font-size: 1.1rem; margin-bottom: 30px;">
+            عذراً، الحساب الذي تستخدمه لا يمتلك الصلاحيات اللازمة للوصول إلى هذه الصفحة. يرجى التأكد من تسجيل الدخول بحساب يمتلك الصلاحيات المطلوبة.
+        </p>
+
+        <div style="display: flex; gap: 15px; justify-content: center;">
+            <a href="/" class="btn btn-outline">العودة للرئيسية</a>
+
+            <form asp-controller="Account" asp-action="Logout" method="post" style="display: inline;">
+                <button type="submit" class="btn btn-primary">تسجيل خروج</button>
+            </form>
+        </div>
+    </div>
+</div>

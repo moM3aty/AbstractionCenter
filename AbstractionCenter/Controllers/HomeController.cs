@@ -1,4 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using AbstractionCenter.Models.Entities;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 
 namespace AbstractionCenter.Controllers
 {
@@ -33,10 +36,12 @@ namespace AbstractionCenter.Controllers
         }
 
         // هيئة التدريس
-        public IActionResult Staff()
+        public async Task<IActionResult> Staff([FromServices] UserManager<ApplicationUser> userManager)
         {
             ViewData["Title"] = "هيئة التدريس";
-            return View();
+            // جلب المحاضرين لعرضهم للزوار
+            var instructors = await userManager.GetUsersInRoleAsync("Instructor");
+            return View(instructors);
         }
 
         // تواصل معنا
@@ -46,10 +51,13 @@ namespace AbstractionCenter.Controllers
             return View();
         }
 
-        // صفحة التحقق من الشهادات (سنبنيها لاحقاً)
-        public IActionResult VerifyCertificate()
+        // صفحة التحقق من الشهادات
+        [HttpGet]
+        public IActionResult VerifyCertificate(string serialNumber)
         {
             ViewData["Title"] = "التحقق من الشهادة";
+            // هنا في التطبيق الفعلي يمكنك البحث عن الشهادة في قاعدة البيانات وتمريرها للـ View
+            ViewBag.SerialNumber = serialNumber;
             return View();
         }
     }

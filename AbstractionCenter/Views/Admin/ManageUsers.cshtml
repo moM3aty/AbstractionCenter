@@ -1,66 +1,170 @@
 ﻿@model IEnumerable<AbstractionCenter.Models.Entities.ApplicationUser>
 @{
-    ViewData["Title"] = "إدارة المستخدمين";
-    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewData["Title"] = "المستخدمين والصلاحيات";
 }
 
 <style>
-    .admin-wrapper { padding: 120px 0 60px; min-height: 70vh; }
-    .admin-table {
+    .table-card {
+        background: var(--card-bg);
+        border-radius: var(--radius-box);
+        padding: 30px;
+        box-shadow: var(--shadow-card);
+    }
+
+    .toolbar {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 25px;
+    }
+
+    .search-box {
+        background: var(--bg-body);
+        border-radius: 30px;
+        padding: 10px 20px;
+        display: flex;
+        align-items: center;
+        width: 350px;
+    }
+
+        .search-box input {
+            border: none;
+            background: transparent;
+            outline: none;
+            padding-right: 10px;
+            font-family: inherit;
+            flex-grow: 1;
+        }
+
+        .search-box i {
+            color: var(--text-muted);
+        }
+
+    .btn-add {
+        background: var(--sidebar-active-bg);
+        color: white;
+        border: none;
+        padding: 10px 25px;
+        border-radius: 30px;
+        font-weight: 700;
+        cursor: pointer;
+        box-shadow: 0 10px 20px rgba(67, 24, 255, 0.2);
+    }
+
+    .modern-table {
         width: 100%;
         border-collapse: collapse;
-        background: white;
-        border-radius: var(--radius-md);
-        overflow: hidden;
-        box-shadow: var(--shadow-sm);
-        margin-top: 20px;
     }
-    .admin-table th, .admin-table td {
-        padding: 15px 20px;
-        text-align: right;
-        border-bottom: 1px solid #e2e8f0;
+
+        .modern-table th {
+            text-align: right;
+            padding: 15px;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .modern-table td {
+            padding: 15px;
+            color: var(--text-main);
+            font-weight: 600;
+            font-size: 0.95rem;
+            border-bottom: 1px solid #f8fafc;
+            vertical-align: middle;
+        }
+
+    .user-avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, var(--sidebar-active-bg), #8b5cf6);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
     }
-    .admin-table th { background: var(--primary-color); color: white; }
-    .admin-table tr:hover { background: #f8fafc; }
+
+    .role-select {
+        padding: 8px 15px;
+        border: 1px solid var(--border-color);
+        border-radius: 10px;
+        font-family: inherit;
+        background: var(--bg-body);
+        color: var(--text-main);
+        font-weight: 600;
+        outline: none;
+    }
 </style>
 
-<div class="container admin-wrapper">
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-        <div>
-            <h2 style="color: var(--primary-color);"><i class="fa-solid fa-users-gear"></i> إدارة المستخدمين</h2>
-            <p style="color: #64748b;">قائمة بجميع المسجلين في النظام (طلاب، محاضرين، إداريين).</p>
+<div class="table-card">
+    <div class="toolbar">
+        <div class="search-box">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <input type="text" placeholder="ابحث بالاسم أو البريد..." id="userSearch">
         </div>
+        <button class="btn-add"><i class="fa-solid fa-user-plus"></i> مستخدم جديد</button>
     </div>
 
-    <table class="admin-table">
+    <table class="modern-table">
         <thead>
             <tr>
-                <th>الاسم الكامل</th>
+                <th>المستخدم</th>
                 <th>البريد الإلكتروني</th>
                 <th>تاريخ الانضمام</th>
-                <th>إجراءات</th>
+                <th>إدارة الصلاحية (Role)</th>
             </tr>
         </thead>
         <tbody>
-            @if(Model != null && Model.Any())
+            @if (Model != null && Model.Any())
             {
                 foreach (var user in Model)
                 {
+                    var initial = string.IsNullOrEmpty(user.FullName) ? "?" : user.FullName.Substring(0, 1).ToUpper();
                     <tr>
-                        <td style="font-weight: 600;">@(string.IsNullOrEmpty(user.FullName) ? "غير محدد" : user.FullName)</td>
-                        <td>@user.Email</td>
-                        <td>@user.CreatedAt.ToString("yyyy-MM-dd")</td>
                         <td>
-                            <button class="btn btn-outline" style="padding: 5px 15px; font-size: 0.85rem;"><i class="fa-solid fa-user-pen"></i> الصلاحيات</button>
+                            <div style="display: flex; align-items: center; gap: 15px;">
+                                <div class="user-avatar">@initial</div>
+                                <div>
+                                    <div style="color: var(--text-main);">@(string.IsNullOrEmpty(user.FullName) ? "غير محدد" : user.FullName)</div>
+                                    <div style="font-size: 0.8rem; color: var(--text-muted); font-weight: normal;">ID: @user.Id.Substring(0, 8)</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td style="color: var(--text-muted); font-weight: 500;">@user.Email</td>
+                        <td style="color: var(--text-muted); font-weight: 500;">@user.CreatedAt.ToString("dd MMM yyyy")</td>
+                        <td>
+                            <form asp-controller="Admin" asp-action="ChangeUserRole" method="post" style="display: flex; gap: 10px; align-items: center;">
+                                <input type="hidden" name="userId" value="@user.Id" />
+                                <select name="newRole" class="role-select">
+                                    <option value="Student">طالب (Student)</option>
+                                    <option value="Instructor">محاضر (Instructor)</option>
+                                    <option value="Admin">مدير (Admin)</option>
+                                </select>
+                                <button type="submit" style="background: var(--bg-body); border: none; width: 35px; height: 35px; border-radius: 10px; cursor: pointer; color: var(--sidebar-active-bg); transition: 0.3s;" onmouseover="this.style.background='var(--sidebar-active-bg)'; this.style.color='white';" onmouseout="this.style.background='var(--bg-body)'; this.style.color='var(--sidebar-active-bg)';">
+                                    <i class="fa-solid fa-check"></i>
+                                </button>
+                            </form>
                         </td>
                     </tr>
                 }
             }
             else
             {
-                <tr>
-                    <td colspan="4" style="text-align: center; padding: 30px; color: #64748b;">لا يوجد مستخدمين مسجلين.</td>
-                }
+                <tr><td colspan="4" style="text-align: center; padding: 40px; color: var(--text-muted);">لا يوجد مستخدمين مسجلين.</td></tr>
+            }
         </tbody>
     </table>
 </div>
+
+@section Scripts {
+    <script>
+        document.getElementById('userSearch').addEventListener('keyup', function() {
+            let searchValue = this.value.toLowerCase();
+            let tableRows = document.querySelectorAll('.modern-table tbody tr');
+            tableRows.forEach(row => {
+                let text = row.textContent.toLowerCase();
+                row.style.display = text.includes(searchValue) ? '' : 'none';
+            });
+        });
+    </script>
+}

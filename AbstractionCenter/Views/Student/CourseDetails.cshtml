@@ -1,6 +1,7 @@
-﻿@{
-    ViewData["Title"] = "محتوى الدورة";
-    Layout = "~/Views/Shared/_Layout.cshtml";
+﻿@model AbstractionCenter.Models.Entities.Course
+@{
+    ViewData["Title"] = Model?.Title ?? "محتوى الدورة";
+    var assignments = ViewBag.Assignments as IEnumerable<AbstractionCenter.Models.Entities.Assignment>;
 }
 
 <style>
@@ -33,58 +34,111 @@
     .assignment-card {
         border-right: 4px solid var(--accent-color);
         background: white;
-        padding: 20px;
+        padding: 25px;
         border-radius: var(--radius-md);
         box-shadow: var(--shadow-sm);
         margin-bottom: 20px;
         display: flex;
         justify-content: space-between;
         align-items: center;
+        flex-wrap: wrap;
+        gap: 20px;
+    }
+
+    .tab-content {
+        display: none;
+    }
+
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+
+    @@keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(10px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
     }
 </style>
 
-<div style="padding: 120px 0 60px; background: #f1f5f9;">
+<div style="padding: 120px 0 60px; background: #f1f5f9; border-bottom: 1px solid #e2e8f0;">
     <div class="container">
-        <a href="/Student/Dashboard" style="color: var(--secondary-color); margin-bottom: 20px; display: inline-block;">
+        <a href="/Student/Dashboard" style="color: var(--secondary-color); margin-bottom: 20px; display: inline-block; font-weight: bold;">
             <i class="fa-solid fa-arrow-right"></i> العودة للوحة التحكم
         </a>
-        <h1 style="color: var(--primary-color);">دبلومة تطوير واجهات الويب (Front-End)</h1>
-        <p style="color: #64748b;">المحاضر: أ. أحمد محمود</p>
+        <h1 style="color: var(--primary-color); margin-bottom: 10px;">@Model?.Title</h1>
+        <p style="color: #64748b; font-size: 1.1rem;"><i class="fa-solid fa-chalkboard-user"></i> المحاضر: @(Model?.RegistrarName ?? "غير محدد")</p>
     </div>
 </div>
 
-<div class="container" style="padding: 40px 0 80px;">
-    <!-- Tabs -->
+<div class="container" style="padding: 40px 0 80px; min-height: 50vh;">
+    <!-- التبويبات -->
     <div class="course-nav">
-        <button class="active">المحتوى التعليمي</button>
-        <button>الواجبات (Assignments)</button>
+        <button class="tab-btn active" data-target="content-tab"><i class="fa-solid fa-photo-film"></i> المحتوى التعليمي</button>
+        <button class="tab-btn" data-target="assignments-tab"><i class="fa-solid fa-tasks"></i> الواجبات المطلوبة</button>
     </div>
 
-    <!-- Content Area -->
-    <div class="glass-card">
-        <!-- Mock Data for Content -->
-        <h3 style="margin-bottom: 20px; color: var(--primary-color);"><i class="fa-solid fa-video" style="color: var(--secondary-color);"></i> المحاضرة الأولى: مقدمة في HTML5</h3>
-        <p style="color: #475569; margin-bottom: 20px;">في هذه المحاضرة سنتعرف على أساسيات بناء هيكل الصفحات باستخدام أحدث وسوم HTML5.</p>
+    <!-- قسم المحتوى -->
+    <div id="content-tab" class="tab-content active">
+        <div class="glass-card">
+            <h3 style="margin-bottom: 20px; color: var(--primary-color);"><i class="fa-solid fa-video" style="color: var(--secondary-color);"></i> المحاضرة الأولى (محتوى تجريبي)</h3>
+            <p style="color: #475569; margin-bottom: 20px;">هذا القسم مخصص لعرض المحتوى الذي يرفعه المحاضر (فيديوهات وملفات).</p>
 
-        <div style="background: black; height: 400px; border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; color: white; margin-bottom: 30px;">
-            <i class="fa-solid fa-circle-play" style="font-size: 4rem; opacity: 0.7; cursor: pointer;"></i>
+            <div style="background: #1e293b; height: 400px; border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; color: white; margin-bottom: 30px;">
+                <i class="fa-solid fa-circle-play" style="font-size: 4rem; opacity: 0.7; cursor: pointer; transition: opacity 0.3s;"></i>
+            </div>
+
+            <a href="#" class="btn btn-outline"><i class="fa-solid fa-download"></i> تحميل الملحقات (PDF)</a>
         </div>
-
-        <a href="#" class="btn btn-outline"><i class="fa-solid fa-download"></i> تحميل ملحقات المحاضرة (PDF)</a>
     </div>
 
-    <!-- Assignments Area (Will be toggled via JS in a real scenario) -->
-    <div style="margin-top: 40px;">
-        <h3 style="margin-bottom: 20px;">الواجبات المطلوبة</h3>
-
-        <div class="assignment-card">
-            <div>
-                <h4 style="color: var(--primary-color); margin-bottom: 5px;">تصميم صفحة شخصية (Portfolio)</h4>
-                <div style="color: #64748b; font-size: 0.9rem;"><i class="fa-regular fa-clock"></i> آخر موعد للتسليم: 25 أكتوبر 2024</div>
+    <!-- قسم الواجبات -->
+    <div id="assignments-tab" class="tab-content">
+        @if (assignments != null && assignments.Any())
+        {
+            foreach (var assign in assignments)
+            {
+                <div class="assignment-card">
+                    <div style="flex: 1; min-width: 250px;">
+                        <h4 style="color: var(--primary-color); margin-bottom: 8px; font-size: 1.2rem;">@assign.Title</h4>
+                        <p style="color: #475569; margin-bottom: 12px; font-size: 0.95rem;">@assign.Description</p>
+                        <div style="color: #ef4444; font-size: 0.9rem; font-weight: bold;">
+                            <i class="fa-regular fa-clock"></i> آخر موعد للتسليم: @assign.DueDate.ToString("dd MMMM yyyy")
+                        </div>
+                    </div>
+                    <div>
+                        <button class="btn btn-primary" style="padding: 10px 25px;"><i class="fa-solid fa-cloud-arrow-up"></i> رفع الحل</button>
+                    </div>
+                </div>
+            }
+        }
+        else
+        {
+            <div class="glass-card" style="text-align: center; padding: 40px;">
+                <i class="fa-solid fa-clipboard-check" style="font-size: 3rem; color: #10b981; margin-bottom: 15px;"></i>
+                <h3 style="color: var(--primary-color);">لا توجد واجبات مطلوبة حالياً</h3>
             </div>
-            <div>
-                <button class="btn btn-primary" style="padding: 8px 20px; font-size: 0.9rem;">رفع الواجب <i class="fa-solid fa-cloud-arrow-up"></i></button>
-            </div>
-        </div>
+        }
     </div>
 </div>
+
+@section Scripts {
+    <script>
+        // تفعيل التبويبات برمجياً داخل هذه الصفحة
+        document.querySelectorAll('.tab-btn').forEach(button => {
+            button.addEventListener('click', function() {
+                document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+                document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+
+                this.classList.add('active');
+                document.getElementById(this.getAttribute('data-target')).classList.add('active');
+            });
+        });
+    </script>
+}

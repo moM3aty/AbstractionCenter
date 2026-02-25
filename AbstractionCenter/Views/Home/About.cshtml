@@ -1,38 +1,95 @@
-﻿@{
-    ViewData["Title"] = "من نحن";
+﻿@inject AbstractionCenter.Data.ApplicationDbContext DbContext
+@{
+    ViewData["Title"] = "قصتنا ومن نحن";
+
+    // جلب الإعدادات من قاعدة البيانات لجعل الصفحة ديناميكية بالكامل
+    var settings = DbContext.SiteSettings.ToDictionary(s => s.Key, s => s.Value);
+    string GetSetting(string key, string fallback = "") => settings.ContainsKey(key) ? settings[key] : fallback;
 }
 
-<section class="hero" style="min-height: 50vh; padding: 120px 0 50px;">
-    <div class="container hero-content">
-        <h1 style="font-size: 3.5rem;">من نحن</h1>
-        <p>تعرف على رؤيتنا، رسالتنا، وكيف نصنع الفارق في مجال التدريب وبناء القدرات.</p>
+<style>
+    .about-header {
+        background: url('@GetSetting("About_HeroImage", "https://images.unsplash.com/photo-1541339907198-e08756dedf3f?auto=format&fit=crop&w=1920&q=80")') center/cover;
+        position: relative;
+        padding: 160px 0 100px;
+        text-align: center;
+        color: white;
+    }
+
+        .about-header::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to bottom, rgba(15,23,42,0.9), rgba(15,23,42,0.95));
+        }
+
+    .about-content {
+        position: relative;
+        z-index: 10;
+        max-width: 800px;
+        margin: 0 auto;
+    }
+</style>
+
+<section class="about-header">
+    <div class="container about-content">
+        <div style="width: 80px; height: 80px; background: rgba(245, 158, 11, 0.2); border: 2px solid var(--accent-color); color: var(--accent-color); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 2rem; margin: 0 auto 20px;">
+            <i class="fa-solid fa-landmark-dome"></i>
+        </div>
+        <h1 style="font-size: 3.5rem; font-weight: 900; margin-bottom: 20px; color: white;">@GetSetting("About_HeroTitle", "قصتنا في أبستراكشن")</h1>
+        <p style="font-size: 1.3rem; color: #cbd5e1; line-height: 1.8;">
+            @GetSetting("About_HeroSubtitle", "نحن لسنا مجرد مركز تدريب، بل صرح تعليمي وُلد من رحم الحاجة العربية لبناء عقول شابة قادرة على قيادة المستقبل ومواكبة الثورة الصناعية الرابعة.")
+        </p>
     </div>
 </section>
 
-<section style="padding: 60px 0;">
+<section class="arabic-pattern" style="padding: 80px 0;">
     <div class="container">
-        <div style="display: flex; flex-wrap: wrap; gap: 40px; align-items: center;">
-            <div style="flex: 1; min-width: 300px;">
-                <div style="background: linear-gradient(135deg, rgba(59,130,246,0.1), rgba(245,158,11,0.1)); padding: 40px; border-radius: var(--radius-lg); border: 1px solid var(--glass-border);">
-                    <h2 style="color: var(--primary-color); margin-bottom: 20px; font-size: 2rem;">مركز ابستراكشن</h2>
-                    <p style="font-size: 1.1rem; color: #475569; margin-bottom: 15px;">
-                        نحن لسنا مجرد مركز تدريب تقليدي، بل منصة تعليمية متكاملة تهدف إلى تمكين الأفراد والمؤسسات من خلال برامج تدريبية تواكب أحدث تطورات العصر وسوق العمل.
-                    </p>
-                    <p style="font-size: 1.1rem; color: #475569;">
-                        نعتمد على دمج التكنولوجيا المتطورة في التعليم، وتقديم تجربة سلسة للطالب والمحاضر عبر بيئة رقمية ذكية.
-                    </p>
-                </div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 60px; align-items: center;">
+            <div style="position: relative;">
+                <div style="position: absolute; top: -20px; right: -20px; width: 100px; height: 100px; background: var(--secondary-color); border-radius: 20px; z-index: 0; opacity: 0.2;"></div>
+                <img src="@GetSetting("About_TeamImage", "https://images.unsplash.com/photo-1531482615713-2afd69097998?auto=format&fit=crop&w=800&q=80")" alt="فريق العمل" style="width: 100%; border-radius: 20px; box-shadow: var(--shadow-premium); position: relative; z-index: 1;" />
+                <div style="position: absolute; bottom: -20px; left: -20px; width: 100px; height: 100px; background: var(--accent-color); border-radius: 50%; z-index: 0; opacity: 0.2;"></div>
             </div>
 
-            <div style="flex: 1; min-width: 300px; display: flex; flex-direction: column; gap: 20px;">
-                <div class="glass-card" style="padding: 25px;">
-                    <h3 style="color: var(--secondary-color); margin-bottom: 10px;"><i class="fa-solid fa-eye"></i> رؤيتنا</h3>
-                    <p>أن نكون المنصة العربية الأولى في بناء القدرات المهنية المعتمدة والمبنية على التطبيق العملي الفعّال.</p>
-                </div>
-                <div class="glass-card" style="padding: 25px;">
-                    <h3 style="color: var(--accent-color); margin-bottom: 10px;"><i class="fa-solid fa-bullseye"></i> رسالتنا</h3>
-                    <p>تقديم محتوى تدريبي متميز على يد خبراء، مدعوم بمنصة تقنية تسهل التواصل وإدارة العمليات التعليمية باحترافية.</p>
-                </div>
+            <div>
+                <h2 style="font-size: 2.5rem; color: var(--primary-color); font-weight: 900; margin-bottom: 20px;">رسالتنا ورؤيتنا</h2>
+                <div style="width: 60px; height: 4px; background: var(--accent-color); margin-bottom: 30px; border-radius: 2px;"></div>
+
+                <h3 style="color: var(--secondary-color); font-size: 1.5rem; margin-bottom: 10px;"><i class="fa-solid fa-eye"></i> الرؤية (Vision)</h3>
+                <p style="color: #475569; font-size: 1.1rem; line-height: 1.8; margin-bottom: 30px;">
+                    @GetSetting("About_Vision", "أن نكون المنصة العربية الأولى الموثوقة والمعتمدة محلياً ودولياً في سد الفجوة بين التعليم الأكاديمي والاحتياجات الفعلية لسوق العمل، لنُخرّج جيلاً يمتلك المهارة ويتحلى بالأخلاق المهنية.")
+                </p>
+
+                <h3 style="color: var(--secondary-color); font-size: 1.5rem; margin-bottom: 10px;"><i class="fa-solid fa-bullseye"></i> الرسالة (Mission)</h3>
+                <p style="color: #475569; font-size: 1.1rem; line-height: 1.8;">
+                    @GetSetting("About_Mission", "تقديم برامج تدريبية وتأهيلية مُبتكرة، مبنية على أسس التطبيق العملي والمشاريع الحقيقية، يديرها نخبة من أمهر الخبراء والممارسين، مع توفير بيئة تعليمية ذكية تسهل رحلة الطالب.")
+                </p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Values Section -->
+<section style="background: var(--primary-color); padding: 80px 0; color: white;">
+    <div class="container text-center" style="text-align: center;">
+        <h2 style="font-size: 2.5rem; font-weight: 800; margin-bottom: 50px; color: white;">@GetSetting("About_ValuesTitle", "قيمنا المؤسسية")</h2>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 30px;">
+            <div style="background: rgba(255,255,255,0.05); padding: 40px 20px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.1);">
+                <i class="fa-solid fa-handshake-angle" style="font-size: 2.5rem; color: var(--accent-color); margin-bottom: 20px;"></i>
+                <h3 style="font-size: 1.3rem; margin-bottom: 10px;">@GetSetting("About_Value1_Title", "الأمانة والنزاهة")</h3>
+                <p style="color: #94a3b8;">@GetSetting("About_Value1_Desc", "نلتزم بتقديم محتوى علمي دقيق بشفافية تامة.")</p>
+            </div>
+            <div style="background: rgba(255,255,255,0.05); padding: 40px 20px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.1);">
+                <i class="fa-solid fa-lightbulb" style="font-size: 2.5rem; color: var(--accent-color); margin-bottom: 20px;"></i>
+                <h3 style="font-size: 1.3rem; margin-bottom: 10px;">@GetSetting("About_Value2_Title", "التطور المستمر")</h3>
+                <p style="color: #94a3b8;">@GetSetting("About_Value2_Desc", "تحديث دائم لمساراتنا لمواكبة تسارع التكنولوجيا.")</p>
+            </div>
+            <div style="background: rgba(255,255,255,0.05); padding: 40px 20px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.1);">
+                <i class="fa-solid fa-people-group" style="font-size: 2.5rem; color: var(--accent-color); margin-bottom: 20px;"></i>
+                <h3 style="font-size: 1.3rem; margin-bottom: 10px;">@GetSetting("About_Value3_Title", "المجتمع الواحد")</h3>
+                <p style="color: #94a3b8;">@GetSetting("About_Value3_Desc", "نبني شبكة علاقات قوية بين الطلاب والمحاضرين.")</p>
             </div>
         </div>
     </div>

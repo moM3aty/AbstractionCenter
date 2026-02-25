@@ -1,11 +1,10 @@
 ﻿@model AbstractionCenter.Models.Entities.Course
 @{
     ViewData["Title"] = "إدارة محتوى الدورة";
-    Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
 <style>
-    .instructor-wrapper {
+    .manage-wrapper {
         padding: 120px 0 60px;
         min-height: 80vh;
     }
@@ -18,62 +17,76 @@
         font-family: inherit;
         font-size: 1rem;
         margin-bottom: 15px;
+        background: #f8fafc;
     }
 
         .form-control:focus {
             outline: none;
             border-color: var(--secondary-color);
+            background: white;
         }
 
     .section-card {
         background: white;
-        border-radius: var(--radius-md);
+        border-radius: var(--radius-lg);
         padding: 30px;
         box-shadow: var(--shadow-sm);
         margin-bottom: 30px;
+        border: 1px solid var(--glass-border);
     }
 </style>
 
-<div class="container instructor-wrapper">
-    <a href="/Instructor/Dashboard" style="color: var(--secondary-color); margin-bottom: 20px; display: inline-block;">
-        <i class="fa-solid fa-arrow-right"></i> العودة للوحة المحاضر
+<div class="container manage-wrapper">
+    <a href="/Instructor/Dashboard" style="color: var(--secondary-color); margin-bottom: 20px; display: inline-block; font-weight: bold;">
+        <i class="fa-solid fa-arrow-right"></i> العودة لقائمة الدورات
     </a>
 
-    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 30px;">
-        <div>
-            <h1 style="color: var(--primary-color);">@(Model?.Title ?? "دورة تجريبية")</h1>
-            <p style="color: #64748b;">إدارة المحتوى وإضافة الواجبات للطلاب</p>
-        </div>
+    <div style="margin-bottom: 30px;">
+        <h1 style="color: var(--primary-color);">@(Model?.Title)</h1>
+        <p style="color: #64748b; font-size: 1.1rem;">إضافة الواجبات للطلاب ورفع المحتوى التعليمي</p>
     </div>
 
-    <div class="section-card">
-        <h3 style="color: var(--primary-color); margin-bottom: 20px;"><i class="fa-solid fa-tasks"></i> إضافة واجب جديد (Assignment)</h3>
-
-        <form asp-controller="Instructor" asp-action="AddAssignment" method="post">
-            <input type="hidden" name="courseId" value="@(Model?.Id ?? 1)" />
-
-            <label style="font-weight: 600; margin-bottom: 5px; display: block;">عنوان الواجب</label>
-            <input type="text" name="title" class="form-control" placeholder="مثال: المشروع النهائي" required />
-
-            <label style="font-weight: 600; margin-bottom: 5px; display: block;">وصف أو متطلبات الواجب</label>
-            <textarea name="description" class="form-control" rows="3" placeholder="اكتب تفاصيل الواجب المطلوبة من الطالب..."></textarea>
-
-            <label style="font-weight: 600; margin-bottom: 5px; display: block;">تاريخ التسليم (Deadline)</label>
-            <input type="date" name="dueDate" class="form-control" required style="width: 250px;" />
-
-            <button type="submit" class="btn btn-primary" style="margin-top: 10px;"><i class="fa-solid fa-plus"></i> حفظ وإضافة الواجب</button>
-        </form>
-    </div>
-
-    <div class="section-card">
-        <h3 style="color: var(--primary-color); margin-bottom: 20px;"><i class="fa-solid fa-video"></i> رفع محتوى تعليمي</h3>
-        <p style="color: #64748b; margin-bottom: 15px;">هذه الميزة تتيح لك رفع فيديوهات ومستندات للطلاب. (سيتم تفعيل الرفع السحابي قريباً)</p>
-
-        <div style="border: 2px dashed #cbd5e1; padding: 40px; text-align: center; border-radius: var(--radius-md); background: #f8fafc; cursor: pointer;">
-            <i class="fa-solid fa-cloud-arrow-up" style="font-size: 3rem; color: #94a3b8; margin-bottom: 15px;"></i>
-            <h4 style="color: var(--text-dark);">اسحب وأفلت الملفات هنا</h4>
-            <p style="color: #64748b; font-size: 0.9rem;">أو اضغط لاختيار ملف من جهازك</p>
-            <button class="btn btn-outline" style="margin-top: 15px;">تصفح الملفات</button>
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div style="background: #10b981; color: white; padding: 15px; border-radius: var(--radius-md); margin-bottom: 20px; font-weight: bold;">
+            <i class="fa-solid fa-circle-check"></i> @TempData["SuccessMessage"]
         </div>
+    }
+
+    <div class="grid-3" style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px;">
+
+        <!-- قسم إضافة الواجبات -->
+        <div class="section-card">
+            <h3 style="color: var(--primary-color); margin-bottom: 20px;"><i class="fa-solid fa-tasks" style="color: var(--secondary-color);"></i> إضافة واجب (Assignment)</h3>
+
+            <form asp-controller="Instructor" asp-action="AddAssignment" method="post">
+                <input type="hidden" name="courseId" value="@(Model?.Id)" />
+
+                <label style="font-weight: 600; margin-bottom: 5px; display: block; color: var(--text-dark);">عنوان الواجب</label>
+                <input type="text" name="title" class="form-control" placeholder="مثال: إنشاء مشروع التخرج" required />
+
+                <label style="font-weight: 600; margin-bottom: 5px; display: block; color: var(--text-dark);">وصف الواجب</label>
+                <textarea name="description" class="form-control" rows="4" placeholder="اكتب تفاصيل المتطلبات هنا..." required></textarea>
+
+                <label style="font-weight: 600; margin-bottom: 5px; display: block; color: var(--text-dark);">تاريخ التسليم (Deadline)</label>
+                <input type="date" name="dueDate" class="form-control" required />
+
+                <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 10px; padding: 12px;"><i class="fa-solid fa-plus"></i> حفظ ونشر للطلاب</button>
+            </form>
+        </div>
+
+        <!-- قسم رفع المحتوى (UI فقط للتمثيل) -->
+        <div class="section-card">
+            <h3 style="color: var(--primary-color); margin-bottom: 20px;"><i class="fa-solid fa-cloud-arrow-up" style="color: var(--secondary-color);"></i> رفع محتوى تعليمي</h3>
+            <p style="color: #64748b; margin-bottom: 20px;">قم برفع ملفات الـ PDF أو مقاطع الفيديو الخاصة بالدورة ليتمكن الطلاب من مشاهدتها.</p>
+
+            <div style="border: 2px dashed #cbd5e1; padding: 50px 20px; text-align: center; border-radius: var(--radius-md); background: #f8fafc; cursor: pointer; transition: all 0.3s;" onmouseover="this.style.borderColor='var(--secondary-color)'" onmouseout="this.style.borderColor='#cbd5e1'">
+                <i class="fa-solid fa-file-arrow-up" style="font-size: 3.5rem; color: #94a3b8; margin-bottom: 15px;"></i>
+                <h4 style="color: var(--text-dark); margin-bottom: 5px;">اسحب وأفلت الملفات هنا</h4>
+                <p style="color: #64748b; font-size: 0.9rem; margin-bottom: 20px;">أو اضغط لاختيار ملف (PDF, MP4, ZIP)</p>
+                <button class="btn btn-outline">تصفح الجهاز</button>
+            </div>
+        </div>
+
     </div>
 </div>

@@ -4,9 +4,6 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace AbstractionCenter.Models.Entities
 {
-    /// <summary>
-    /// نموذج الواجبات التي يضيفها عضو هيئة التدريس (المسجل) داخل الدورة
-    /// </summary>
     public class Assignment
     {
         [Key]
@@ -22,7 +19,6 @@ namespace AbstractionCenter.Models.Entities
         [Display(Name = "تاريخ التسليم (Deadline)")]
         public DateTime DueDate { get; set; }
 
-        // ربط الواجب بالدورة الخاصة به
         [Required]
         public int CourseId { get; set; }
         [ForeignKey("CourseId")]

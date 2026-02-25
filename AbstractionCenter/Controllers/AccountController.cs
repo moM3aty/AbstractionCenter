@@ -5,9 +5,6 @@ using System.Threading.Tasks;
 
 namespace AbstractionCenter.Controllers
 {
-    /// <summary>
-    /// متحكم تسجيل الدخول وتوجيه المستخدمين حسب صلاحياتهم
-    /// </summary>
     public class AccountController : Controller
     {
         private readonly SignInManager<ApplicationUser> _signInManager;
@@ -19,9 +16,11 @@ namespace AbstractionCenter.Controllers
             _userManager = userManager;
         }
 
+        // --- دوال تسجيل الدخول ---
         [HttpGet]
         public IActionResult Login()
         {
+            if (User.Identity.IsAuthenticated) return RedirectToDashboard();
             ViewData["Title"] = "تسجيل الدخول";
             return View();
         }
@@ -36,36 +35,90 @@ namespace AbstractionCenter.Controllers
 
                 if (result.Succeeded)
                 {
-                    // جلب بيانات المستخدم لمعرفة صلاحيته (Role) وتوجيهه للوحة المناسبة
                     var user = await _userManager.FindByEmailAsync(email);
                     var roles = await _userManager.GetRolesAsync(user);
 
-                    if (roles.Contains("Admin"))
-                    {
-                        return RedirectToAction("Index", "Admin"); // توجيه للوحة الإدارة
-                    }
-                    else if (roles.Contains("Instructor"))
-                    {
-                        return RedirectToAction("Dashboard", "Instructor"); // توجيه للوحة هيئة التدريس
-                    }
-                    else
-                    {
-                        return RedirectToAction("Dashboard", "Student"); // توجيه لمنصة الطالب
-                    }
+                    if (roles.Contains("Admin")) return RedirectToAction("Index", "Admin");
+                    if (roles.Contains("Instructor")) return RedirectToAction("Dashboard", "Instructor");
+                    return RedirectToAction("Dashboard", "Student");
                 }
 
                 ModelState.AddModelError(string.Empty, "البريد الإلكتروني أو كلمة المرور غير صحيحة.");
             }
-
-            return View(); // إعادة عرض صفحة الدخول مع رسالة الخطأ
+            return View();
         }
 
+        // --- دوال إنشاء حساب جديد (التي كانت ناقصة) ---
+        [HttpGet]
+        public IActionResult Register()
+        {
+            if (User.Identity.IsAuthenticated) return RedirectToDashboard();
+            ViewData["Title"] = "إنشاء حساب جديد";
+            return View();
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Register(string fullName, string email, string password, string confirmPassword)
+        {
+            if (password != confirmPassword)
+            {
+                ModelState.AddModelError(string.Empty, "كلمتا المرور غير متطابقتين.");
+                return View();
+            }
+
+            if (ModelState.IsValid)
+            {
+                var user = new ApplicationUser
+                {
+                    UserName = email,
+                    Email = email,
+                    FullName = fullName,
+                    CreatedAt = System.DateTime.Now
+                };
+
+                var result = await _userManager.CreateAsync(user, password);
+
+                if (result.Succeeded)
+                {
+                    // إعطاء صلاحية "طالب" افتراضياً لأي حساب جديد يتم إنشاؤه من واجهة الموقع
+                    await _userManager.AddToRoleAsync(user, "Student");
+
+                    // تسجيل الدخول مباشرة بعد إنشاء الحساب
+                    await _signInManager.SignInAsync(user, isPersistent: false);
+                    return RedirectToAction("Dashboard", "Student");
+                }
+
+                // عرض الأخطاء في حال فشل الإنشاء (مثل البريد مسجل مسبقاً أو كلمة المرور ضعيفة)
+                foreach (var error in result.Errors)
+                {
+                    ModelState.AddModelError(string.Empty, error.Description);
+                }
+            }
+            return View();
+        }
+
+        // --- دوال تسجيل الخروج والصلاحيات ---
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Logout()
         {
             await _signInManager.SignOutAsync();
             return RedirectToAction("Index", "Home");
+        }
+
+        [HttpGet]
+        public IActionResult AccessDenied()
+        {
+            ViewData["Title"] = "صلاحيات غير كافية";
+            return View();
+        }
+
+        private IActionResult RedirectToDashboard()
+        {
+            if (User.IsInRole("Admin")) return RedirectToAction("Index", "Admin");
+            if (User.IsInRole("Instructor")) return RedirectToAction("Dashboard", "Instructor");
+            return RedirectToAction("Dashboard", "Student");
         }
     }
 }

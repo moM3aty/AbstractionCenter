@@ -3,7 +3,6 @@ using AbstractionCenter.Models.Entities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
-
 var builder = WebApplication.CreateBuilder(args);
 
 // 1. إعداد الاتصال بقاعدة البيانات (يجب إضافة نص الاتصال DefaultConnection في appsettings.json)

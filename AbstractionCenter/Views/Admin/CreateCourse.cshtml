@@ -1,50 +1,44 @@
 ﻿@model AbstractionCenter.Models.Entities.Course
 @{
     ViewData["Title"] = "إضافة دورة جديدة";
-    Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
 <style>
-    .form-wrapper {
-        padding: 120px 0 60px;
-        min-height: 80vh;
-    }
-
-    .glass-form {
-        background: rgba(255, 255, 255, 0.9);
-        border: 1px solid var(--glass-border);
-        border-radius: var(--radius-lg);
+    .form-card {
+        background: var(--card-bg);
+        border-radius: var(--radius-box);
         padding: 40px;
-        box-shadow: var(--shadow-md);
+        box-shadow: var(--shadow-card);
         max-width: 800px;
         margin: 0 auto;
     }
 
     .form-group {
-        margin-bottom: 20px;
+        margin-bottom: 25px;
     }
 
         .form-group label {
             display: block;
-            margin-bottom: 8px;
-            font-weight: 600;
-            color: var(--text-dark);
+            margin-bottom: 10px;
+            font-weight: 700;
+            color: var(--text-main);
+            font-size: 0.95rem;
         }
 
     .form-control {
         width: 100%;
-        padding: 12px 15px;
-        border: 2px solid #e2e8f0;
-        border-radius: var(--radius-md);
+        padding: 15px 20px;
+        border: 2px solid var(--border-color);
+        border-radius: 15px;
         font-family: inherit;
         font-size: 1rem;
-        background: #f8fafc;
-        transition: all 0.3s ease;
+        background: var(--bg-body);
+        transition: 0.3s;
     }
 
         .form-control:focus {
             outline: none;
-            border-color: var(--secondary-color);
+            border-color: var(--sidebar-active-bg);
             background: white;
         }
 
@@ -54,67 +48,89 @@
         gap: 20px;
     }
 
-    @@media(max-width: 768px) {
-        .form-row {
-            grid-template-columns: 1fr;
-        }
+    .section-title {
+        color: var(--sidebar-active-bg);
+        font-size: 1.2rem;
+        font-weight: 800;
+        margin: 35px 0 20px;
+        border-bottom: 2px solid var(--bg-body);
+        padding-bottom: 10px;
     }
+
+    .btn-save {
+        background: var(--sidebar-active-bg);
+        color: white;
+        border: none;
+        padding: 15px 40px;
+        border-radius: 15px;
+        font-weight: bold;
+        font-size: 1.1rem;
+        cursor: pointer;
+        box-shadow: 0 10px 20px rgba(67, 24, 255, 0.2);
+        transition: 0.3s;
+        width: 100%;
+    }
+
+        .btn-save:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 25px rgba(67, 24, 255, 0.3);
+        }
 </style>
 
-<div class="container form-wrapper">
-    <div class="glass-form">
-        <h2 style="color: var(--primary-color); margin-bottom: 10px; text-align: center;"><i class="fa-solid fa-plus-circle"></i> إضافة دورة جديدة</h2>
-        <p style="text-align: center; color: #64748b; margin-bottom: 30px;">قم بإدخال بيانات الدورة وتحديد المسجل المسؤول عنها.</p>
+<div class="form-card">
+    <h2 style="color: var(--text-main); margin-bottom: 10px; text-align: center;">إنشاء دورة تدريبية</h2>
+    <p style="text-align: center; color: var(--text-muted); margin-bottom: 30px;">قم بملء البيانات الأساسية لنشر الدورة على المنصة.</p>
 
-        <form asp-action="CreateCourse" method="post">
+    <form asp-action="CreateCourse" method="post">
+        <div class="form-group">
+            <label>اسم الدورة / المسار</label>
+            <input asp-for="Title" class="form-control" placeholder="مثال: دبلومة البرمجة المتقدمة" required />
+        </div>
+
+        <div class="form-group">
+            <label>وصف الدورة (نبذة تعريفية للطلاب)</label>
+            <textarea asp-for="Description" class="form-control" rows="4" placeholder="اكتب نبذة عن الدورة ومحتواها..."></textarea>
+        </div>
+
+        <div class="form-row">
             <div class="form-group">
-                <label>اسم الدورة</label>
-                <input asp-for="Title" class="form-control" placeholder="مثال: دبلومة البرمجة المتقدمة" required />
+                <label>تاريخ البدء المتوقع</label>
+                <input asp-for="StartDate" type="date" class="form-control" required />
             </div>
-
             <div class="form-group">
-                <label>وصف الدورة</label>
-                <textarea asp-for="Description" class="form-control" rows="4" placeholder="اكتب نبذة عن الدورة ومحتواها..."></textarea>
+                <label>حالة الدورة</label>
+                <select asp-for="Status" class="form-control">
+                    <option value="0">مفتوحة للتسجيل</option>
+                    <option value="1">قيد التنفيذ</option>
+                    <option value="2">مكتملة</option>
+                </select>
             </div>
+        </div>
 
-            <div class="form-row">
-                <div class="form-group">
-                    <label>تاريخ البدء المتوقع</label>
-                    <input asp-for="StartDate" type="date" class="form-control" required />
-                </div>
-                <div class="form-group">
-                    <label>حالة الدورة</label>
-                    <select asp-for="Status" class="form-control">
-                        <option value="0">مفتوحة للتسجيل</option>
-                        <option value="1">قيد التنفيذ</option>
-                        <option value="2">مكتملة</option>
-                    </select>
-                </div>
+
+        <h4 class="section-title"><i class="fa-solid fa-user-tie"></i> إسناد الدورة لمحاضر</h4>
+        <div class="form-row">
+            <div class="form-group" style="grid-column: 1 / -1;">
+                <label>اختر المحاضر المسؤول عن الدورة</label>
+                <select asp-for="RegistrarUserId" class="form-control" required>
+                    <option value="">-- اضغط لاختيار محاضر من فريق العمل --</option>
+                    @if (ViewBag.Instructors != null)
+                    {
+                        foreach (var inst in ViewBag.Instructors)
+                        {
+                            <option value="@inst.Id">@inst.FullName - (@inst.Specialization)</option>
+                        }
+                    }
+                </select>
+                <small style="color: var(--text-muted); margin-top: 5px; display: block;">ملاحظة: سيتم سحب اسم المحاضر ورقم هاتفه تلقائياً من ملفه الشخصي.</small>
             </div>
+        </div>
 
-            <hr style="border: 0; border-top: 1px solid #e2e8f0; margin: 30px 0;">
-            <h4 style="color: var(--secondary-color); margin-bottom: 20px;"><i class="fa-brands fa-whatsapp"></i> بيانات التسجيل والمسجل</h4>
-
-            <div class="form-row">
-                <div class="form-group">
-                    <label>اسم مسجل الدورة (المسؤول)</label>
-                    <input asp-for="RegistrarName" class="form-control" placeholder="أ. محمد محمود" required />
-                </div>
-                <div class="form-group">
-                    <label>رقم واتساب المسجل</label>
-                    <input asp-for="RegistrarWhatsApp" class="form-control" placeholder="مثال: 201xxxxxxxxx" required />
-                </div>
+        <div style="margin-top: 40px;">
+            <button type="submit" class="btn-save">حفظ ونشر الدورة <i class="fa-solid fa-paper-plane" style="margin-right: 8px;"></i></button>
+            <div style="text-align: center; margin-top: 15px;">
+                <a href="/Admin/ManageCourses" style="color: var(--text-muted); font-weight: 600;">إلغاء والعودة للقائمة</a>
             </div>
-
-            <div class="form-group">
-                <label>رابط فورم التسجيل (Google Form)</label>
-                <input asp-for="RegistrationFormUrl" type="url" class="form-control" placeholder="https://forms.google.com/..." required />
-            </div>
-
-            <div style="margin-top: 40px; text-align: center;">
-                <button type="submit" class="btn btn-primary" style="padding: 12px 40px; font-size: 1.1rem;">حفظ الدورة <i class="fa-solid fa-check"></i></button>
-                <a href="/Admin/ManageCourses" class="btn btn-outline" style="padding: 12px 40px; font-size: 1.1rem;">إلغاء</a>
-            </div>
-        </form>
-    </div>
+        </div>
+    </form>
 </div>

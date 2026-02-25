@@ -1,64 +1,344 @@
-﻿<!DOCTYPE html>
+﻿@inject AbstractionCenter.Data.ApplicationDbContext DbContext
+@{
+    var allSettings = DbContext.SiteSettings.ToList();
+    var settingsDict = allSettings.ToDictionary(s => s.Key, s => s.Value);
+
+    // جلب روابط السوشيال ميديا ديناميكياً
+    var socialLinks = allSettings.Where(s => s.Group == "Social").ToList();
+
+    string GetSetting(string key, string fallback = "") => settingsDict.ContainsKey(key) ? settingsDict[key] : fallback;
+
+    // دالة مساعدة لاختيار الأيقونة المناسبة بناءً على الاسم
+    string GetSocialIcon(string displayName)
+    {
+        string name = displayName.ToLower();
+        if (name.Contains("facebook") || name.Contains("فيسبوك")) return "fa-brands fa-facebook-f";
+        if (name.Contains("twitter") || name.Contains("تويتر") || name.Contains(" x ")) return "fa-brands fa-x-twitter";
+        if (name.Contains("instagram") || name.Contains("انستجرام")) return "fa-brands fa-instagram";
+        if (name.Contains("linkedin") || name.Contains("لينكد")) return "fa-brands fa-linkedin-in";
+        if (name.Contains("youtube") || name.Contains("يوتيوب")) return "fa-brands fa-youtube";
+        if (name.Contains("tiktok") || name.Contains("تيك توك")) return "fa-brands fa-tiktok";
+        if (name.Contains("whatsapp") || name.Contains("واتساب")) return "fa-brands fa-whatsapp";
+        if (name.Contains("telegram") || name.Contains("تيليجرام")) return "fa-brands fa-telegram";
+        return "fa-solid fa-link"; // أيقونة افتراضية
+    }
+}
+<!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - مركز ابستراكشن</title>
-
-    <!-- Google Fonts: Cairo for Arabic -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
-
-    <!-- Font Awesome for Icons (using CDN as it's standard for icons, but CSS is pure) -->
+    <title>@ViewData["Title"] - @GetSetting("SiteName", "مركز ابستراكشن")</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
-
-    <!-- Our Pure CSS Design System -->
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <style>
+        /* Premium Royal Footer */
+        .premium-footer {
+            background-color: #0f172a;
+            color: #e2e8f0;
+            padding: 80px 0 30px;
+            margin-top: auto;
+            border-top: 4px solid var(--secondary-color);
+            position: relative;
+            overflow: hidden;
+        }
+
+            .premium-footer::before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background-image: url('data:image/svg+xml,%3Csvg width=\'60\' height=\'60\' viewBox=\'0 0 60 60\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cg fill=\'none\' fill-rule=\'evenodd\'%3E%3Cg fill=\'%23cda434\' fill-opacity=\'0.03\'%3E%3Cpath d=\'M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z\'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E');
+                opacity: 0.8;
+                pointer-events: none;
+            }
+
+        .footer-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1.5fr;
+            gap: 50px;
+            margin-bottom: 60px;
+            position: relative;
+            z-index: 10;
+        }
+
+        .footer-brand {
+            margin-bottom: 25px;
+            font-size: 2rem;
+            font-weight: 900;
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+            .footer-brand span {
+                background: linear-gradient(to left, var(--secondary-color), #fef08a);
+                -webkit-background-clip: text;
+                -webkit-text-fill-color: transparent;
+            }
+
+        .footer-text {
+            color: #94a3b8;
+            line-height: 1.9;
+            margin-bottom: 25px;
+            font-size: 1.05rem;
+        }
+
+        .footer-heading {
+            color: white;
+            font-size: 1.3rem;
+            margin-bottom: 30px;
+            font-weight: 800;
+            position: relative;
+            padding-bottom: 15px;
+        }
+
+            .footer-heading::after {
+                content: '';
+                position: absolute;
+                bottom: 0;
+                right: 0;
+                width: 50px;
+                height: 3px;
+                background: var(--secondary-color);
+                border-radius: 5px;
+            }
+
+        .footer-links {
+            list-style: none;
+            padding: 0;
+        }
+
+            .footer-links li {
+                margin-bottom: 18px;
+                font-size: 1.05rem;
+            }
+
+            .footer-links a {
+                color: #cbd5e1;
+                transition: 0.3s;
+                display: flex;
+                align-items: center;
+                gap: 10px;
+            }
+
+                .footer-links a:hover {
+                    color: var(--secondary-color);
+                    transform: translateX(-5px);
+                }
+
+        .social-links {
+            display: flex;
+            gap: 15px;
+        }
+
+        .social-icon {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.05);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--secondary-color);
+            font-size: 1.3rem;
+            transition: 0.3s;
+            border: 1px solid rgba(205, 164, 52, 0.2);
+        }
+
+            .social-icon:hover {
+                background: var(--secondary-color);
+                color: #0f172a;
+                transform: translateY(-5px);
+                box-shadow: 0 10px 20px rgba(205, 164, 52, 0.3);
+            }
+
+        .newsletter-form {
+            display: flex;
+            gap: 10px;
+            margin-top: 25px;
+        }
+
+            .newsletter-form input {
+                flex-grow: 1;
+                padding: 15px 20px;
+                border-radius: 12px;
+                border: 1px solid rgba(255,255,255,0.1);
+                outline: none;
+                background: rgba(255,255,255,0.05);
+                color: white;
+                font-family: inherit;
+                transition: 0.3s;
+            }
+
+                .newsletter-form input:focus {
+                    border-color: var(--secondary-color);
+                    background: rgba(255,255,255,0.1);
+                }
+
+            .newsletter-form button {
+                background: var(--secondary-color);
+                color: #0f172a;
+                border: none;
+                padding: 0 25px;
+                border-radius: 12px;
+                font-weight: 900;
+                font-size: 1.1rem;
+                cursor: pointer;
+                transition: 0.3s;
+            }
+
+                .newsletter-form button:hover {
+                    background: #d4af37;
+                    box-shadow: 0 5px 15px rgba(205, 164, 52, 0.4);
+                }
+
+        .footer-bottom {
+            border-top: 1px solid rgba(255,255,255,0.1);
+            padding-top: 25px;
+            text-align: center;
+            color: #64748b;
+            font-size: 1rem;
+            position: relative;
+            z-index: 10;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        @@media (max-width: 992px) {
+            .footer-grid
+
+        {
+            grid-template-columns: 1fr 1fr;
+        }
+
+        }
+        @@media (max-width: 768px) {
+            .footer-grid
+
+        {
+            grid-template-columns: 1fr;
+            text-align: center;
+        }
+
+        .footer-heading::after {
+            left: 50%;
+            right: auto;
+            transform: translateX(-50%);
+        }
+
+        .footer-links a {
+            justify-content: center;
+        }
+
+        .social-links {
+            justify-content: center;
+        }
+
+        .footer-bottom {
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        }
+    </style>
 </head>
-<body>
-    <!-- Premium Navigation -->
+<body style="display: flex; flex-direction: column; min-height: 100vh;">
     <nav class="navbar">
-        <div class="container">
+        <div class="container" style="display: flex; justify-content: space-between; align-items: center;">
             <a href="/" class="logo">
-                <i class="fa-solid fa-layer-group"></i>
-                ابستراكشن <span>سنتر</span>
+                <i class="fa-solid fa-layer-group"></i> @GetSetting("SiteName", "ابستراكشن")
             </a>
-
+            <!-- الروابط أصبحت ديناميكية من الإدارة -->
             <ul class="nav-links">
-                <li><a href="/" class="active">الرئيسية</a></li>
-                <li><a href="/Home/About">من نحن</a></li>
-                <li><a href="/Home/Tracks">المسارات التدريبية</a></li>
-                <li><a href="/Home/Staff">هيئة التدريس</a></li>
-                <li><a href="/Courses/Open">الدورات المتاحة</a></li>
-                <li><a href="/Home/Contact">تواصل معنا</a></li>
+                <li><a href="/">الرئيسية</a></li>
+                <li><a href="/Home/About">@GetSetting("Nav_About", "من نحن")</a></li>
+                <li><a href="/Home/Tracks">@GetSetting("Nav_Tracks", "المسارات")</a></li>
+                <li><a href="/Home/Staff">@GetSetting("Nav_Staff", "فريق العمل")</a></li>
+                <li><a href="/Courses/Open">@GetSetting("Nav_Courses", "الدورات")</a></li>
+                <li><a href="/Home/VerifyCertificate">@GetSetting("Nav_Verify", "الشهادات")</a></li>
+                <li><a href="/Home/Contact">@GetSetting("Nav_Contact", "تواصل معنا")</a></li>
             </ul>
-
             <div class="nav-actions">
-                <a href="/Account/Login" class="btn btn-outline">تسجيل الدخول</a>
-                <a href="/Courses/Open" class="btn btn-primary">ابدأ الآن</a>
+                @if (User.Identity.IsAuthenticated)
+                {
+                    <a href="/Account/Login" class="btn btn-primary"><i class="fa-solid fa-border-all"></i> لوحة التحكم</a>
+                }
+                else
+                {
+                    <a href="/Account/Login" class="btn btn-outline"><i class="fa-solid fa-user"></i> دخول</a>
+                    <a href="/Courses/Open" class="btn btn-primary">ابدأ رحلتك</a>
+                }
             </div>
         </div>
     </nav>
 
-    <!-- Main Content Area -->
     <main role="main">
         @RenderBody()
     </main>
 
-    <!-- Global Footer (Simplified for now) -->
-    <footer style="background: var(--primary-color); color: white; padding: 40px 0; text-align: center; margin-top: 80px;">
+    <footer class="premium-footer">
         <div class="container">
-            <h3>مركز ابستراكشن للتدريب وبناء القدرات</h3>
-            <p>نصنع المستقبل بالمعرفة والمهارة.</p>
-            <div style="margin-top: 20px; color: #cbd5e1;">
-                &copy; @DateTime.Now.Year - Abstraction Center. جميع الحقوق محفوظة.
+            <div class="footer-grid">
+                <div>
+                    <div class="footer-brand"><i class="fa-solid fa-layer-group"></i> @GetSetting("SiteName")</div>
+                    <p class="footer-text">@GetSetting("FooterDesc")</p>
+                    <div class="social-links">
+                        <a href="@GetSetting("FacebookLink")" class="social-icon" target="_blank"><i class="fa-brands fa-facebook-f"></i></a>
+                        <a href="@GetSetting("TwitterLink")" class="social-icon" target="_blank"><i class="fa-brands fa-twitter"></i></a>
+                        <a href="@GetSetting("LinkedInLink")" class="social-icon" target="_blank"><i class="fa-brands fa-linkedin-in"></i></a>
+                    </div>
+                </div>
+
+                <div>
+                    <h4 class="footer-heading">روابط سريعة</h4>
+                    <ul class="footer-links">
+                        <li><a href="/Home/About"><i class="fa-solid fa-angle-left"></i> @GetSetting("Nav_About", "من نحن")</a></li>
+                        <li><a href="/Courses/Open"><i class="fa-solid fa-angle-left"></i> @GetSetting("Nav_Courses", "الدورات المتاحة")</a></li>
+                        <li><a href="/Home/Tracks"><i class="fa-solid fa-angle-left"></i> @GetSetting("Nav_Tracks", "المسارات التدريبية")</a></li>
+                        <li><a href="/Home/VerifyCertificate"><i class="fa-solid fa-angle-left"></i> @GetSetting("Nav_Verify", "التحقق من الشهادة")</a></li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h4 class="footer-heading">تواصل معنا</h4>
+                    <ul class="footer-links">
+                        @foreach (var contact in allSettings.Where(s => s.Group == "Contact"))
+                        {
+                            <li>
+                                <span style="color: #cbd5e1;">
+                                    @{
+                                        string icon = "fa-info-circle";
+                                        if (contact.DisplayName.Contains("هاتف") || contact.DisplayName.Contains("موبايل")) icon = "fa-phone";
+                                        else if (contact.DisplayName.Contains("بريد") || contact.DisplayName.Contains("إيميل")) icon = "fa-envelope";
+                                        else if (contact.DisplayName.Contains("عنوان") || contact.DisplayName.Contains("موقع")) icon = "fa-location-dot";
+                                    }
+                                    <i class="fa-solid @icon" style="color: var(--secondary-color); width: 25px;"></i> @contact.Value
+                                </span>
+                            </li>
+                        }
+                    </ul>
+                </div>
+
+                <div>
+                    <h4 class="footer-heading">النشرة البريدية</h4>
+                    <p class="footer-text" style="margin-bottom: 15px;">اشترك ليصلك أحدث الدورات وورش العمل المجانية.</p>
+                   
+                </div>
             </div>
-            
+
+            <div class="footer-bottom">
+                <span>&copy; @DateTime.Now.Year - @GetSetting("SiteName"). جميع الحقوق محفوظة.</span>
+                <span style="color: #475569; font-size: 0.9rem;">@GetSetting("CopyrightText", "تم التطوير بواسطة GMTWEB ")</span>
+            </div>
         </div>
     </footer>
 
-    <!-- Global Scripts (if needed later) -->
     <script src="~/js/site.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>

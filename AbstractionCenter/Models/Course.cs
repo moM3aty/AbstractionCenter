@@ -3,9 +3,6 @@ using System.ComponentModel.DataAnnotations;
 
 namespace AbstractionCenter.Models.Entities
 {
-    /// <summary>
-    /// نموذج يمثل الدورة التدريبية، مصمم ليدعم طلبك الخاص بربط مسجل الدورة ورقم الواتساب والفورم الديناميكي.
-    /// </summary>
     public class Course
     {
         [Key]
@@ -21,22 +18,16 @@ namespace AbstractionCenter.Models.Entities
         [Display(Name = "صورة الدورة")]
         public string ImageUrl { get; set; }
 
-        // --- هذه الحقول مخصصة للميزة التي طلبتها (التواصل مع مسجل الدورة) ---
-
         [Display(Name = "اسم مسجل الدورة")]
         public string RegistrarName { get; set; }
 
         [Display(Name = "رقم واتساب المسجل")]
-        [RegularExpression(@"^\+?\d{10,15}$", ErrorMessage = "صيغة رقم الواتساب غير صحيحة")]
         public string RegistrarWhatsApp { get; set; }
 
-        [Display(Name = "رابط فورم التسجيل (جوجل فورم أو داخلي)")]
+        [Display(Name = "رابط فورم التسجيل")]
         public string RegistrationFormUrl { get; set; }
 
-        // معرف حساب مسجل الدورة في لوحة التحكم (لكي تذهب طلبات التسجيل إلى صفحته الشخصية)
         public string RegistrarUserId { get; set; }
-
-        // ------------------------------------------------------------------
 
         [Display(Name = "حالة الدورة")]
         public CourseStatus Status { get; set; }

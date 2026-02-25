@@ -1,0 +1,484 @@
+﻿@model IEnumerable<AbstractionCenter.Models.Entities.SiteSetting>
+@{
+    ViewData["Title"] = "إعدادات وتصميم الموقع";
+    var groupedSettings = Model?.GroupBy(s => s.Group).ToDictionary(g => g.Key, g => g.ToList()) ?? new Dictionary<string, List<AbstractionCenter.Models.Entities.SiteSetting>>();
+}
+
+<style>
+    /* Royal Enterprise Settings UI */
+    :root {
+        --st-primary: #0f172a;
+        --st-gold: #cda434;
+        --st-bg: #f8fafc;
+        --st-card: #ffffff;
+        --st-text: #1e293b;
+        --st-muted: #64748b;
+        --st-border: #e2e8f0;
+        --st-radius: 20px;
+        --st-shadow: 0 20px 40px -10px rgba(15, 23, 42, 0.1);
+    }
+
+    .settings-page-wrapper {
+        background: var(--st-bg);
+        border-radius: var(--st-radius);
+        padding: 30px;
+    }
+
+    .settings-layout {
+        display: grid;
+        grid-template-columns: 280px 1fr;
+        gap: 40px;
+        align-items: start;
+    }
+
+    .settings-sidebar {
+        background: var(--st-card);
+        border-radius: var(--st-radius);
+        padding: 25px 20px;
+        box-shadow: var(--st-shadow);
+        position: sticky;
+        top: 100px;
+        border: 1px solid rgba(205, 164, 52, 0.1);
+    }
+
+    .tab-btn {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        width: 100%;
+        padding: 16px 20px;
+        border: none;
+        background: transparent;
+        text-align: right;
+        border-radius: 14px;
+        font-weight: 700;
+        color: var(--st-muted);
+        cursor: pointer;
+        transition: all 0.3s ease;
+        margin-bottom: 10px;
+        font-family: inherit;
+        font-size: 1.05rem;
+    }
+
+        .tab-btn:hover {
+            background: rgba(15, 23, 42, 0.03);
+            color: var(--st-primary);
+            transform: translateX(-5px);
+        }
+
+        .tab-btn.active {
+            background: var(--st-primary);
+            color: var(--st-gold);
+            box-shadow: 0 10px 20px rgba(15, 23, 42, 0.2);
+        }
+
+    .settings-content {
+        background: var(--st-card);
+        border-radius: var(--st-radius);
+        padding: 50px;
+        box-shadow: var(--st-shadow);
+        min-height: 600px;
+        border: 1px solid rgba(205, 164, 52, 0.1);
+    }
+
+    .tab-pane {
+        display: none;
+        animation: slideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        opacity: 0;
+    }
+
+        .tab-pane.active {
+            display: block;
+        }
+
+    @@keyframes slideUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .section-header {
+        margin-bottom: 40px;
+        padding-bottom: 20px;
+        border-bottom: 2px solid var(--st-border);
+        display: flex;
+        align-items: center;
+        gap: 20px;
+    }
+
+    .section-header-icon {
+        width: 60px;
+        height: 60px;
+        background: rgba(205, 164, 52, 0.1);
+        color: var(--st-gold);
+        border-radius: 15px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.8rem;
+    }
+
+    .section-header h2 {
+        color: var(--st-primary);
+        font-weight: 900;
+        font-size: 1.8rem;
+        margin-bottom: 5px;
+    }
+
+    .section-header p {
+        color: var(--st-muted);
+        font-size: 1rem;
+        margin: 0;
+    }
+
+    .form-group {
+        background: #fcfcfd;
+        border: 1px solid #f1f5f9;
+        padding: 25px;
+        border-radius: 16px;
+        margin-bottom: 25px;
+        transition: all 0.3s;
+        position: relative;
+    }
+
+        .form-group:hover {
+            border-color: rgba(205, 164, 52, 0.3);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.02);
+        }
+
+        .form-group label {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 12px;
+            font-weight: 800;
+            color: var(--st-primary);
+            font-size: 1.05rem;
+        }
+
+    .form-control {
+        width: 100%;
+        padding: 16px 20px;
+        border: 2px solid var(--st-border);
+        border-radius: 12px;
+        font-family: inherit;
+        font-size: 1rem;
+        background: white;
+        transition: 0.3s;
+        color: var(--st-text);
+    }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--st-gold);
+            box-shadow: 0 0 0 4px rgba(205, 164, 52, 0.1);
+        }
+
+    .image-preview-container {
+        border-radius: 16px;
+        overflow: hidden;
+        border: 2px dashed var(--st-gold);
+        height: 250px;
+        background: var(--st-primary);
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-top: 15px;
+    }
+
+        .image-preview-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+    .btn-delete-link {
+        position: absolute;
+        top: 20px;
+        left: 20px;
+        background: rgba(239, 68, 68, 0.1);
+        color: #ef4444;
+        border: none;
+        width: 35px;
+        height: 35px;
+        border-radius: 10px;
+        cursor: pointer;
+        transition: 0.3s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 5;
+    }
+
+        .btn-delete-link:hover {
+            background: #ef4444;
+            color: white;
+            transform: scale(1.1);
+        }
+
+    .save-btn {
+        background: linear-gradient(135deg, var(--st-primary), #1e293b);
+        color: var(--st-gold);
+        border: none;
+        padding: 18px 40px;
+        border-radius: 14px;
+        font-weight: 900;
+        font-size: 1.15rem;
+        cursor: pointer;
+        transition: 0.4s;
+        width: 100%;
+        box-shadow: 0 10px 25px rgba(15, 23, 42, 0.3);
+        margin-top: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+    }
+
+        .save-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 35px rgba(15, 23, 42, 0.4);
+            color: white;
+        }
+
+    .add-new-btn {
+        background: rgba(205, 164, 52, 0.05);
+        border: 2px dashed var(--st-gold);
+        color: var(--st-primary);
+        width: 100%;
+        padding: 20px;
+        border-radius: 16px;
+        font-weight: 800;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        margin-top: 30px;
+    }
+
+        .add-new-btn:hover {
+            background: var(--st-gold);
+            color: var(--st-primary);
+        }
+
+    @@media (max-width: 992px) {
+        .settings-layout {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div style="background: rgba(16, 185, 129, 0.1); color: #059669; border: 2px solid #10b981; padding: 20px 30px; border-radius: 16px; margin-bottom: 30px; font-weight: 800; display: flex; align-items: center; gap: 15px;">
+        <i class="fa-solid fa-circle-check" style="font-size: 1.8rem;"></i> @TempData["SuccessMessage"]
+    </div>
+}
+
+<div class="settings-page-wrapper">
+    <!-- نموذج الحذف السريع (يُستدعى برمجياً) -->
+    <form id="deleteForm" asp-controller="SiteSettings" asp-action="DeleteSetting" method="post" style="display:none;">
+        @Html.AntiForgeryToken()
+        <input type="hidden" name="key" id="deleteKeyInput" />
+    </form>
+
+    <div class="settings-layout">
+
+        <div class="settings-sidebar">
+            <h3 style="color: var(--st-primary); font-size: 1.2rem; font-weight: 900; margin-bottom: 25px; display: flex; align-items: center; gap: 10px;">
+                <i class="fa-solid fa-crown" style="color: var(--st-gold);"></i> لوحة التحكم الملكية
+            </h3>
+            <button type="button" class="tab-btn active" data-target="tab-general"><i class="fa-solid fa-globe"></i> إعدادات عامة</button>
+            <button type="button" class="tab-btn" data-target="tab-home"><i class="fa-solid fa-house"></i> الصفحة الرئيسية</button>
+            <button type="button" class="tab-btn" data-target="tab-about"><i class="fa-solid fa-book-open-reader"></i> صفحة من نحن</button>
+            <button type="button" class="tab-btn" data-target="tab-tracks"><i class="fa-solid fa-layer-group"></i> المسارات</button>
+            <button type="button" class="tab-btn" data-target="tab-contact"><i class="fa-solid fa-address-book"></i> التواصل والسوشيال</button>
+
+            <hr style="border: 0; border-top: 1px solid var(--st-border); margin: 30px 0 20px;" />
+            <button type="button" onclick="document.getElementById('mainForm').submit()" class="save-btn"><i class="fa-solid fa-floppy-disk"></i> حفظ ونشر</button>
+        </div>
+
+        <div class="settings-content">
+            <form id="mainForm" asp-controller="SiteSettings" asp-action="UpdateSettings" method="post">
+
+                <!-- عام -->
+                <div id="tab-general" class="tab-pane active">
+                    <div class="section-header">
+                        <div class="section-header-icon"><i class="fa-solid fa-globe"></i></div>
+                        <div><h2>الإعدادات العامة</h2><p>الاسم، الفوتر، والروابط.</p></div>
+                    </div>
+                    @{
+                        await RenderSettingsGroup(groupedSettings.GetValueOrDefault("General"));
+                    }
+                </div>
+
+                <!-- الرئيسية -->
+                <div id="tab-home" class="tab-pane">
+                    <div class="section-header">
+                        <div class="section-header-icon"><i class="fa-solid fa-house"></i></div>
+                        <div><h2>الصفحة الرئيسية</h2><p>النصوص والصور الترحيبية.</p></div>
+                    </div>
+                    @{
+                        await RenderSettingsGroup(groupedSettings.GetValueOrDefault("Home"));
+                    }
+                </div>
+
+                <!-- من نحن -->
+                <div id="tab-about" class="tab-pane">
+                    <div class="section-header">
+                        <div class="section-header-icon"><i class="fa-solid fa-book-open-reader"></i></div>
+                        <div><h2>صفحة من نحن</h2><p>الرؤية والرسالة وفريق العمل.</p></div>
+                    </div>
+                    @{
+                        await RenderSettingsGroup(groupedSettings.GetValueOrDefault("About"));
+                    }
+                </div>
+
+                <!-- المسارات -->
+                <div id="tab-tracks" class="tab-pane">
+                    <div class="section-header">
+                        <div class="section-header-icon"><i class="fa-solid fa-layer-group"></i></div>
+                        <div><h2>المسارات التدريبية</h2><p>تعديل محتوى وأيقونات المسارات.</p></div>
+                    </div>
+                    @{
+                        await RenderSettingsGroup(groupedSettings.GetValueOrDefault("Tracks"));
+                    }
+                </div>
+
+                <!-- التواصل -->
+                <div id="tab-contact" class="tab-pane">
+                    <div class="section-header">
+                        <div class="section-header-icon"><i class="fa-solid fa-address-book"></i></div>
+                        <div><h2>التواصل والسوشيال ميديا</h2><p>إدارة الروابط وأرقام الهواتف.</p></div>
+                    </div>
+
+                    <h3 style="color: var(--st-primary); font-weight: 800; margin-bottom: 20px;">البيانات والروابط</h3>
+                    @{
+                        await RenderSettingsGroup(groupedSettings.GetValueOrDefault("Contact"), true);
+                    }
+                    <hr style="border: 0; border-top: 1px solid var(--st-border); margin: 30px 0;" />
+                    @{
+                        await RenderSettingsGroup(groupedSettings.GetValueOrDefault("Social"), true);
+                    }
+
+                    <div style="background: rgba(205, 164, 52, 0.05); padding: 30px; border-radius: var(--st-radius); border: 1px solid rgba(205, 164, 52, 0.2); margin-top: 40px;">
+                        <h3 style="color: var(--st-primary); font-weight: 900; margin-bottom: 10px;">إضافة وسيلة جديدة</h3>
+                        <div id="new-contacts-container"></div>
+                        <button type="button" class="add-new-btn" onclick="addNewContactField()"><i class="fa-solid fa-circle-plus"></i> انقر للإضافة</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@functions {
+    private async Task RenderSettingsGroup(List<AbstractionCenter.Models.Entities.SiteSetting> settings, bool allowDelete = false)
+    {
+        if (settings == null || !settings.Any()) return;
+
+        foreach (var setting in settings)
+        {
+            <div class="form-group">
+                <label><i class="fa-solid fa-pen-nib" style="color: var(--st-gold);"></i> @setting.DisplayName</label>
+
+                @if (allowDelete)
+                {
+                    <button type="button" class="btn-delete-link" onclick="confirmDelete('@setting.Key')" title="حذف نهائي">
+                        <i class="fa-solid fa-trash-can"></i>
+                    </button>
+                }
+
+                @if (setting.Key.EndsWith("Image"))
+                {
+                    <input type="url" name="settings[@setting.Key]" value="@setting.Value" class="form-control image-url-input" data-preview="preview-@setting.Key" dir="ltr" />
+                    <div class="image-preview-container"><img id="preview-@setting.Key" src="@setting.Value" onerror="this.src='https://via.placeholder.com/400x200?text=Invalid+Image'" /></div>
+                }
+                else if (setting.Key.EndsWith("Icon"))
+                {
+                    var icons = new Dictionary<string, string> {
+        { "fa-solid fa-code", "&#xf121; برمجة" },
+        { "fa-solid fa-chart-line", "&#xf201; إدارة" },
+        { "fa-solid fa-language", "&#xf1ab; لغات" },
+        { "fa-solid fa-palette", "&#xf53f; تصميم" },
+        { "fa-solid fa-microchip", "&#xf2db; AI" }
+        };
+
+                    <select name="settings[@setting.Key]" class="form-control icon-selector">
+                        @foreach (var icon in icons)
+                        {
+                            if (setting.Value == icon.Key)
+                            {
+                                <option value="@icon.Key" selected="selected">@Html.Raw(icon.Value)</option>
+                            }
+                            else
+                            {
+                                <option value="@icon.Key">@Html.Raw(icon.Value)</option>
+                            }
+                        }
+                    </select>
+                }
+                else if (setting.Value.Length > 60 || setting.Key.Contains("Desc"))
+                {
+                    <textarea name="settings[@setting.Key]" class="form-control">@setting.Value</textarea>
+                }
+                else
+                {
+                    <input type="text" name="settings[@setting.Key]" value="@setting.Value" class="form-control" dir="auto" />
+                }
+            </div>
+        }
+    }
+}
+
+@section Scripts {
+    <script>
+        // التبويبات
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+                this.classList.add('active');
+                document.getElementById(this.getAttribute('data-target')).classList.add('active');
+            });
+        });
+
+        // معاينة الصور
+        document.querySelectorAll('.image-url-input').forEach(input => {
+            input.addEventListener('input', function() {
+                var img = document.getElementById(this.getAttribute('data-preview'));
+                if (img) img.src = this.value;
+            });
+        });
+
+        // الحذف
+        function confirmDelete(key) {
+            if (confirm('هل أنت متأكد من حذف هذا الرابط نهائياً؟')) {
+                document.getElementById('deleteKeyInput').value = key;
+                document.getElementById('deleteForm').submit();
+            }
+        }
+
+        // إضافة حقول جديدة
+        function addNewContactField() {
+            const html = `
+                <div class="dynamic-field-card" style="background:#f1f5f9; padding:20px; border-radius:15px; margin-bottom:15px; position:relative;">
+                    <button type="button" onclick="this.parentElement.remove()" style="position:absolute; left:15px; top:15px; color:red; border:none; background:none; cursor:pointer;"><i class="fa-solid fa-times-circle"></i></button>
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+                        <select name="NewSetting_Groups" class="form-control"><option value="Contact">هاتف/إيميل</option><option value="Social">سوشيال ميديا</option></select>
+                        <input type="text" name="NewSetting_Names" class="form-control" placeholder="الاسم (مثال: تيك توك)" required>
+                    </div>
+                    <input type="text" name="NewSetting_Values" class="form-control" style="margin-top:10px" placeholder="الرابط أو الرقم" required>
+                </div>`;
+            document.getElementById('new-contacts-container').insertAdjacentHTML('beforeend', html);
+        }
+    </script>
+}

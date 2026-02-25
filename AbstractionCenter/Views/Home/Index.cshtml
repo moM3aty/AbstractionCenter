@@ -1,72 +1,97 @@
-﻿@{
+﻿@inject AbstractionCenter.Data.ApplicationDbContext DbContext
+@{
     ViewData["Title"] = "الرئيسية";
+    var settings = DbContext.SiteSettings.ToDictionary(s => s.Key, s => s.Value);
+    string GetSetting(string key, string fallback = "") => settings.ContainsKey(key) ? settings[key] : fallback;
 }
 
-<!-- Hero Section -->
-<section class="hero">
-    <div class="container hero-content">
-        <h1>مستقبلك المهني يبدأ من <br>مركز ابستراكشن</h1>
-        <p>المنصة التعليمية الأولى لبناء القدرات وتطوير المهارات. نقدم دورات تدريبية متقدمة على يد نخبة من الخبراء وهيئة التدريس الأكفاء، بتجربة تعليمية تجمع بين الجانب النظري والتطبيق العملي.</p>
-        <div style="display: flex; gap: 20px; justify-content: center; margin-top: 30px;">
-            <a href="/Courses/Open" class="btn btn-primary" style="padding: 15px 40px; font-size: 1.2rem;">تصفح الدورات</a>
-            <a href="/Home/About" class="btn btn-outline" style="padding: 15px 40px; font-size: 1.2rem;">تعرف علينا</a>
+<!-- Premium Hero Section with Arabic Identity & Elegant Colors -->
+<section class="hero-arabic" style="padding: 140px 0 100px; min-height: 85vh; display: flex; align-items: center; position: relative; overflow: hidden; background-color: #0f172a;">
+    <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background-image: url('data:image/svg+xml,%3Csvg width=\'60\' height=\'60\' viewBox=\'0 0 60 60\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cg fill=\'none\' fill-rule=\'evenodd\'%3E%3Cg fill=\'%23cda434\' fill-opacity=\'0.05\'%3E%3Cpath d=\'M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z\'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E'); opacity: 0.6;"></div>
+    <div style="position: absolute; top: -150px; right: -150px; width: 500px; height: 500px; background: rgba(205, 164, 52, 0.15); border-radius: 50%; filter: blur(80px);"></div>
+    <div style="position: absolute; bottom: -150px; left: -150px; width: 400px; height: 400px; background: rgba(59, 130, 246, 0.15); border-radius: 50%; filter: blur(80px);"></div>
+
+    <div class="container" style="display: grid; grid-template-columns: 1fr 1fr; gap: 60px; align-items: center; position: relative; z-index: 10;">
+        <div class="hero-text">
+            <div style="display: inline-block; padding: 8px 20px; background: rgba(205, 164, 52, 0.15); color: #cda434; border-radius: 30px; font-weight: bold; margin-bottom: 25px; font-size: 0.95rem; border: 1px solid rgba(205, 164, 52, 0.3);">
+                <i class="fa-solid fa-star"></i> @GetSetting("HeroBadge")
+            </div>
+            <h1 style="font-size: 4rem; font-weight: 900; line-height: 1.3; margin-bottom: 25px; color: white;">
+                @GetSetting("HeroTitle") <br>
+                <span style="background: linear-gradient(to left, #cda434, #fef08a); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">@GetSetting("SiteName")</span>
+            </h1>
+            <p style="font-size: 1.2rem; color: #cbd5e1; margin-bottom: 45px; line-height: 1.9;">
+                @GetSetting("HeroSubtitle")
+            </p>
+            <div style="display: flex; gap: 20px;">
+                <a href="/Courses/Open" class="btn" style="background: #cda434; color: #0f172a; padding: 15px 40px; font-size: 1.1rem; font-weight: 800; border-radius: 30px; transition: 0.3s; box-shadow: 0 10px 25px rgba(205, 164, 52, 0.3); text-decoration: none; display: flex; align-items: center;">
+                    استكشف برامجنا <i class="fa-solid fa-arrow-left" style="margin-right: 8px;"></i>
+                </a>
+            </div>
+        </div>
+
+        <div style="position: relative;">
+            <div style="position: relative; border-radius: 30px; overflow: hidden; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); border: 1px solid rgba(205, 164, 52, 0.3);">
+                <!-- الصورة أصبحت ديناميكية -->
+                <img src="@GetSetting("HeroImage")" alt="القسم الترحيبي" style="width: 100%; height: 550px; object-fit: cover; display: block;" />
+                <div style="position: absolute; inset: 0; background: linear-gradient(to top, rgba(15,23,42,0.9), transparent);"></div>
+            </div>
         </div>
     </div>
 </section>
 
-<!-- Features Section -->
-<section style="padding: 80px 0;">
+<!-- Features Section (Dynamic) -->
+<section class="arabic-pattern" style="padding: 100px 0; background: #f8fafc;">
     <div class="container">
-        <div class="section-title">
-            <h2>لماذا تختار ابستراكشن؟</h2>
-            <p>مميزات تجعلنا خيارك الأول لتطوير مهاراتك</p>
+        <div style="text-align: center; margin-bottom: 70px; max-width: 700px; margin-left: auto; margin-right: auto;">
+            <h2 style="font-size: 2.8rem; color: #0f172a; margin-bottom: 15px; font-weight: 900;">@GetSetting("FeaturesTitle")</h2>
+            <p style="color: #475569; font-size: 1.2rem; line-height: 1.8;">@GetSetting("FeaturesSubtitle")</p>
         </div>
 
-        <div class="grid-3">
-            <!-- Feature 1 -->
-            <div class="glass-card">
-                <div class="card-icon">
-                    <i class="fa-solid fa-chalkboard-user"></i>
+        <div class="grid-3" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 30px;">
+            <div class="glass-card" style="text-align: center; padding: 50px 30px; background: white; border: 1px solid #e2e8f0; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); transition: transform 0.3s ease;">
+                <div style="width: 80px; height: 80px; background: rgba(59, 130, 246, 0.1); color: #3b82f6; border-radius: 25px; display: flex; align-items: center; justify-content: center; font-size: 2.2rem; margin: 0 auto 25px; transform: rotate(10deg);">
+                    <i class="fa-solid fa-book-open-reader" style="transform: rotate(-10deg);"></i>
                 </div>
-                <h3>هيئة تدريس متميزة</h3>
-                <p>نخبة من الأكاديميين والخبراء في سوق العمل يقدمون لك خلاصة خبراتهم بأساليب حديثة.</p>
+                <h3 style="margin-bottom: 15px; color: #0f172a; font-size: 1.4rem; font-weight: 800;">@GetSetting("F1_Title")</h3>
+                <p style="color: #64748b; line-height: 1.7;">@GetSetting("F1_Desc")</p>
             </div>
 
-            <!-- Feature 2 -->
-            <div class="glass-card">
-                <div class="card-icon">
-                    <i class="fa-solid fa-laptop-code"></i>
+            <div class="glass-card" style="text-align: center; padding: 50px 30px; background: white; border: 1px solid #e2e8f0; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); transition: transform 0.3s ease;">
+                <div style="width: 80px; height: 80px; background: rgba(205, 164, 52, 0.1); color: #cda434; border-radius: 25px; display: flex; align-items: center; justify-content: center; font-size: 2.2rem; margin: 0 auto 25px; transform: rotate(10deg);">
+                    <i class="fa-solid fa-users-viewfinder" style="transform: rotate(-10deg);"></i>
                 </div>
-                <h3>منصة طلابية متكاملة</h3>
-                <p>تابع تقدمك، ارفع واجباتك، وتواصل مع مسجل الدورة بسهولة تامة عبر منصتنا التفاعلية.</p>
+                <h3 style="margin-bottom: 15px; color: #0f172a; font-size: 1.4rem; font-weight: 800;">@GetSetting("F2_Title")</h3>
+                <p style="color: #64748b; line-height: 1.7;">@GetSetting("F2_Desc")</p>
             </div>
 
-            <!-- Feature 3 -->
-            <div class="glass-card">
-                <div class="card-icon">
-                    <i class="fa-solid fa-certificate"></i>
+            <div class="glass-card" style="text-align: center; padding: 50px 30px; background: white; border: 1px solid #e2e8f0; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); transition: transform 0.3s ease;">
+                <div style="width: 80px; height: 80px; background: rgba(16, 185, 129, 0.1); color: #10b981; border-radius: 25px; display: flex; align-items: center; justify-content: center; font-size: 2.2rem; margin: 0 auto 25px; transform: rotate(10deg);">
+                    <i class="fa-solid fa-file-signature" style="transform: rotate(-10deg);"></i>
                 </div>
-                <h3>شهادات معتمدة</h3>
-                <p>احصل على شهادة موثقة برقم تسلسلي يمكن التحقق منها إلكترونياً فور إتمامك للدورة.</p>
+                <h3 style="margin-bottom: 15px; color: #0f172a; font-size: 1.4rem; font-weight: 800;">@GetSetting("F3_Title")</h3>
+                <p style="color: #64748b; line-height: 1.7;">@GetSetting("F3_Desc")</p>
             </div>
         </div>
     </div>
 </section>
 
-<!-- Quick Stats / Banner Section -->
-<section style="background: linear-gradient(135deg, var(--primary-color), var(--secondary-color)); color: white; padding: 60px 0; border-radius: 30px; margin: 40px auto; max-width: 1200px; box-shadow: var(--shadow-premium);">
-    <div class="container" style="display: flex; justify-content: space-around; flex-wrap: wrap; text-align: center;">
-        <div style="margin: 20px;">
-            <h2 style="font-size: 3rem; font-weight: 900; color: var(--accent-color);">+50</h2>
-            <p style="font-size: 1.2rem;">دورة تدريبية</p>
-        </div>
-        <div style="margin: 20px;">
-            <h2 style="font-size: 3rem; font-weight: 900; color: var(--accent-color);">+1000</h2>
-            <p style="font-size: 1.2rem;">طالب مسجل</p>
-        </div>
-        <div style="margin: 20px;">
-            <h2 style="font-size: 3rem; font-weight: 900; color: var(--accent-color);">+20</h2>
-            <p style="font-size: 1.2rem;">مسار تخصصي</p>
+<!-- Call to Action Section (Dynamic) -->
+<section style="padding: 80px 0; background: white;">
+    <div class="container">
+        <div style="background: linear-gradient(135deg, #0f172a, #1e293b); border-radius: 30px; overflow: hidden; display: grid; grid-template-columns: 1.2fr 1fr; box-shadow: 0 25px 50px -12px rgba(15, 23, 42, 0.3);">
+            <div style="padding: 70px 60px; color: white; display: flex; flex-direction: column; justify-content: center;">
+                <h2 style="font-size: 2.5rem; font-weight: 800; margin-bottom: 20px; color: #cda434;">@GetSetting("CTATitle")</h2>
+                <p style="font-size: 1.2rem; color: #cbd5e1; margin-bottom: 30px; line-height: 1.8;">@GetSetting("CTASubtitle")</p>
+                <div>
+                    <a href="/Account/Register" class="btn" style="background: white; color: #0f172a; padding: 15px 40px; font-size: 1.1rem; font-weight: 800; border-radius: 30px; display: inline-block; text-decoration: none; transition: background 0.3s ease;">@GetSetting("CTABtnText")</a>
+                </div>
+            </div>
+            <div style="position: relative;">
+                <!-- الصورة أصبحت ديناميكية -->
+                <img src="@GetSetting("CTAImage")" alt="تسجيل الحساب" style="width: 100%; height: 100%; object-fit: cover; opacity: 0.85;" />
+                <div style="position: absolute; inset: 0; background: linear-gradient(to right, #1e293b, transparent);"></div>
+            </div>
         </div>
     </div>
 </section>
