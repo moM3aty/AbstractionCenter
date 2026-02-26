@@ -1,17 +1,25 @@
-﻿@model AbstractionCenter.Models.Entities.Certificate
+﻿@using Microsoft.AspNetCore.Localization
+@model AbstractionCenter.Models.Entities.Certificate
 @{
     Layout = null;
+
+    // اكتشاف اللغة الحالية
+    var requestCulture = Context.Features.Get<IRequestCultureFeature>();
+    var currentCulture = requestCulture?.RequestCulture.UICulture.Name ?? "ar";
+    bool isRtl = currentCulture == "ar";
 }
 
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="@currentCulture" dir="@(isRtl ? "rtl" : "ltr")">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>شهادة إتمام - @Model.Student.FullName</title>
-    <!-- خطوط عربية فاخرة -->
-    <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <title>@(isRtl ? "شهادة إتمام" : "Certificate of Completion") - @Model.Student.FullName</title>
+
+    <!-- خطوط عربية وإنجليزية فاخرة -->
+    <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Cairo:wght@400;600;700;900&family=Playfair+Display:wght@600;700;900&family=Outfit:wght@400;600;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+
     <style>
         :root {
             --royal-navy: #0b1120;
@@ -20,7 +28,7 @@
             --cert-bg: #ffffff;
         }
 
-        /* إعدادات الطباعة الدقيقة A4 */
+        /* إعدادات الطباعة الدقيقة A4 Landscape */
         @@page {
             size: A4 landscape;
             margin: 0;
@@ -28,31 +36,34 @@
 
         * {
             box-sizing: border-box;
-            -webkit-print-color-adjust: exact;
-            print-color-adjust: exact;
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
         }
 
         body {
             margin: 0;
             padding: 0;
             background: #1a1a1a;
-            font-family: 'Cairo', sans-serif;
+            /* تغيير الخط الأساسي بناءً على اللغة */
+            font-family: @(isRtl ? "'Cairo', sans-serif" : "'Outfit', sans-serif");
             display: flex;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
         }
 
-        /* الحاوية الرئيسية بمقاسات A4 دقيقة */
+        /* الحاوية الرئيسية بمقاسات A4 دقيقة (297mm x 210mm) */
         .certificate-canvas {
             width: 297mm;
-            height: 250mm;
+            height: 210mm; /* تم تصحيح الارتفاع للقياس القياسي */
             background: var(--cert-bg);
             position: relative;
             overflow: hidden;
             display: flex;
-            padding: 12mm;
+            padding: 10mm;
             box-shadow: 0 0 50px rgba(0,0,0,0.5);
+            page-break-after: avoid;
+            page-break-inside: avoid;
         }
 
         /* الخلفية الزخرفية */
@@ -61,57 +72,60 @@
             inset: 0;
             background-image: radial-gradient(circle at 50% 50%, rgba(197, 160, 89, 0.02) 0%, transparent 80%), url('data:image/svg+xml,%3Csvg width="60" height="60" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg"%3E%3Cpath d="M30 30l15 15m-30 0l15-15" stroke="%23c5a059" stroke-opacity="0.03" stroke-width="1" fill="none"/%3E%3C/svg%3E');
             pointer-events: none;
+            z-index: 1;
         }
 
         /* إطارات الحماية والزخرفة */
         .cert-border-outer {
             position: absolute;
-            inset: 6mm;
+            inset: 5mm;
             border: 1px solid var(--royal-gold);
             pointer-events: none;
+            z-index: 2;
         }
 
         .cert-border-inner {
             position: absolute;
-            inset: 9mm;
-            border: 6px double var(--royal-navy);
+            inset: 8mm;
+            border: 5px double var(--royal-navy);
             pointer-events: none;
+            z-index: 2;
         }
 
-        /* الأركان الكلاسيكية */
+        /* الأركان الكلاسيكية (ثابتة فيزيائياً بغض النظر عن الاتجاه) */
         .corner {
             position: absolute;
-            width: 100px;
-            height: 100px;
+            width: 80px;
+            height: 80px;
             z-index: 10;
             border: 4px solid var(--royal-gold);
         }
 
         .corner-tr {
             top: 0;
-            left: 0;
-            border-right: none;
+            right: 0;
+            border-left: none;
             border-bottom: none;
         }
 
         .corner-tl {
             top: 0;
-            right: 0;
-            border-left: none;
+            left: 0;
+            border-right: none;
             border-bottom: none;
         }
 
         .corner-br {
             bottom: 0;
-            left: 0;
-            border-right: none;
+            right: 0;
+            border-left: none;
             border-top: none;
         }
 
         .corner-bl {
             bottom: 0;
-            right: 0;
-            border-left: none;
+            left: 0;
+            border-right: none;
             border-top: none;
         }
 
@@ -121,9 +135,9 @@
             z-index: 5;
             display: flex;
             flex-direction: column;
-            padding: 30px 60px;
+            padding: 20px 50px;
             border: 1px solid rgba(197, 160, 89, 0.3);
-            background: rgba(255, 255, 255, 0.7);
+            background: rgba(255, 255, 255, 0.85);
         }
 
         /* ترويسة الشهادة */
@@ -131,7 +145,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 20px;
+            margin-bottom: 10px;
         }
 
         .brand-box {
@@ -141,38 +155,38 @@
         }
 
         .brand-logo-icon {
-            font-size: 3.5rem;
+            font-size: 3rem;
             color: var(--royal-gold);
         }
 
         .brand-text h2 {
             margin: 0;
-            font-size: 1.8rem;
+            font-size: 1.6rem;
             font-weight: 900;
             color: var(--royal-navy);
         }
 
         .brand-text span {
-            font-size: 0.8rem;
+            font-size: 0.75rem;
             font-weight: 700;
             color: var(--royal-gold);
             letter-spacing: 2px;
             display: block;
-            margin-top: -5px;
+            margin-top: -3px;
         }
 
         .serial-tag {
             background: var(--royal-navy);
             color: white;
-            padding: 12px 25px;
+            padding: 10px 20px;
             border-radius: 4px;
             text-align: center;
-            box-shadow: 4px 4px 0px var(--royal-gold);
+            box-shadow: @(isRtl ? "-3px" : "3px") 3px 0px var(--royal-gold);
         }
 
             .serial-tag small {
                 display: block;
-                font-size: 0.65rem;
+                font-size: 0.6rem;
                 color: var(--royal-gold);
                 font-weight: 800;
                 text-transform: uppercase;
@@ -181,10 +195,10 @@
 
             .serial-tag strong {
                 font-family: 'Courier New', monospace;
-                font-size: 1.2rem;
+                font-size: 1.1rem;
             }
 
-        /* جسم الشهادة - معالجة تباعد الأبعاد */
+        /* جسم الشهادة */
         .cert-body {
             flex: 1;
             display: flex;
@@ -195,58 +209,61 @@
         }
 
         .title-group {
-            margin-bottom: 30px;
+            margin-bottom: 15px;
         }
 
         .main-title {
-            font-size: 4.2rem;
+            font-size: 3.8rem;
             font-weight: 900;
             color: var(--royal-navy);
             margin: 0;
             line-height: 1;
+            text-transform: uppercase;
         }
 
         .sub-title {
-            font-size: 1rem;
+            font-size: 0.95rem;
             color: var(--royal-gold);
             font-weight: 800;
-            letter-spacing: 12px;
+            letter-spacing: @(isRtl ? "10px" : "8px");
             text-transform: uppercase;
-            margin-top: 20px;
+            margin-top: 10px;
         }
 
         .intro-phrase {
-            font-size: 1.3rem;
-            color: #666;
+            font-size: 1.2rem;
+            color: #555;
             font-weight: 600;
-            margin-bottom: -10px;
+            margin-bottom: 5px;
         }
 
         .recipient-name {
-            font-size: 3.8rem;
+            font-size: 3.5rem;
             font-weight: 900;
             color: var(--royal-navy);
-            margin: 15px 0;
-            font-family: 'Amiri', serif; /* خط عربي كلاسيكي للاسم */
+            margin: 5px 0;
+            /* تغيير خط الاسم ليكون مميزاً للإنجليزية والعربية */
+            font-family: @(isRtl ? "'Amiri', serif" : "'Playfair Display', serif");
             position: relative;
-            padding-bottom: 10px;
+            padding-bottom: 8px;
+            text-transform: capitalize;
         }
 
             .recipient-name::after {
                 content: '';
                 position: absolute;
                 bottom: 0;
-                left: 10%;
-                width: 80%;
+                left: 15%;
+                width: 70%;
                 height: 2px;
                 background: linear-gradient(to left, transparent, var(--royal-gold), transparent);
             }
 
         .statement-text {
-            font-size: 1.25rem;
+            font-size: 1.15rem;
             color: #444;
             max-width: 800px;
-            line-height: 1.8;
+            line-height: 1.7;
             margin-top: 10px;
             font-weight: 600;
         }
@@ -254,8 +271,8 @@
             .statement-text strong {
                 color: var(--royal-navy);
                 font-weight: 900;
-                border-bottom: 2px solid rgba(197, 160, 89, 0.4);
-                padding: 0 5px;
+                border-bottom: 2px solid rgba(197, 160, 89, 0.3);
+                padding: 0 4px;
             }
 
         /* تذييل الشهادة */
@@ -263,29 +280,29 @@
             display: flex;
             justify-content: space-between;
             align-items: flex-end;
-            margin-top: 30px;
+            margin-top: 10px;
         }
 
         .signature-box {
             text-align: center;
-            width: 200px;
+            width: 180px;
         }
 
         .sig-line {
             width: 100%;
             height: 1.5px;
             background: var(--royal-navy);
-            margin-bottom: 10px;
+            margin-bottom: 8px;
         }
 
         .sig-name {
             font-weight: 900;
             color: var(--royal-navy);
-            font-size: 1.1rem;
+            font-size: 1rem;
         }
 
         .sig-rank {
-            font-size: 0.8rem;
+            font-size: 0.75rem;
             color: var(--royal-gold);
             font-weight: 800;
         }
@@ -294,34 +311,32 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            position: relative;
-            bottom: -10px;
         }
 
         .qr-frame {
-            padding: 8px;
+            padding: 6px;
             background: white;
-            border: 2px solid var(--royal-gold);
-            border-radius: 10px;
-            margin-bottom: 5px;
+            border: 1.5px solid var(--royal-gold);
+            border-radius: 8px;
+            margin-bottom: 4px;
         }
 
             .qr-frame img {
-                width: 85px;
-                height: 85px;
+                width: 70px;
+                height: 70px;
                 display: block;
             }
 
         .qr-text {
-            font-size: 0.7rem;
+            font-size: 0.65rem;
             font-weight: 900;
             color: #999;
         }
 
-        /* أزرار التحكم في المتصفح */
+        /* أزرار التحكم */
         .controls-overlay {
             position: fixed;
-            bottom: 40px;
+            bottom: 30px;
             left: 50%;
             transform: translateX(-50%);
             display: flex;
@@ -330,10 +345,10 @@
         }
 
         .btn-royal {
-            padding: 14px 35px;
+            padding: 12px 30px;
             border-radius: 50px;
             border: none;
-            font-family: 'Cairo';
+            font-family: inherit;
             font-weight: 900;
             cursor: pointer;
             display: flex;
@@ -341,7 +356,7 @@
             gap: 10px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.4);
             transition: 0.3s;
-            font-size: 1rem;
+            font-size: 0.95rem;
         }
 
         .btn-gold-action {
@@ -356,22 +371,30 @@
         }
 
         .btn-royal:hover {
-            transform: translateY(-5px);
+            transform: translateY(-3px);
         }
 
+        /* تنظيف إعدادات الطباعة للحصول على دقة 100% */
         @@media print {
-            body {
+            html, body {
+                width: 297mm;
+                height: 210mm;
                 background: white;
-                height: max-content;
+                margin: 0;
+                padding: 0;
+                overflow: hidden;
             }
 
             .controls-overlay {
-                display: none;
+                display: none !important;
             }
 
             .certificate-canvas {
-                box-shadow: none;
-                margin: 0;
+                box-shadow: none !important;
+                margin: 0 !important;
+                padding: 10mm !important;
+                border: none !important;
+                transform: scale(1);
             }
         }
     </style>
@@ -397,12 +420,12 @@
                 <div class="brand-box">
                     <i class="fa-solid fa-crown brand-logo-icon"></i>
                     <div class="brand-text">
-                        <h2>أبستراكشن</h2>
+                        <h2>@(isRtl ? "أبستراكشن" : "Abstraction")</h2>
                         <span>ABSTRACTION CENTER</span>
                     </div>
                 </div>
                 <div class="serial-tag">
-                    <small>الرقم المرجعي</small>
+                    <small>@(isRtl ? "الرقم المرجعي" : "Serial Number")</small>
                     <strong>@Model.UniqueSerialNumber</strong>
                 </div>
             </header>
@@ -410,18 +433,24 @@
             <!-- Body Section -->
             <div class="cert-body">
                 <div class="title-group">
-                    <h1 class="main-title">شهادة إتمام</h1>
-                    <div class="sub-title">Certificate of Completion</div>
+                    <h1 class="main-title">@(isRtl ? "شهادة إتمام" : "Certificate of Completion")</h1>
+                    <div class="sub-title">@(isRtl ? "Certificate of Completion" : "شهادة إتمام")</div>
                 </div>
 
-                <p class="intro-phrase">يشهد مركز أبستراكشن للتدريب والاستشارات بأن الفاضل/ـة:</p>
+                <p class="intro-phrase">
+                    @(isRtl ? "يشهد مركز أبستراكشن للتدريب والاستشارات بأن الفاضل/ـة:" : "Abstraction Center for Training & Consulting certifies that:")
+                </p>
+
                 <div class="recipient-name">@Model.Student.FullName</div>
 
                 <p class="statement-text">
-                    قد اجتاز/ت بنجاح كافة متطلبات المسار التدريبي التخصصي المكثف بعنوان:<br>
+                    @(isRtl ? "قد اجتاز/ت بنجاح كافة متطلبات المسار التدريبي التخصصي المكثف بعنوان:" : "Has successfully completed all requirements of the intensive specialized training track titled:")<br>
+
                     <strong>@Model.Batch.Course.Title</strong><br>
-                    بمعدل ساعات تدريبية معتمدة، مع إتمام كافة المشاريع العملية والتقييمات المقررة بنجاح،<br>
-                    وذلك في تاريخ <strong>@Model.IssueDate.ToString("dd MMMM yyyy")</strong>.
+
+                    @(isRtl ? "بمعدل ساعات تدريبية معتمدة، مع إتمام كافة المشاريع العملية والتقييمات المقررة بنجاح،" : "with accredited training hours, successfully completing all practical projects and scheduled assessments,")<br>
+
+                    @(isRtl ? "وذلك في تاريخ" : "on the date of") <strong>@Model.IssueDate.ToString("dd MMMM yyyy")</strong>.
                 </p>
             </div>
 
@@ -430,20 +459,20 @@
                 <div class="signature-box">
                     <div class="sig-line"></div>
                     <div class="sig-name">@Model.Batch.Instructor.FullName</div>
-                    <div class="sig-rank">محاضر المسار المعتمد</div>
+                    <div class="sig-rank">@(isRtl ? "محاضر المسار المعتمد" : "Certified Track Instructor")</div>
                 </div>
 
                 <div class="qr-seal">
                     <div class="qr-frame">
                         <img src="@ViewBag.QRCodeBase64" alt="Verify QR" />
                     </div>
-                    <div class="qr-text">امسح للتحقق من الموثوقية</div>
+                    <div class="qr-text">@(isRtl ? "امسح للتحقق من الموثوقية" : "Scan to Verify")</div>
                 </div>
 
                 <div class="signature-box">
                     <div class="sig-line"></div>
-                    <div class="sig-name">إدارة الأكاديمية</div>
-                    <div class="sig-rank">مركز أبستراكشن للتدريب</div>
+                    <div class="sig-name">@(isRtl ? "إدارة الأكاديمية" : "Academy Administration")</div>
+                    <div class="sig-rank">@(isRtl ? "مركز أبستراكشن للتدريب" : "Abstraction Training Center")</div>
                 </div>
             </footer>
         </div>
@@ -452,10 +481,10 @@
     <!-- UI Controls -->
     <div class="controls-overlay">
         <button class="btn-royal btn-gold-action" onclick="window.print()">
-            <i class="fa-solid fa-file-pdf"></i> حفظ الشهادة (PDF)
+            <i class="fa-solid fa-file-pdf"></i> @(isRtl ? "حفظ الشهادة (PDF)" : "Save Certificate (PDF)")
         </button>
         <a href="/Student/Dashboard" class="btn-royal btn-white-action">
-            <i class="fa-solid fa-arrow-right"></i> لوحة التحكم
+            <i class="fa-solid fa-arrow-right"></i> @(isRtl ? "العودة للوحة التحكم" : "Back to Dashboard")
         </a>
     </div>
 
