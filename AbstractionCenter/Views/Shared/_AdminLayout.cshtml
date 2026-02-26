@@ -249,6 +249,12 @@
                         <i class="fa-solid fa-users-gear"></i> المستخدمين والصلاحيات
                     </a>
                 </li>
+                <!-- الرابط الجديد لإدارة المحاضرين -->
+                <li>
+                    <a href="/Admin/ManageInstructors" class="@(ViewContext.RouteData.Values["Action"]?.ToString() == "ManageInstructors" ? "active" : "")">
+                        <i class="fa-solid fa-user-tie"></i> إدارة المحاضرين
+                    </a>
+                </li>
                 <li>
                     <a href="/SiteSettings/Index" class="@(ViewContext.RouteData.Values["Controller"]?.ToString() == "SiteSettings" ? "active" : "")">
                         <i class="fa-solid fa-palette"></i> تصميم ومحتوى الموقع

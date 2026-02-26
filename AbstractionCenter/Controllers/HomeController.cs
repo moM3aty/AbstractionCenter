@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Linq;
 using AbstractionCenter.Services;
 using System;
+using Microsoft.AspNetCore.Identity;
 
 namespace AbstractionCenter.Controllers
 {
@@ -13,16 +14,22 @@ namespace AbstractionCenter.Controllers
     {
         private readonly ApplicationDbContext _context;
         private readonly IFileUploaderService _fileUploader;
+        private readonly UserManager<ApplicationUser> _userManager;
 
-        public HomeController(ApplicationDbContext context, IFileUploaderService fileUploader)
+        public HomeController(ApplicationDbContext context, IFileUploaderService fileUploader, UserManager<ApplicationUser> userManager)
         {
             _context = context;
             _fileUploader = fileUploader;
+            _userManager = userManager;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            return View();
+            // جلب المستخدمين الذين يمتلكون رتبة "محاضر" فقط، ثم فلترة النشطين منهم
+            var instructorsInRole = await _userManager.GetUsersInRoleAsync("Instructor");
+            var activeInstructors = instructorsInRole.Where(u => u.IsActive).Take(3).ToList();
+
+            return View(activeInstructors);
         }
 
         public IActionResult About()
@@ -37,15 +44,11 @@ namespace AbstractionCenter.Controllers
 
         public async Task<IActionResult> Staff()
         {
-            // جلب المدربين النشطين فقط
-            var instructors = await _context.Users
-                .Where(u => u.IsActive)
-                .ToListAsync();
+            // جلب جميع المحاضرين النشطين لصفحة فريق الخبراء
+            var instructorsInRole = await _userManager.GetUsersInRoleAsync("Instructor");
+            var activeInstructors = instructorsInRole.Where(u => u.IsActive).ToList();
 
-            // تصفية إضافية عبر الـ Role إذا لزم الأمر، لكننا نعتمد على IsActive حالياً
-            // var instructorRole = await _context.Roles.FirstOrDefaultAsync(r => r.Name == "Instructor");
-
-            return View(instructors);
+            return View(activeInstructors);
         }
 
         public IActionResult Contact()
@@ -98,15 +101,8 @@ namespace AbstractionCenter.Controllers
                     .Include(c => c.Batch).ThenInclude(b => b.Course)
                     .FirstOrDefaultAsync(c => c.UniqueSerialNumber == serialNumber && c.IsApproved);
 
-                if (certificate != null)
-                {
-                    ViewBag.Certificate = certificate;
-                    ViewBag.IsValid = true;
-                }
-                else
-                {
-                    ViewBag.IsValid = false;
-                }
+                ViewBag.Certificate = certificate;
+                ViewBag.IsValid = certificate != null;
             }
             return View();
         }

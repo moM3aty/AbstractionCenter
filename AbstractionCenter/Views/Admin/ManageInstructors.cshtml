@@ -1,0 +1,263 @@
+﻿@model IEnumerable<AbstractionCenter.Models.Entities.ApplicationUser>
+@{
+    ViewData["Title"] = "إدارة المحاضرين";
+}
+
+<style>
+    .page-header-card {
+        background: linear-gradient(135deg, #0b1120 0%, #1e293b 100%);
+        border-radius: 24px;
+        padding: 40px;
+        color: white;
+        margin-bottom: 40px;
+        box-shadow: 0 20px 40px -10px rgba(11, 17, 32, 0.3);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border: 1px solid rgba(212,175,55,0.2);
+    }
+
+        .page-header-card h1 {
+            font-size: 2rem;
+            font-weight: 900;
+            margin-bottom: 5px;
+            color: #d4af37;
+        }
+
+    .instructors-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 30px;
+    }
+
+    .instructor-card {
+        background: white;
+        border-radius: 20px;
+        overflow: hidden;
+        border: 1px solid #e2e8f0;
+        box-shadow: 0 10px 25px rgba(11, 17, 32, 0.05);
+        transition: all 0.3s ease;
+        position: relative;
+    }
+
+        .instructor-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(11, 17, 32, 0.1);
+            border-color: #d4af37;
+        }
+
+    .card-header-bg {
+        height: 100px;
+        background: linear-gradient(135deg, #0b1120, #1e293b);
+        position: relative;
+    }
+
+    .status-badge {
+        position: absolute;
+        top: 15px;
+        right: 15px;
+        padding: 5px 15px;
+        border-radius: 50px;
+        font-size: 0.8rem;
+        font-weight: 800;
+        color: white;
+    }
+
+    .status-active {
+        background: rgba(16, 185, 129, 0.2);
+        color: #10b981;
+        border: 1px solid rgba(16, 185, 129, 0.5);
+    }
+
+    .status-inactive {
+        background: rgba(239, 68, 68, 0.2);
+        color: #ef4444;
+        border: 1px solid rgba(239, 68, 68, 0.5);
+    }
+
+    .instructor-avatar {
+        width: 100px;
+        height: 100px;
+        border-radius: 50%;
+        border: 4px solid white;
+        background: white;
+        position: absolute;
+        bottom: -50px;
+        left: 50%;
+        transform: translateX(-50%);
+        object-fit: cover;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+
+    .card-body {
+        padding: 60px 20px 20px;
+        text-align: center;
+    }
+
+        .card-body h3 {
+            font-size: 1.3rem;
+            font-weight: 900;
+            color: #0b1120;
+            margin-bottom: 5px;
+        }
+
+        .card-body p.spec {
+            color: #d4af37;
+            font-weight: 700;
+            font-size: 0.95rem;
+            margin-bottom: 15px;
+        }
+
+        .card-body p.email {
+            color: #64748b;
+            font-size: 0.85rem;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+    .card-actions {
+        display: flex;
+        gap: 10px;
+        padding: 0 20px 20px;
+    }
+
+    .btn-action {
+        flex: 1;
+        padding: 10px;
+        border-radius: 12px;
+        font-weight: 800;
+        font-size: 0.9rem;
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        transition: 0.3s;
+        border: none;
+        cursor: pointer;
+    }
+
+    .btn-edit {
+        background: #f8fafc;
+        color: #0b1120;
+        border: 1px solid #e2e8f0;
+    }
+
+        .btn-edit:hover {
+            background: #0b1120;
+            color: #d4af37;
+            border-color: #0b1120;
+        }
+
+    .btn-delete {
+        background: rgba(239, 68, 68, 0.1);
+        color: #ef4444;
+        border: 1px solid rgba(239, 68, 68, 0.2);
+    }
+
+        .btn-delete:hover {
+            background: #ef4444;
+            color: white;
+        }
+
+    /* Alert Messages */
+    .custom-alert {
+        padding: 15px 20px;
+        border-radius: 15px;
+        margin-bottom: 20px;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .alert-success {
+        background: rgba(16, 185, 129, 0.1);
+        border: 1px solid #10b981;
+        color: #059669;
+    }
+
+    .alert-error {
+        background: rgba(239, 68, 68, 0.1);
+        border: 1px solid #ef4444;
+        color: #dc2626;
+    }
+</style>
+
+<div>
+    <div class="page-header-card">
+        <div>
+            <h1><i class="fa-solid fa-chalkboard-user"></i> الهيئة الأكاديمية والمدربين</h1>
+            <p style="color: #cbd5e1; margin: 0;">إدارة حسابات المحاضرين، تعديل بياناتهم، أو إزالتهم من النظام.</p>
+        </div>
+        <a href="/Admin/Index" class="btn btn-outline" style="border-color: rgba(255,255,255,0.2); color: white;">
+            العودة للوحة التحكم <i class="fa-solid fa-arrow-left"></i>
+        </a>
+    </div>
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="custom-alert alert-success">
+            <i class="fa-solid fa-circle-check"></i> @TempData["SuccessMessage"]
+        </div>
+    }
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="custom-alert alert-error">
+            <i class="fa-solid fa-triangle-exclamation"></i> @TempData["ErrorMessage"]
+        </div>
+    }
+
+    <div class="instructors-grid">
+        @if (Model != null && Model.Any())
+        {
+            foreach (var instructor in Model)
+            {
+                <div class="instructor-card">
+                    <div class="card-header-bg">
+                        <span class="status-badge @(instructor.IsActive ? "status-active" : "status-inactive")">
+                            <i class="fa-solid @(instructor.IsActive ? "fa-check" : "fa-ban")"></i> @(instructor.IsActive ? "نشط" : "معطل")
+                        </span>
+                        @{
+                            string safeName = !string.IsNullOrEmpty(instructor.FullName) ? instructor.FullName : "Instructor";
+                            string picUrl = string.IsNullOrEmpty(instructor.ProfilePicture)
+                            ? $"https://ui-avatars.com/api/?name={Uri.EscapeDataString(safeName)}&background=0b1120&color=d4af37&size=256"
+                            : (instructor.ProfilePicture.StartsWith("http") ? instructor.ProfilePicture : "/" + instructor.ProfilePicture.TrimStart('/'));
+                        }
+                        <img src="@picUrl" alt="@instructor.FullName" class="instructor-avatar" onerror="this.onerror=null;this.src='https://ui-avatars.com/api/?name=@Uri.EscapeDataString(safeName)&background=0b1120&color=d4af37&size=256';" />
+                    </div>
+                    <div class="card-body">
+                        <h3>@(string.IsNullOrEmpty(instructor.FullName) ? "بدون اسم" : instructor.FullName)</h3>
+                        <p class="spec">@(string.IsNullOrEmpty(instructor.Specialization) ? "مدرب عام" : instructor.Specialization)</p>
+                        <p class="email"><i class="fa-solid fa-envelope"></i> @instructor.Email</p>
+                        <p class="email" style="margin-top: -10px;"><i class="fa-solid fa-phone"></i> @(instructor.PhoneNumber ?? "لا يوجد رقم")</p>
+                    </div>
+                    <div class="card-actions">
+                        <!-- نستخدم نفس صفحة تعديل الطالب لأنها تعدل أي ApplicationUser -->
+                        <a href="/Admin/EditStudent?userId=@instructor.Id" class="btn-action btn-edit">
+                            <i class="fa-solid fa-pen-to-square"></i> تعديل
+                        </a>
+                        <form asp-action="DeleteInstructor" method="post" style="flex: 1; margin: 0;" onsubmit="return confirm('هل أنت متأكد من حذف هذا المحاضر بشكل نهائي؟');">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="id" value="@instructor.Id" />
+                            <button type="submit" class="btn-action btn-delete" style="width: 100%;">
+                                <i class="fa-solid fa-trash"></i> حذف
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            }
+        }
+        else
+        {
+            <div style="grid-column: 1 / -1; text-align: center; padding: 60px; background: white; border-radius: 24px; border: 2px dashed #e2e8f0;">
+                <i class="fa-solid fa-users-slash" style="font-size: 4rem; color: #cbd5e1; margin-bottom: 20px;"></i>
+                <h3 style="color: #0b1120; font-weight: 900;">لا يوجد محاضرين</h3>
+                <p style="color: #64748b;">قم بقبول طلبات انضمام المحاضرين الجدد ليظهروا هنا.</p>
+            </div>
+        }
+    </div>
+</div>

@@ -138,6 +138,27 @@
             transform: translateY(-2px);
         }
 
+    .btn-delete {
+        background: rgba(239, 68, 68, 0.1);
+        color: #ef4444;
+        padding: 10px 15px;
+        border-radius: 10px;
+        font-size: 0.9rem;
+        font-weight: 800;
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        border: 1px solid rgba(239, 68, 68, 0.2);
+        cursor: pointer;
+    }
+
+        .btn-delete:hover {
+            background: #ef4444;
+            color: white;
+            transform: translateY(-2px);
+        }
+
     .empty-state {
         text-align: center;
         padding: 80px 20px;
@@ -173,6 +194,13 @@
         </div>
     }
 
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div style="background: rgba(239, 68, 68, 0.1); color: #dc2626; padding: 15px 25px; border-radius: 12px; margin-bottom: 20px; font-weight: bold; border: 1px solid #ef4444;">
+            <i class="fa-solid fa-triangle-exclamation"></i> @TempData["ErrorMessage"]
+        </div>
+    }
+
     <div class="table-responsive">
         <table class="modern-data-table">
             <thead>
@@ -205,6 +233,11 @@
                                 <div style="display: flex; gap: 10px;">
                                     <a href="/Admin/ManageBatches?courseId=@course.Id" class="btn-batches"><i class="fa-solid fa-users-rectangle"></i> إدارة الدفعات</a>
                                     <a href="/Admin/EditCourse/@course.Id" class="btn-edit"><i class="fa-solid fa-pen-to-square"></i> تعديل الدورة</a>
+                                    <form asp-action="DeleteCourse" method="post" style="margin: 0;" onsubmit="return confirm('هل أنت متأكد من رغبتك في حذف هذه الدورة بالكامل؟');">
+                                        @Html.AntiForgeryToken()
+                                        <input type="hidden" name="id" value="@course.Id" />
+                                        <button type="submit" class="btn-delete"><i class="fa-solid fa-trash-can"></i> حذف</button>
+                                    </form>
                                 </div>
                             </td>
                         </tr>

@@ -1,145 +1,212 @@
 ﻿@using Microsoft.AspNetCore.Localization
 @model IEnumerable<AbstractionCenter.Models.Entities.ApplicationUser>
-@inject AbstractionCenter.Data.ApplicationDbContext DbContext
 @{
     var requestCulture = Context.Features.Get<IRequestCultureFeature>();
     bool isRtl = requestCulture?.RequestCulture.UICulture.Name == "ar" || requestCulture?.RequestCulture.UICulture.Name == null;
-    ViewData["Title"] = isRtl ? "فريق التدريب" : "Our Experts";
-
-    var allSettings = DbContext.SiteSettings.ToList();
-    var settingsDict = allSettings.ToDictionary(s => s.Key, s => s);
-    string GetSetting(string key, string fallbackAr, string fallbackEn)
-    {
-        if (settingsDict.ContainsKey(key))
-        {
-            var setting = settingsDict[key];
-            if (isRtl) return setting.Value;
-            return !string.IsNullOrEmpty(setting.ValueEn) ? setting.ValueEn : setting.Value;
-        }
-        return isRtl ? fallbackAr : fallbackEn;
-    }
+    ViewData["Title"] = isRtl ? "نخبة الخبراء" : "Our Elite Experts";
 }
 
 <style>
+    .staff-page {
+        background: #f8fafc;
+        padding: 120px 0 100px;
+        min-height: 80vh;
+    }
+
+    /* --- Page Hero --- */
     .staff-hero {
-        background: linear-gradient(135deg, var(--primary-color), #1e293b);
-        position: relative;
-        padding: 160px 0 100px;
         text-align: center;
-        color: white;
+        margin-bottom: 80px;
+        position: relative;
     }
 
-    .staff-card {
-        text-align: center;
-        padding: 50px 30px;
-        background: white;
-        border-radius: var(--radius-lg);
-        border: 1px solid #e2e8f0;
-        box-shadow: var(--shadow-sm);
-        transition: all 0.4s ease;
-        position: relative;
-        overflow: hidden;
+    .staff-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: rgba(212, 175, 55, 0.1);
+        color: #b48a25;
+        padding: 10px 25px;
+        border-radius: 50px;
+        font-weight: 900;
+        font-size: 0.95rem;
+        margin-bottom: 25px;
+        border: 1px solid rgba(212, 175, 55, 0.3);
     }
 
-        .staff-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 120px;
-            background: linear-gradient(135deg, rgba(212,175,55,0.1), transparent);
-            z-index: 0;
+    .staff-hero h1 {
+        font-size: 4rem;
+        font-weight: 900;
+        color: var(--primary-color);
+        margin-bottom: 20px;
+    }
+
+        .staff-hero h1 span {
+            background: linear-gradient(to left, #d4af37, #b48a25);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
 
-        .staff-card:hover {
-            transform: translateY(-10px);
-            box-shadow: var(--shadow-premium);
+    .staff-hero p {
+        font-size: 1.3rem;
+        color: #64748b;
+        max-width: 800px;
+        margin: 0 auto;
+        line-height: 1.8;
+    }
+
+    /* --- Expert Cards (Reused & Scaled) --- */
+    .expert-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+        gap: 40px;
+    }
+
+    .expert-card {
+        background: #ffffff;
+        border-radius: 24px;
+        overflow: hidden;
+        box-shadow: 0 15px 35px rgba(11, 17, 32, 0.05);
+        border: 1px solid #e2e8f0;
+        transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+        position: relative;
+    }
+
+        .expert-card:hover {
+            transform: translateY(-12px);
+            box-shadow: 0 30px 60px -10px rgba(11, 17, 32, 0.15);
             border-color: var(--secondary-color);
         }
 
-    .staff-img {
-        width: 140px;
-        height: 140px;
-        border-radius: 50%;
-        background-color: #f1f5f9;
-        margin: 0 auto 25px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 4rem;
-        color: var(--primary-color);
-        border: 4px solid var(--secondary-color);
-        box-shadow: 0 10px 25px rgba(212, 175, 55, 0.3);
-        overflow: hidden;
+    .expert-img-box {
         position: relative;
-        z-index: 1;
+        height: 350px;
+        overflow: hidden;
+        background: var(--primary-color);
     }
 
-        .staff-img img {
+        .expert-img-box img {
             width: 100%;
             height: 100%;
             object-fit: cover;
+            transition: transform 0.8s ease;
         }
 
-    .staff-title {
-        color: var(--secondary-color);
-        font-weight: 800;
-        font-size: 1.1rem;
-        margin-bottom: 15px;
-        position: relative;
-        z-index: 1;
+    .expert-card:hover .expert-img-box img {
+        transform: scale(1.08);
     }
 
-    .staff-name {
+    .expert-overlay {
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(to top, rgba(11,17,32,0.98) 0%, rgba(11,17,32,0.3) 60%, transparent 100%);
+    }
+
+    .expert-badge {
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        background: rgba(255, 255, 255, 0.95);
         color: var(--primary-color);
+        padding: 6px 16px;
+        border-radius: 50px;
         font-weight: 900;
+        font-size: 0.8rem;
+        backdrop-filter: blur(10px);
+        z-index: 2;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+        .expert-badge i {
+            color: var(--secondary-color);
+        }
+
+    .expert-info {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        padding: 30px 25px;
+        z-index: 10;
+        text-align: center;
+    }
+
+    .expert-name {
+        color: white;
         font-size: 1.6rem;
-        position: relative;
-        z-index: 1;
+        font-weight: 900;
+        margin-bottom: 8px;
+        text-shadow: 0 2px 10px rgba(0,0,0,0.5);
+    }
+
+    .expert-spec {
+        color: var(--secondary-color);
+        font-weight: 700;
+        font-size: 1.05rem;
+        margin-bottom: 0;
+    }
+
+    @@media (max-width: 768px) {
+        .staff-hero h1
+
+    {
+        font-size: 2.8rem;
+    }
+
+    .expert-grid {
+        grid-template-columns: 1fr;
+        padding: 0 20px;
+    }
+
     }
 </style>
 
-<section class="staff-hero">
-    <div class="container" style="position: relative; z-index: 10;">
-        <div style="width: 80px; height: 80px; background: rgba(212,175,55,0.1); border: 1px solid rgba(212,175,55,0.3); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 2.2rem; color: var(--secondary-color); margin: 0 auto 20px;">
-            <i class="fa-solid fa-user-tie"></i>
-        </div>
-        <h1 style="font-size: 3.5rem; font-weight: 900; margin-bottom: 20px;color:#cbd5e1;">@GetSetting("Staff_HeroTitle", "نخبة من الخبراء", "Elite Experts")</h1>
-        <p style="color: #cbd5e1; font-size: 1.2rem; max-width: 700px; margin: 0 auto;">@GetSetting("Staff_HeroSubtitle", "نفخر في ابستراكشن بنخبة من أفضل الخبراء الأكاديميين والمهنيين الذين ينقلون خبراتهم العملية لك لضمان أعلى جودة تعليمية.", "We take pride in our elite group of academic and professional experts who transfer their practical experiences to you to ensure the highest educational quality.")</p>
-    </div>
-</section>
-
-<section style="padding: 100px 0; background: #f8fafc;">
+<div class="staff-page">
     <div class="container">
-        <div class="grid-3">
-            @if (Model != null && Model.Any(u => u.IsActive))
+        <div class="staff-hero">
+            <div class="staff-badge">
+                <i class="fa-solid fa-star"></i> @(isRtl ? "الهيئة الأكاديمية والتدريبية" : "Academic & Training Board")
+            </div>
+            <h1>@(isRtl ? "نخبة" : "Our") <span>@(isRtl ? "الخبراء" : "Experts")</span></h1>
+            <p>@(isRtl ? "تعرف على فريقنا المتميز من الأكاديميين والمدربين المحترفين الذين يجمعون بين الخبرة العلمية والتطبيق العملي لتقديم أفضل تجربة تعليمية." : "Meet our outstanding team of academics and professional trainers who combine scientific expertise with practical application to deliver the best educational experience.")</p>
+        </div>
+
+        <div class="expert-grid">
+            @if (Model != null && Model.Any())
             {
-                foreach (var instructor in Model.Where(u => u.IsActive))
+                foreach (var instructor in Model)
                 {
-                    <div class="staff-card">
-                        <div class="staff-img">
-                            @if (!string.IsNullOrEmpty(instructor.ProfilePicture))
-                            {
-                                <img src="@instructor.ProfilePicture" alt="@instructor.FullName" />
+                    <div class="expert-card">
+                        <div class="expert-badge"><i class="fa-solid fa-certificate"></i> @(isRtl ? "خبير معتمد" : "Certified Expert")</div>
+                        <div class="expert-img-box">
+                            @{
+                                string safeName = !string.IsNullOrEmpty(instructor.FullName) ? instructor.FullName : "Expert";
+                                string picUrl = string.IsNullOrEmpty(instructor.ProfilePicture)
+                                ? $"https://ui-avatars.com/api/?name={Uri.EscapeDataString(safeName)}&background=0b1120&color=d4af37&size=512&font-size=0.33"
+                                : (instructor.ProfilePicture.StartsWith("http") ? instructor.ProfilePicture : "/" + instructor.ProfilePicture.TrimStart('/'));
                             }
-                            else
-                            {
-                                <i class="fa-solid fa-user-tie"></i>
-                            }
+                            <img src="@picUrl" alt="@instructor.FullName" loading="lazy" onerror="this.onerror=null;this.src='https://ui-avatars.com/api/?name=@Uri.EscapeDataString(safeName)&background=0b1120&color=d4af37&size=512&font-size=0.33';" />
+                            <div class="expert-overlay"></div>
+
+                            <div class="expert-info">
+                                <h3 class="expert-name">@(string.IsNullOrEmpty(instructor.FullName) ? "مدرب الأكاديمية" : instructor.FullName)</h3>
+                                <p class="expert-spec">@(string.IsNullOrEmpty(instructor.Specialization) ? (isRtl ? "مدرب وأكاديمي" : "Academic Trainer") : instructor.Specialization)</p>
+                            </div>
                         </div>
-                        <h3 class="staff-name">@instructor.FullName</h3>
-                        <div class="staff-title">@(string.IsNullOrEmpty(instructor.Specialization) ? (isRtl ? "محاضر معتمد" : "Certified Instructor") : instructor.Specialization)</div>
                     </div>
                 }
             }
             else
             {
-                <div style="grid-column: 1/-1; text-align: center; padding: 60px; background: white; border-radius: var(--radius-lg); border: 1px dashed #e2e8f0;">
-                    <i class="fa-solid fa-users-slash" style="font-size: 4rem; color: #cbd5e1; margin-bottom: 20px;"></i>
-                    <h3 style="color: var(--primary-color); font-weight: 900; font-size: 1.5rem;">@(isRtl ? "لا يوجد مدربين متاحين حالياً..." : "No instructors available currently...")</h3>
+                <div style="grid-column: 1 / -1; text-align: center; padding: 100px 20px; background: white; border-radius: 40px; border: 2px dashed #e2e8f0;">
+                    <i class="fa-solid fa-users-slash" style="font-size: 5rem; color: #cbd5e1; margin-bottom: 25px;"></i>
+                    <h3 style="color: var(--primary-color); font-weight: 900; font-size: 2rem;">@(isRtl ? "لا يوجد مدربين متاحين حالياً" : "No Instructors Available")</h3>
+                    <p style="color: #64748b; font-size: 1.2rem;">@(isRtl ? "يتم تحديث قائمة الخبراء، يرجى العودة لاحقاً." : "The experts list is being updated, please check back later.")</p>
                 </div>
             }
         </div>
     </div>
-</section>
+</div>

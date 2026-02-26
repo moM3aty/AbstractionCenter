@@ -81,7 +81,41 @@ namespace AbstractionCenter.Controllers
 
             return View(user);
         }
+        [HttpGet]
+        public async Task<IActionResult> ManageInstructors()
+        {
+            // جلب جميع المستخدمين الذين يمتلكون صلاحية "محاضر"
+            var instructors = await _userManager.GetUsersInRoleAsync("Instructor");
+            return View(instructors);
+        }
 
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteInstructor(string id)
+        {
+            var user = await _userManager.FindByIdAsync(id);
+            if (user == null) return NotFound();
+
+            // فحص ما إذا كان المحاضر مرتبطاً بدفعات تدريبية لمنع أخطاء قاعدة البيانات
+            bool hasBatches = await _context.Batches.AnyAsync(b => b.InstructorId == id);
+            if (hasBatches)
+            {
+                TempData["ErrorMessage"] = $"لا يمكن حذف المحاضر ({user.FullName}) لوجود دفعات دراسية مسندة إليه. يرجى نقل الدفعات لمحاضر آخر أو تعطيل حسابه بدلاً من الحذف.";
+                return RedirectToAction("ManageInstructors");
+            }
+
+            var result = await _userManager.DeleteAsync(user);
+            if (result.Succeeded)
+            {
+                TempData["SuccessMessage"] = $"تم حذف المحاضر ({user.FullName}) بنجاح.";
+            }
+            else
+            {
+                TempData["ErrorMessage"] = "حدث خطأ أثناء محاولة الحذف.";
+            }
+
+            return RedirectToAction("ManageInstructors");
+        }
         // 1. إدارة المستخدمين (الطلاب والمدربين)
         // ==========================================
         public async Task<IActionResult> ManageUsers()
@@ -207,6 +241,25 @@ namespace AbstractionCenter.Controllers
                 }
             }
             return View(course);
+        }
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteCourse(int id)
+        {
+            var course = await _context.Courses.Include(c => c.Batches).FirstOrDefaultAsync(c => c.Id == id);
+            if (course == null) return NotFound();
+
+            if (course.Batches != null && course.Batches.Any())
+            {
+                TempData["ErrorMessage"] = $"لا يمكن حذف الدورة ({course.Title}) لوجود دفعات دراسية مسجلة بها. يرجى حذف الدفعات أولاً.";
+                return RedirectToAction(nameof(ManageCourses));
+            }
+
+            _context.Courses.Remove(course);
+            await _context.SaveChangesAsync();
+
+            TempData["SuccessMessage"] = $"تم حذف الدورة ({course.Title}) بنجاح.";
+            return RedirectToAction(nameof(ManageCourses));
         }
 
         public async Task<IActionResult> ManageBatches(int courseId)
