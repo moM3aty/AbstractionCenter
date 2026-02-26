@@ -16,6 +16,17 @@
 
 		<!-- حزمة Identity لإدارة المستخدمين والصلاحيات -->
 		<PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.0" />
+		<PackageReference Include="QRCoder" Version="1.7.0" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Folder Include="wwwroot\uploads\courses\" />
+	  <Folder Include="wwwroot\uploads\course_materials\" />
+	  <Folder Include="wwwroot\uploads\cvs\" />
+	  <Folder Include="wwwroot\uploads\lessons\" />
+	  <Folder Include="wwwroot\uploads\lessons_content\" />
+	  <Folder Include="wwwroot\uploads\profiles\" />
+	  <Folder Include="wwwroot\uploads\student_solutions\" />
 	</ItemGroup>
 
 </Project>

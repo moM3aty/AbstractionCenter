@@ -3,6 +3,8 @@ using AbstractionCenter.Models.Entities;
 using AbstractionCenter.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Localization;
+using System.Globalization;
 using System;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -26,29 +28,36 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
 .AddEntityFrameworkStores<ApplicationDbContext>()
 .AddDefaultTokenProviders();
 
-// --- التعديل الجوهري لمنع الدخول المتعدد ---
-// هذا الإعداد يجبر النظام على التحقق من الـ SecurityStamp مع كل طلب
-// بالتالي عند تسجيل الدخول من جهاز جديد، سيتم تغيير الختم وطرد الجهاز القديم فوراً
 builder.Services.Configure<SecurityStampValidatorOptions>(options =>
 {
     options.ValidationInterval = TimeSpan.Zero;
 });
 
-// 3. إعداد مسارات تسجيل الدخول
 builder.Services.ConfigureApplicationCookie(options =>
 {
     options.LoginPath = "/Account/Login";
     options.AccessDeniedPath = "/Account/AccessDenied";
 });
 
-// 4. تسجيل خدمة رفع الملفات (التعديل الجديد)
 builder.Services.AddScoped<IFileUploaderService, FileUploaderService>();
 
-builder.Services.AddControllersWithViews();
+// --- التعديل الجديد: إعدادات تعدد اللغات ---
+builder.Services.AddLocalization(options => options.ResourcesPath = "Resources");
+
+builder.Services.AddControllersWithViews()
+    .AddViewLocalization()
+    .AddDataAnnotationsLocalization();
+
+builder.Services.Configure<RequestLocalizationOptions>(options =>
+{
+    var supportedCultures = new[] { new CultureInfo("ar"), new CultureInfo("en") };
+    options.DefaultRequestCulture = new RequestCulture("ar"); // العربية لغة افتراضية
+    options.SupportedCultures = supportedCultures;
+    options.SupportedUICultures = supportedCultures;
+});
 
 var app = builder.Build();
 
-// 5. تهيئة الأدوار والمستخدم الإداري
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
@@ -73,6 +82,9 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
+
+// --- تفعيل برمجية اللغات ---
+app.UseRequestLocalization();
 
 app.UseAuthentication();
 app.UseAuthorization();

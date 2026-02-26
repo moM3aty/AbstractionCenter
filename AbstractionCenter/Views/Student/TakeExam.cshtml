@@ -1,6 +1,6 @@
-﻿@model AbstractionCenter.Models.Entities.Course
+﻿@model AbstractionCenter.Models.Entities.Batch
 @{
-    ViewData["Title"] = "الاختبار النهائي: " + Model.Title;
+    ViewData["Title"] = "الاختبار النهائي: " + Model.Course?.Title;
     int questionNumber = 1;
 }
 
@@ -55,6 +55,15 @@
             color: var(--ex-gold);
             font-weight: 900;
             font-size: 2.2rem;
+            margin-bottom: 10px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .exam-header h3 {
+            color: white;
+            font-weight: 800;
+            font-size: 1.4rem;
             margin-bottom: 15px;
             position: relative;
             z-index: 2;
@@ -209,54 +218,66 @@
 <div class="exam-wrapper">
     <div class="exam-header">
         <h1>التقييم النهائي للمسار</h1>
-        <p>@Model.Title</p>
+        <h3>@Model.Course?.Title</h3>
+        <p>@Model.BatchName | إشراف: @Model.Instructor?.FullName</p>
         <div class="score-badge">
-            <i class="fa-solid fa-medal"></i> نسبة الاجتياز المطلوبة: @Model.FinalExam.PassingScorePercentage%
+            <i class="fa-solid fa-medal"></i> نسبة الاجتياز المطلوبة: @Model.FinalExam?.PassingScorePercentage%
         </div>
     </div>
 
     <form action="/Student/SubmitExam" method="post" id="examForm">
         @Html.AntiForgeryToken()
-        <input type="hidden" name="courseId" value="@Model.Id" />
+        <input type="hidden" name="batchId" value="@Model.Id" />
 
-        @foreach (var q in Model.FinalExam.Questions)
+        @if (Model.FinalExam?.Questions != null && Model.FinalExam.Questions.Any())
         {
-            <div class="question-card">
-                <div class="q-title">
-                    <span class="q-num">@questionNumber</span>
-                    <span>@q.QuestionText</span>
-                </div>
+            foreach (var q in Model.FinalExam.Questions)
+            {
+                <div class="question-card">
+                    <div class="q-title">
+                        <span class="q-num">@questionNumber</span>
+                        <span>@q.QuestionText</span>
+                    </div>
 
-                <div class="options-grid">
-                    <label class="option-label">
-                        <input type="radio" name="answers[@q.Id]" value="1" required />
-                        <span>@q.Option1</span>
-                    </label>
-                    <label class="option-label">
-                        <input type="radio" name="answers[@q.Id]" value="2" required />
-                        <span>@q.Option2</span>
-                    </label>
-                    <label class="option-label">
-                        <input type="radio" name="answers[@q.Id]" value="3" required />
-                        <span>@q.Option3</span>
-                    </label>
-                    <label class="option-label">
-                        <input type="radio" name="answers[@q.Id]" value="4" required />
-                        <span>@q.Option4</span>
-                    </label>
+                    <div class="options-grid">
+                        <label class="option-label">
+                            <input type="radio" name="answers[@q.Id]" value="1" required />
+                            <span>@q.Option1</span>
+                        </label>
+                        <label class="option-label">
+                            <input type="radio" name="answers[@q.Id]" value="2" required />
+                            <span>@q.Option2</span>
+                        </label>
+                        <label class="option-label">
+                            <input type="radio" name="answers[@q.Id]" value="3" required />
+                            <span>@q.Option3</span>
+                        </label>
+                        <label class="option-label">
+                            <input type="radio" name="answers[@q.Id]" value="4" required />
+                            <span>@q.Option4</span>
+                        </label>
+                    </div>
                 </div>
+                questionNumber++;
+            }
+
+            <div style="margin-top: 50px;">
+                <div class="warning-text">
+                    <i class="fa-solid fa-circle-exclamation" style="color: #f59e0b;"></i> تأكد من مراجعة كافة إجاباتك جيداً قبل الاعتماد النهائي.
+                </div>
+                <button type="button" class="btn-submit-exam" onclick="confirmSubmit()">
+                    اعتماد الإجابات وإنهاء الاختبار <i class="fa-solid fa-paper-plane"></i>
+                </button>
             </div>
-            questionNumber++;
         }
-
-        <div style="margin-top: 50px;">
-            <div class="warning-text">
-                <i class="fa-solid fa-circle-exclamation" style="color: #f59e0b;"></i> تأكد من مراجعة كافة إجاباتك جيداً قبل الاعتماد النهائي.
+        else
+        {
+            <div class="question-card" style="text-align: center;">
+                <i class="fa-solid fa-hourglass-half" style="font-size: 3rem; color: #cbd5e1; margin-bottom: 15px;"></i>
+                <h3 style="color: var(--ex-primary);">لم يتم إدراج أسئلة لهذا الاختبار بعد</h3>
+                <p style="color: var(--ex-muted);">يرجى مراجعة المحاضر المسئول عن الدفعة.</p>
             </div>
-            <button type="button" class="btn-submit-exam" onclick="confirmSubmit()">
-                اعتماد الإجابات وإنهاء الاختبار <i class="fa-solid fa-paper-plane"></i>
-            </button>
-        </div>
+        }
     </form>
 </div>
 

@@ -6,8 +6,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace AbstractionCenter.Models.Entities
 {
     /// <summary>
-    /// تم تحديث النموذج ليصبح بديلاً متكاملاً لفورم جوجل
-    /// يحتوي على بيانات ثابتة، وإجابات متغيرة للأسئلة
+    /// تم تحديث هذا النموذج ليتم ربط طلب تسجيل الطالب بـ (الدفعة) بدلاً من الدورة العامة
     /// </summary>
     public class RegistrationRequest
     {
@@ -19,12 +18,12 @@ namespace AbstractionCenter.Models.Entities
         [ForeignKey("StudentId")]
         public ApplicationUser Student { get; set; }
 
+        // التعديل: الربط بالدفعة (Batch)
         [Required]
-        public int CourseId { get; set; }
-        [ForeignKey("CourseId")]
-        public Course Course { get; set; }
+        public int BatchId { get; set; }
+        [ForeignKey("BatchId")]
+        public Batch Batch { get; set; }
 
-        // --- الحقول الثابتة المشتركة التي طلبتها ---
         [Required(ErrorMessage = "الاسم الرباعي مطلوب")]
         [Display(Name = "الاسم رباعي")]
         public string FullName { get; set; }
@@ -53,19 +52,13 @@ namespace AbstractionCenter.Models.Entities
         [Display(Name = "حالة الطلب")]
         public RequestStatus Status { get; set; } = RequestStatus.Pending;
 
-        // --- ربط الفورم بإجابات الأسئلة المخصصة للدورة ---
         public ICollection<RegistrationAnswer>? Answers { get; set; }
     }
 
     public enum RequestStatus
     {
-        [Display(Name = "قيد المراجعة")]
-        Pending,
-
-        [Display(Name = "تمت الموافقة")]
-        Approved,
-
-        [Display(Name = "مرفوض")]
-        Rejected
+        [Display(Name = "قيد المراجعة")] Pending,
+        [Display(Name = "تمت الموافقة")] Approved,
+        [Display(Name = "مرفوض")] Rejected
     }
 }

@@ -1,12 +1,25 @@
-﻿@inject AbstractionCenter.Data.ApplicationDbContext DbContext
+﻿@using Microsoft.AspNetCore.Localization
+@inject AbstractionCenter.Data.ApplicationDbContext DbContext
 @{
-    ViewData["Title"] = "الرئيسية";
-    var settings = DbContext.SiteSettings.ToDictionary(s => s.Key, s => s.Value);
-    string GetSetting(string key, string fallback = "") => settings.ContainsKey(key) ? settings[key] : fallback;
+    var requestCulture = Context.Features.Get<IRequestCultureFeature>();
+    bool isRtl = requestCulture?.RequestCulture.UICulture.Name == "ar" || requestCulture?.RequestCulture.UICulture.Name == null;
+    ViewData["Title"] = isRtl ? "الرئيسية" : "Home";
+
+    var allSettings = DbContext.SiteSettings.ToList();
+    var settingsDict = allSettings.ToDictionary(s => s.Key, s => s);
+    string GetSetting(string key, string fallbackAr, string fallbackEn)
+    {
+        if (settingsDict.ContainsKey(key))
+        {
+            var setting = settingsDict[key];
+            if (isRtl) return setting.Value;
+            return !string.IsNullOrEmpty(setting.ValueEn) ? setting.ValueEn : setting.Value;
+        }
+        return isRtl ? fallbackAr : fallbackEn;
+    }
 }
 
 <style>
-    /* --- Premium Hero Section --- */
     .hero-premium {
         padding: 160px 0 120px;
         min-height: 90vh;
@@ -17,7 +30,6 @@
         background-color: var(--primary-color);
     }
 
-        /* Abstract Shapes Background */
         .hero-premium::before {
             content: '';
             position: absolute;
@@ -93,7 +105,7 @@
         overflow: hidden;
         box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
         border: 1px solid rgba(212, 175, 55, 0.3);
-        transform: perspective(1000px) rotateY(-5deg);
+        transform: perspective(1000px) rotateY( @(isRtl ? "-5deg" : "5deg") );
         transition: transform 0.5s ease;
     }
 
@@ -114,7 +126,6 @@
             background: linear-gradient(to top, rgba(11,17,32,0.8), transparent);
         }
 
-    /* --- Features Section --- */
     .features-section {
         padding: 120px 0;
         background: #f8fafc;
@@ -171,7 +182,6 @@
         font-size: 1.05rem;
     }
 
-    /* --- CTA Section --- */
     .cta-section {
         padding: 80px 0;
         background: white;
@@ -224,9 +234,8 @@
             content: '';
             position: absolute;
             inset: 0;
-            background: linear-gradient(to right, #1e293b, transparent);
+            background: linear-gradient(to @(isRtl ? "right" : "left"), #1e293b, transparent);
         }
-
     @@media (max-width: 992px) {
         .hero-grid
 
@@ -264,82 +273,79 @@
     }
 </style>
 
-<!-- Hero Section -->
 <section class="hero-premium">
     <div class="container hero-grid">
         <div class="hero-text">
             <div class="hero-badge">
-                <i class="fa-solid fa-crown"></i> @GetSetting("HeroBadge", "منصة الكفاءات العربية الأولى")
+                <i class="fa-solid fa-crown"></i> @GetSetting("HeroBadge", "منصة الكفاءات العربية الأولى", "The Premier Capability Platform")
             </div>
             <h1 class="hero-title">
-                @GetSetting("HeroTitle", "نصنع قادة المستقبل في") <br>
-                <span>@GetSetting("SiteName", "أبستراكشن")</span>
+                @GetSetting("HeroTitle", "نصنع قادة المستقبل في", "We Build Future Leaders at") <br>
+                <span>@GetSetting("SiteName", "أبستراكشن", "Abstraction")</span>
             </h1>
             <p class="hero-subtitle">
-                @GetSetting("HeroSubtitle", "رؤية طموحة لتمكين الشباب بالمهارات التقنية والإدارية الحديثة. نجمع بين أصالة القيم وحداثة التكنولوجيا لنضعك على طريق النجاح.")
+                @GetSetting("HeroSubtitle", "رؤية طموحة لتمكين الشباب بالمهارات التقنية والإدارية الحديثة. نجمع بين أصالة القيم وحداثة التكنولوجيا لنضعك على طريق النجاح.", "An ambitious vision to empower youth with modern technical and administrative skills. We combine authentic values with modern technology to put you on the path to success.")
             </p>
-            <div style="display: flex; gap: 20px; flex-wrap: wrap; justify-content: center;">
+            <div style="display: flex; gap: 20px; flex-wrap: wrap; justify-content: @(isRtl ? "flex-start" : "flex-start");">
                 <a href="/Courses/Open" class="btn btn-primary" style="font-size: 1.15rem; padding: 18px 40px;">
-                    استكشف برامجنا <i class="fa-solid fa-arrow-left"></i>
+                    @(isRtl ? "استكشف برامجنا" : "Explore Programs") <i class="fa-solid @(isRtl ? "fa-arrow-left" : "fa-arrow-right")"></i>
                 </a>
                 <a href="/Home/About" class="btn btn-outline" style="border-color: rgba(255,255,255,0.3); color: white; font-size: 1.15rem; padding: 18px 40px;">
-                    تعرف علينا <i class="fa-solid fa-play"></i>
+                    @(isRtl ? "تعرف علينا" : "Learn About Us") <i class="fa-solid fa-play"></i>
                 </a>
             </div>
         </div>
 
         <div class="hero-image-wrapper">
-            <img src="@GetSetting("HeroImage", "https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=1920&q=80")" alt="ترحيب" />
+            <img src="@GetSetting("HeroImage", "https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=1920&q=80", "https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=1920&q=80")" alt="Hero" />
             <div class="overlay"></div>
         </div>
     </div>
 </section>
 
-<!-- Features Section -->
 <section class="features-section">
     <div class="container">
         <div style="text-align: center; margin-bottom: 70px; max-width: 800px; margin-left: auto; margin-right: auto;">
-            <h2 style="font-size: 2.8rem; color: var(--primary-color); margin-bottom: 20px; font-weight: 900;">@GetSetting("FeaturesTitle", "لماذا نحن خيارك الأفضل؟")</h2>
-            <p style="color: #64748b; font-size: 1.2rem; line-height: 1.8;">@GetSetting("FeaturesSubtitle", "نقدم تجربة تعليمية فريدة صُممت لتلبي احتياجات سوق العمل بمعايير جودة عالمية.")</p>
+            <h2 style="font-size: 2.8rem; color: var(--primary-color); margin-bottom: 20px; font-weight: 900;">@GetSetting("FeaturesTitle", "لماذا نحن خيارك الأفضل؟", "Why Choose Us?")</h2>
+            <p style="color: #64748b; font-size: 1.2rem; line-height: 1.8;">@GetSetting("FeaturesSubtitle", "نقدم تجربة تعليمية فريدة صُممت لتلبي احتياجات سوق العمل بمعايير جودة عالمية.", "We offer a unique educational experience designed to meet market needs with global quality standards.")</p>
         </div>
 
         <div class="grid-3">
             <div class="feature-card">
                 <div class="feature-icon"><i class="fa-solid fa-laptop-code"></i></div>
-                <h3>@GetSetting("F1_Title", "أصالة وابتكار")</h3>
-                <p>@GetSetting("F1_Desc", "محتوى تدريبي متطور يُقدم بأحدث أساليب التكنولوجيا والذكاء الاصطناعي.")</p>
+                <h3>@GetSetting("F1_Title", "أصالة وابتكار", "Originality & Innovation")</h3>
+                <p>@GetSetting("F1_Desc", "محتوى تدريبي متطور يُقدم بأحدث أساليب التكنولوجيا والذكاء الاصطناعي.", "Advanced training content delivered with the latest technology and AI methods.")</p>
             </div>
 
             <div class="feature-card">
                 <div class="feature-icon" style="background: rgba(59, 130, 246, 0.1); color: #3b82f6;"><i class="fa-solid fa-user-tie"></i></div>
-                <h3>@GetSetting("F2_Title", "نخبة الخبراء")</h3>
-                <p>@GetSetting("F2_Desc", "تتلمذ على يد قامات مهنية تنقل لك خبراتها الحقيقية من سوق العمل.")</p>
+                <h3>@GetSetting("F2_Title", "نخبة الخبراء", "Elite Experts")</h3>
+                <p>@GetSetting("F2_Desc", "تتلمذ على يد قامات مهنية تنقل لك خبراتها الحقيقية من سوق العمل.", "Learn from professional figures who transfer their real market experiences to you.")</p>
             </div>
 
             <div class="feature-card">
                 <div class="feature-icon" style="background: rgba(16, 185, 129, 0.1); color: #10b981;"><i class="fa-solid fa-certificate"></i></div>
-                <h3>@GetSetting("F3_Title", "شهادات موثقة")</h3>
-                <p>@GetSetting("F3_Desc", "احصل على شهادات إتمام قابلة للتحقق الفوري تدعم سيرتك الذاتية.")</p>
+                <h3>@GetSetting("F3_Title", "شهادات موثقة", "Certified Credentials")</h3>
+                <p>@GetSetting("F3_Desc", "احصل على شهادات إتمام قابلة للتحقق الفوري تدعم سيرتك الذاتية.", "Earn verifiable completion certificates to boost your resume.")</p>
             </div>
         </div>
     </div>
 </section>
 
-<!-- Call to Action -->
 <section class="cta-section">
     <div class="container">
         <div class="cta-card">
             <div class="cta-content">
-                <h2>@GetSetting("CTATitle", "جاهز للانطلاق نحو القمة؟")</h2>
-                <p>@GetSetting("CTASubtitle", "لا تضيع المزيد من الوقت. انضم إلى عائلتنا اليوم، وابدأ في بناء قدراتك لكي تكون الخيار الأول في سوق العمل التنافسي.")</p>
+                <h2>@GetSetting("CTATitle", "جاهز للانطلاق نحو القمة؟", "Ready to Reach the Top?")</h2>
+                <p>@GetSetting("CTASubtitle", "لا تضيع المزيد من الوقت. انضم إلى عائلتنا اليوم، وابدأ في بناء قدراتك لكي تكون الخيار الأول في سوق العمل التنافسي.", "Don't waste any more time. Join our family today and start building your capabilities to be the first choice in the competitive job market.")</p>
                 <div>
-                    <a href="/Account/Register" class="btn" style="background: white; color: var(--primary-color); padding: 18px 45px; font-size: 1.2rem; font-weight: 900; border-radius: 50px;">
-                        @GetSetting("CTABtnText", "سجل حسابك مجاناً") <i class="fa-solid fa-rocket" style="margin-right: 8px;"></i>
+                    <a href="/Courses/Open" class="btn" style="background: white; color: var(--primary-color); padding: 18px 45px; font-size: 1.2rem; font-weight: 900; border-radius: 50px;">
+                        @(isRtl ? "تصفح الدورات المتاحة" : "Browse Available Courses") <i class="fa-solid fa-rocket" style="margin-@(isRtl ? "right" : "left"): 8px;"></i>
                     </a>
                 </div>
             </div>
             <div class="cta-image">
-                <img src="@GetSetting("CTAImage", "https://images.unsplash.com/photo-1519389950473-47ba0277781c?auto=format&fit=crop&w=800&q=80")" alt="Join Us" />
+                <img src="@GetSetting("CTAImage", "https://images.unsplash.com/photo-1519389950473-47ba0277781c?auto=format&fit=crop&w=800&q=80", "https://images.unsplash.com/photo-1519389950473-47ba0277781c?auto=format&fit=crop&w=800&q=80")" alt="Join Us" />
             </div>
         </div>
     </div>

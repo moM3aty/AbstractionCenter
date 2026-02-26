@@ -1,8 +1,22 @@
-﻿@inject AbstractionCenter.Data.ApplicationDbContext DbContext
+﻿@using Microsoft.AspNetCore.Localization
+@inject AbstractionCenter.Data.ApplicationDbContext DbContext
 @{
-    ViewData["Title"] = "المسارات التدريبية";
-    var settings = DbContext.SiteSettings.ToDictionary(s => s.Key, s => s.Value);
-    string GetSetting(string key, string fallback = "") => settings.ContainsKey(key) ? settings[key] : fallback;
+    var requestCulture = Context.Features.Get<IRequestCultureFeature>();
+    bool isRtl = requestCulture?.RequestCulture.UICulture.Name == "ar" || requestCulture?.RequestCulture.UICulture.Name == null;
+    ViewData["Title"] = isRtl ? "المسارات التدريبية" : "Training Tracks";
+
+    var allSettings = DbContext.SiteSettings.ToList();
+    var settingsDict = allSettings.ToDictionary(s => s.Key, s => s);
+    string GetSetting(string key, string fallbackAr, string fallbackEn)
+    {
+        if (settingsDict.ContainsKey(key))
+        {
+            var setting = settingsDict[key];
+            if (isRtl) return setting.Value;
+            return !string.IsNullOrEmpty(setting.ValueEn) ? setting.ValueEn : setting.Value;
+        }
+        return isRtl ? fallbackAr : fallbackEn;
+    }
 }
 
 <style>
@@ -46,45 +60,42 @@
 
 <section class="tracks-hero">
     <div class="container" style="position: relative; z-index: 10;">
-        <h1 style="font-size: 3.5rem; color: white; margin-bottom: 20px; font-weight: 900;">@GetSetting("Tracks_HeroTitle", "المسارات التدريبية")</h1>
-        <p style="color: #cbd5e1; font-size: 1.2rem; max-width: 700px; margin: 0 auto;">@GetSetting("Tracks_HeroSubtitle", "نقدم مجموعة متنوعة من المسارات التي تغطي أهم متطلبات سوق العمل الحالي والمستقبلي، مصممة بعناية فائقة.")</p>
+        <h1 style="font-size: 3.5rem; color: white; margin-bottom: 20px; font-weight: 900;">@GetSetting("Tracks_HeroTitle", "المسارات التدريبية", "Training Tracks")</h1>
+        <p style="color: #cbd5e1; font-size: 1.2rem; max-width: 700px; margin: 0 auto;">@GetSetting("Tracks_HeroSubtitle", "نقدم مجموعة متنوعة من المسارات التي تغطي أهم متطلبات سوق العمل الحالي والمستقبلي، مصممة بعناية فائقة.", "We offer a variety of tracks covering the most important requirements of the current and future job market, designed with great care.")</p>
     </div>
 </section>
 
 <section style="padding: 100px 0; background: #f8fafc;">
     <div class="container">
         <div class="grid-3">
-            <!-- Track 1 -->
             <div class="glass-card" style="text-align: center; padding: 50px 30px;">
                 <div class="track-icon-wrapper">
-                    <i class="@GetSetting("Track1_Icon", "fa-solid fa-code")"></i>
+                    <i class="@GetSetting("Track1_Icon", "fa-solid fa-code", "fa-solid fa-code")"></i>
                 </div>
-                <h3 style="color: var(--primary-color); font-weight: 900; font-size: 1.6rem; margin-bottom: 15px;">@GetSetting("Track1_Title", "هندسة البرمجيات والتقنية")</h3>
-                <p style="color: #64748b; line-height: 1.8; font-size: 1.05rem;">@GetSetting("Track1_Desc", "تطوير الويب، الذكاء الاصطناعي، الأمن السيبراني، وبرمجة تطبيقات الهواتف الذكية بأحدث التقنيات.")</p>
+                <h3 style="color: var(--primary-color); font-weight: 900; font-size: 1.6rem; margin-bottom: 15px;">@GetSetting("Track1_Title", "هندسة البرمجيات والتقنية", "Software Engineering & Tech")</h3>
+                <p style="color: #64748b; line-height: 1.8; font-size: 1.05rem;">@GetSetting("Track1_Desc", "تطوير الويب، الذكاء الاصطناعي، الأمن السيبراني، وبرمجة تطبيقات الهواتف الذكية بأحدث التقنيات.", "Web development, AI, cybersecurity, and mobile app programming with the latest technologies.")</p>
             </div>
 
-            <!-- Track 2 -->
             <div class="glass-card" style="text-align: center; padding: 50px 30px;">
                 <div class="track-icon-wrapper">
-                    <i class="@GetSetting("Track2_Icon", "fa-solid fa-chart-line")"></i>
+                    <i class="@GetSetting("Track2_Icon", "fa-solid fa-chart-line", "fa-solid fa-chart-line")"></i>
                 </div>
-                <h3 style="color: var(--primary-color); font-weight: 900; font-size: 1.6rem; margin-bottom: 15px;">@GetSetting("Track2_Title", "الإدارة والأعمال")</h3>
-                <p style="color: #64748b; line-height: 1.8; font-size: 1.05rem;">@GetSetting("Track2_Desc", "التسويق الرقمي، إدارة المشاريع (PMP)، الموارد البشرية، وتحليل الأعمال وريادة المشاريع.")</p>
+                <h3 style="color: var(--primary-color); font-weight: 900; font-size: 1.6rem; margin-bottom: 15px;">@GetSetting("Track2_Title", "الإدارة والأعمال", "Management & Business")</h3>
+                <p style="color: #64748b; line-height: 1.8; font-size: 1.05rem;">@GetSetting("Track2_Desc", "التسويق الرقمي، إدارة المشاريع (PMP)، الموارد البشرية، وتحليل الأعمال وريادة المشاريع.", "Digital marketing, PMP, HR, business analysis, and entrepreneurship.")</p>
             </div>
 
-            <!-- Track 3 -->
             <div class="glass-card" style="text-align: center; padding: 50px 30px;">
                 <div class="track-icon-wrapper">
-                    <i class="@GetSetting("Track3_Icon", "fa-solid fa-language")"></i>
+                    <i class="@GetSetting("Track3_Icon", "fa-solid fa-language", "fa-solid fa-language")"></i>
                 </div>
-                <h3 style="color: var(--primary-color); font-weight: 900; font-size: 1.6rem; margin-bottom: 15px;">@GetSetting("Track3_Title", "اللغات والمهارات الناعمة")</h3>
-                <p style="color: #64748b; line-height: 1.8; font-size: 1.05rem;">@GetSetting("Track3_Desc", "اللغة الإنجليزية المهنية، مهارات التواصل، القيادة، والتحضير لاجتياز المقابلات الشخصية بنجاح.")</p>
+                <h3 style="color: var(--primary-color); font-weight: 900; font-size: 1.6rem; margin-bottom: 15px;">@GetSetting("Track3_Title", "اللغات والمهارات الناعمة", "Languages & Soft Skills")</h3>
+                <p style="color: #64748b; line-height: 1.8; font-size: 1.05rem;">@GetSetting("Track3_Desc", "اللغة الإنجليزية المهنية، مهارات التواصل، القيادة، والتحضير لاجتياز المقابلات الشخصية بنجاح.", "Professional English, communication skills, leadership, and interview preparation.")</p>
             </div>
         </div>
 
         <div style="text-align: center; margin-top: 60px;">
             <a href="/Courses/Open" class="btn btn-primary" style="padding: 18px 40px; font-size: 1.15rem;">
-                تصفح جميع البرامج المتاحة للتسجيل <i class="fa-solid fa-arrow-left"></i>
+                @(isRtl ? "تصفح جميع البرامج المتاحة للتسجيل" : "Browse all available programs") <i class="fa-solid @(isRtl ? "fa-arrow-left" : "fa-arrow-right")"></i>
             </a>
         </div>
     </div>

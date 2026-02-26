@@ -1,254 +1,181 @@
-﻿@inject AbstractionCenter.Data.ApplicationDbContext DbContext
+﻿@using Microsoft.AspNetCore.Localization
+@inject AbstractionCenter.Data.ApplicationDbContext DbContext
 @{
     var allSettings = DbContext.SiteSettings.ToList();
-    var settingsDict = allSettings.ToDictionary(s => s.Key, s => s.Value);
+    var settingsDict = allSettings.ToDictionary(s => s.Key, s => s);
 
-    var socialLinks = allSettings.Where(s => s.Group == "Social").ToList();
-    string GetSetting(string key, string fallback = "") => settingsDict.ContainsKey(key) ? settingsDict[key] : fallback;
+    // --- اكتشاف اللغة الحالية لتحديد الاتجاه والنصوص ---
+    var requestCulture = Context.Features.Get<IRequestCultureFeature>();
+    var currentCulture = requestCulture?.RequestCulture.UICulture.Name ?? "ar";
+    bool isRtl = currentCulture == "ar";
 
-    string GetSocialIcon(string displayName)
+    string GetSetting(string key, string fallbackAr = "", string fallbackEn = "") 
     {
-        string name = displayName.ToLower();
-        if (name.Contains("facebook") || name.Contains("فيسبوك")) return "fa-brands fa-facebook-f";
-        if (name.Contains("twitter") || name.Contains("تويتر") || name.Contains(" x ")) return "fa-brands fa-twitter";
-        if (name.Contains("instagram") || name.Contains("انستجرام")) return "fa-brands fa-instagram";
-        if (name.Contains("linkedin") || name.Contains("لينكد")) return "fa-brands fa-linkedin-in";
-        if (name.Contains("youtube") || name.Contains("يوتيوب")) return "fa-brands fa-youtube";
-        if (name.Contains("tiktok") || name.Contains("تيك توك")) return "fa-brands fa-tiktok";
-        if (name.Contains("whatsapp") || name.Contains("واتساب")) return "fa-brands fa-whatsapp";
-        if (name.Contains("telegram") || name.Contains("تيليجرام")) return "fa-brands fa-telegram";
-        return "fa-solid fa-link";
+        if (settingsDict.ContainsKey(key))
+        {
+            var setting = settingsDict[key];
+            if (isRtl) return setting.Value;
+            return !string.IsNullOrEmpty(setting.ValueEn) ? setting.ValueEn : setting.Value;
+        }
+        return isRtl ? fallbackAr : fallbackEn;
     }
 }
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="@currentCulture" dir="@(isRtl ? "rtl" : "ltr")">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - @GetSetting("SiteName", "أبستراكشن")</title>
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <title>@ViewData["Title"] - @GetSetting("SiteName", "أبستراكشن", "Abstraction")</title>
+    
+    @if(isRtl)
+    {
+        <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    }
+    else
+    {
+        <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    }
+
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    
+    @if(!isRtl)
+    {
+        <style>
+            body { font-family: 'Outfit', 'Segoe UI', sans-serif; }
+            .nav-links { padding-left: 0; }
+            .ms-auto { margin-left: auto !important; margin-right: 0 !important; }
+            .me-3 { margin-right: 1rem !important; margin-left: 0 !important; }
+            .footer-heading::after { left: 0; right: auto; }
+            .cert-ref { text-align: right; }
+        </style>
+    }
     <style>
-        /* --- Premium Public Footer --- */
-        .premium-footer {
-            background-color: #0b1120;
-            color: #e2e8f0;
-            padding: 80px 0 30px;
-            margin-top: auto;
-            border-top: 4px solid var(--secondary-color);
-            position: relative;
-            overflow: hidden;
+        .premium-footer { background-color: #0b1120; color: #e2e8f0; padding: 80px 0 30px; margin-top: auto; border-top: 4px solid var(--secondary-color); position: relative; overflow: hidden; }
+        .premium-footer::before { content: ''; position: absolute; inset: 0; background-image: url('data:image/svg+xml,%3Csvg width=\'60\' height=\'60\' viewBox=\'0 0 60 60\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cg fill=\'none\' fill-rule=\'evenodd\'%3E%3Cg fill=\'%23d4af37\' fill-opacity=\'0.03\'%3E%3Cpath d=\'M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z\'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E'); pointer-events: none; }
+        .footer-grid { display: grid; grid-template-columns: 2fr 1fr 1fr 1.5fr; gap: 50px; margin-bottom: 60px; position: relative; z-index: 10; }
+        .footer-brand { margin-bottom: 20px; font-size: 2.2rem; font-weight: 900; color: white; display: flex; align-items: center; gap: 12px; }
+        .footer-brand i { color: var(--secondary-color); }
+        .footer-brand span { background: linear-gradient(to left, var(--secondary-color), #fef08a); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .footer-text { color: #94a3b8; line-height: 1.9; margin-bottom: 25px; font-size: 1.05rem; }
+        .footer-heading { color: white; font-size: 1.3rem; margin-bottom: 30px; font-weight: 900; position: relative; padding-bottom: 15px; }
+        .footer-heading::after { content: ''; position: absolute; bottom: 0; right: 0; width: 40px; height: 3px; background: var(--secondary-color); border-radius: 5px; }
+        .footer-links { list-style: none; padding: 0; }
+        .footer-links li { margin-bottom: 18px; font-size: 1.05rem; }
+        .footer-links a { color: #cbd5e1; display: flex; align-items: center; gap: 10px; }
+        .footer-links a:hover { color: var(--secondary-color); transform: translateX(@(isRtl ? "-5px" : "5px")); }
+        .social-links { display: flex; gap: 12px; flex-wrap: wrap; }
+        .social-icon { width: 45px; height: 45px; border-radius: 12px; background: rgba(255,255,255,0.05); display: flex; align-items: center; justify-content: center; color: var(--secondary-color); font-size: 1.3rem; border: 1px solid rgba(212, 175, 55, 0.2); transition: 0.3s; }
+        .social-icon:hover { background: var(--secondary-color); color: #0b1120; transform: translateY(-5px); box-shadow: 0 10px 20px rgba(212, 175, 55, 0.3); }
+        .footer-bottom { border-top: 1px solid rgba(255,255,255,0.1); padding-top: 25px; text-align: center; color: #64748b; font-size: 1rem; position: relative; z-index: 10; display: flex; justify-content: space-between; align-items: center; }
+        .mobile-menu-btn { display: none; background: none; border: none; font-size: 1.8rem; color: var(--primary-color); cursor: pointer; }
+        
+        /* --- Premium Language Toggle Pill --- */
+        .lang-pill {
+            display: flex;
+            background: #f1f5f9;
+            border: 1px solid #e2e8f0;
+            border-radius: 50px;
+            padding: 4px;
+            align-items: center;
+        }
+        .lang-pill-btn {
+            background: transparent;
+            border: none;
+            padding: 6px 14px;
+            border-radius: 50px;
+            font-family: inherit;
+            font-weight: 800;
+            font-size: 0.9rem;
+            color: #64748b;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .lang-pill-btn:hover { color: var(--primary-color); }
+        .lang-pill-btn.active {
+            background: linear-gradient(135deg, var(--secondary-color), #fef08a);
+            color: var(--primary-color);
+            box-shadow: 0 4px 10px rgba(212, 175, 55, 0.3);
         }
 
-            .premium-footer::before {
-                content: '';
-                position: absolute;
-                top: 0;
-                left: 0;
-                right: 0;
-                bottom: 0;
-                background-image: url('data:image/svg+xml,%3Csvg width=\'60\' height=\'60\' viewBox=\'0 0 60 60\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cg fill=\'none\' fill-rule=\'evenodd\'%3E%3Cg fill=\'%23d4af37\' fill-opacity=\'0.03\'%3E%3Cpath d=\'M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z\'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E');
-                pointer-events: none;
-            }
-
-        .footer-grid {
-            display: grid;
-            grid-template-columns: 2fr 1fr 1fr 1.5fr;
-            gap: 50px;
-            margin-bottom: 60px;
+        /* --- Global Notification Bell Styling --- */
+        .notif-bell-link {
             position: relative;
-            z-index: 10;
-        }
-
-        .footer-brand {
-            margin-bottom: 20px;
-            font-size: 2.2rem;
-            font-weight: 900;
-            color: white;
+            color: var(--primary-color);
+            font-size: 1.4rem;
+            transition: 0.3s;
             display: flex;
             align-items: center;
-            gap: 12px;
-        }
-
-            .footer-brand i {
-                color: var(--secondary-color);
-            }
-
-            .footer-brand span {
-                background: linear-gradient(to left, var(--secondary-color), #fef08a);
-                -webkit-background-clip: text;
-                -webkit-text-fill-color: transparent;
-            }
-
-        .footer-text {
-            color: #94a3b8;
-            line-height: 1.9;
-            margin-bottom: 25px;
-            font-size: 1.05rem;
-        }
-
-        .footer-heading {
-            color: white;
-            font-size: 1.3rem;
-            margin-bottom: 30px;
-            font-weight: 900;
-            position: relative;
-            padding-bottom: 15px;
-        }
-
-            .footer-heading::after {
-                content: '';
-                position: absolute;
-                bottom: 0;
-                right: 0;
-                width: 40px;
-                height: 3px;
-                background: var(--secondary-color);
-                border-radius: 5px;
-            }
-
-        .footer-links {
-            list-style: none;
-            padding: 0;
-        }
-
-            .footer-links li {
-                margin-bottom: 18px;
-                font-size: 1.05rem;
-            }
-
-            .footer-links a {
-                color: #cbd5e1;
-                display: flex;
-                align-items: center;
-                gap: 10px;
-            }
-
-                .footer-links a:hover {
-                    color: var(--secondary-color);
-                    transform: translateX(-5px);
-                }
-
-        .social-links {
-            display: flex;
-            gap: 12px;
-            flex-wrap: wrap;
-        }
-
-        .social-icon {
+            justify-content: center;
             width: 45px;
             height: 45px;
             border-radius: 12px;
-            background: rgba(255,255,255,0.05);
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            background: #f1f5f9;
+            border: 1px solid #e2e8f0;
+        }
+        .notif-bell-link:hover {
             color: var(--secondary-color);
-            font-size: 1.3rem;
-            border: 1px solid rgba(212, 175, 55, 0.2);
-            transition: 0.3s;
+            border-color: var(--secondary-color);
+            background: #ffffff;
+            transform: translateY(-2px);
+        }
+        .bell-badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            width: 10px;
+            height: 10px;
+            background: #ef4444;
+            border-radius: 50%;
+            border: 2px solid #ffffff;
+            box-shadow: 0 0 5px rgba(239, 68, 68, 0.5);
         }
 
-            .social-icon:hover {
-                background: var(--secondary-color);
-                color: #0b1120;
-                transform: translateY(-5px);
-                box-shadow: 0 10px 20px rgba(212, 175, 55, 0.3);
-            }
-
-        .footer-bottom {
-            border-top: 1px solid rgba(255,255,255,0.1);
-            padding-top: 25px;
-            text-align: center;
-            color: #64748b;
-            font-size: 1rem;
-            position: relative;
-            z-index: 10;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        /* Mobile Menu Toggle */
-        .mobile-menu-btn {
-            display: none;
-            background: none;
-            border: none;
-            font-size: 1.8rem;
-            color: var(--primary-color);
-            cursor: pointer;
-        }
-
-        @@media (max-width: 992px) {
-            .footer-grid
-
-        {
-            grid-template-columns: 1fr 1fr;
-        }
-
-        .mobile-menu-btn {
-            display: block;
-        }
-
-        }
-        @@media (max-width: 768px) {
-            .footer-grid
-
-        {
-            grid-template-columns: 1fr;
-            text-align: center;
-        }
-
-        .footer-heading::after {
-            left: 50%;
-            right: auto;
-            transform: translateX(-50%);
-        }
-
-        .footer-links a, .social-links, .footer-brand {
-            justify-content: center;
-        }
-
-        .footer-bottom {
-            flex-direction: column;
-            gap: 15px;
-        }
-
-        }
+        @@media (max-width: 992px) { .footer-grid { grid-template-columns: 1fr 1fr; } .mobile-menu-btn { display: block; } .nav-links { display: none; } }
+        @@media (max-width: 768px) { .footer-grid { grid-template-columns: 1fr; text-align: center; } .footer-heading::after { left: 50%; right: auto; transform: translateX(-50%); } .footer-links a, .social-links, .footer-brand { justify-content: center; } .footer-bottom { flex-direction: column; gap: 15px; } }
     </style>
 </head>
-<body>
+<body style="display: flex; flex-direction: column; min-height: 100vh;">
     <nav class="navbar" id="mainNavbar">
         <div class="container" style="display: flex; justify-content: space-between; align-items: center;">
             <a href="/" class="logo">
-                <i class="fa-solid fa-crown"></i> <span>@GetSetting("SiteName", "أبستراكشن")</span>
+                <i class="fa-solid fa-crown"></i> <span>@GetSetting("SiteName", "أبستراكشن", "Abstraction")</span>
             </a>
-
+            
             <ul class="nav-links">
-                <li><a href="/" class="@(ViewContext.RouteData.Values["Action"]?.ToString() == "Index" && ViewContext.RouteData.Values["Controller"]?.ToString() == "Home" ? "active" : "")">الرئيسية</a></li>
-                <li><a href="/Home/About" class="@(ViewContext.RouteData.Values["Action"]?.ToString() == "About" ? "active" : "")">@GetSetting("Nav_About", "من نحن")</a></li>
-                <li><a href="/Home/Tracks" class="@(ViewContext.RouteData.Values["Action"]?.ToString() == "Tracks" ? "active" : "")">@GetSetting("Nav_Tracks", "المسارات")</a></li>
-                <li><a href="/Home/Staff" class="@(ViewContext.RouteData.Values["Action"]?.ToString() == "Staff" ? "active" : "")">@GetSetting("Nav_Staff", "الخبراء")</a></li>
-                <li><a href="/Courses/Open" class="@(ViewContext.RouteData.Values["Controller"]?.ToString() == "Courses" ? "active" : "")">@GetSetting("Nav_Courses", "البرامج")</a></li>
-                <li><a href="/Home/VerifyCertificate" class="@(ViewContext.RouteData.Values["Action"]?.ToString() == "VerifyCertificate" ? "active" : "")">@GetSetting("Nav_Verify", "الشهادات")</a></li>
-                <li><a href="/Home/Contact" class="@(ViewContext.RouteData.Values["Action"]?.ToString() == "Contact" ? "active" : "")">@GetSetting("Nav_Contact", "تواصل معنا")</a></li>
+                <li><a href="/" class="@(ViewContext.RouteData.Values["Action"]?.ToString() == "Index" && ViewContext.RouteData.Values["Controller"]?.ToString() == "Home" ? "active" : "")">@(isRtl ? "الرئيسية" : "Home")</a></li>
+                <li><a href="/Home/About" class="@(ViewContext.RouteData.Values["Action"]?.ToString() == "About" ? "active" : "")">@GetSetting("Nav_About", "من نحن", "About Us")</a></li>
+                <li><a href="/Home/Tracks" class="@(ViewContext.RouteData.Values["Action"]?.ToString() == "Tracks" ? "active" : "")">@GetSetting("Nav_Tracks", "المسارات", "Tracks")</a></li>
+                <li><a href="/Home/Staff" class="@(ViewContext.RouteData.Values["Action"]?.ToString() == "Staff" ? "active" : "")">@GetSetting("Nav_Staff", "الخبراء", "Experts")</a></li>
+                <li><a href="/Courses/Open" class="@(ViewContext.RouteData.Values["Controller"]?.ToString() == "Courses" ? "active" : "")">@GetSetting("Nav_Courses", "البرامج", "Programs")</a></li>
+                <li><a href="/Home/VerifyCertificate" class="@(ViewContext.RouteData.Values["Action"]?.ToString() == "VerifyCertificate" ? "active" : "")">@GetSetting("Nav_Verify", "الشهادات", "Certificates")</a></li>
             </ul>
 
-            <div class="nav-actions">
+            <div class="nav-actions" style="display: flex; align-items: center; gap: 15px;">
+                
+                <!-- Premium Language Toggle -->
+                <form id="langForm" asp-controller="Language" asp-action="SetLanguage" method="post" class="lang-pill" style="margin: 0;">
+                    <input type="hidden" name="returnUrl" value="@Context.Request.Path" />
+                    <button type="submit" name="culture" value="ar" class="lang-pill-btn @(isRtl ? "active" : "")">عربي</button>
+                    <button type="submit" name="culture" value="en" class="lang-pill-btn @(!isRtl ? "active" : "")">EN</button>
+                </form>
+
                 @if (User.Identity.IsAuthenticated)
                 {
-                    <a href="/Account/Login" class="btn btn-primary"><i class="fa-solid fa-grip"></i> لوحة التحكم</a>
+                    <!-- Global Notification Bell -->
+                    <a href="/Student/Notifications" class="notif-bell-link" title="@(isRtl ? "الإشعارات" : "Notifications")">
+                        <i class="fa-regular fa-bell"></i>
+                        <span class="bell-badge"></span>
+                    </a>
+
+                    <a href="/Account/Login" class="btn btn-primary"><i class="fa-solid fa-grip"></i> @(isRtl ? "لوحة التحكم" : "Dashboard")</a>
                 }
                 else
                 {
-                    <a href="/Account/Login" class="btn btn-outline" style="display: none;"><i class="fa-solid fa-user"></i> دخول</a>
-                    <a href="/Courses/Open" class="btn btn-primary">ابدأ رحلتك</a>
+                    <a href="/Account/Login" class="btn btn-primary"><i class="fa-solid fa-user"></i> @(isRtl ? "تسجيل دخول" : "Login")</a>
                 }
             </div>
-
-            <!-- Mobile menu button -->
-            <button class="mobile-menu-btn"><i class="fa-solid fa-bars"></i></button>
+            <button class="mobile-menu-btn"><i class="fa-solid fa-bars-staggered"></i></button>
         </div>
     </nav>
 
@@ -260,60 +187,67 @@
         <div class="container">
             <div class="footer-grid">
                 <div>
-                    <div class="footer-brand"><i class="fa-solid fa-crown"></i> <span>@GetSetting("SiteName")</span></div>
-                    <p class="footer-text">@GetSetting("FooterDesc")</p>
+                    <div class="footer-brand"><i class="fa-solid fa-crown"></i> <span>@GetSetting("SiteName", "أبستراكشن", "Abstraction")</span></div>
+                    <p class="footer-text">@GetSetting("FooterDesc", "منصتك الأولى للتدريب وبناء القدرات المهنية.", "Your premier platform for training and professional capacity building.")</p>
+                    
+                    <!-- تم دمج روابط السوشيال ميديا مع نظام الإعدادات للتحكم فيها من الأدمن -->
                     <div class="social-links">
-                        @foreach (var link in socialLinks)
-                        {
-                            <a href="@link.Value" class="social-icon" target="_blank" title="@link.DisplayName">
-                                <i class="@GetSocialIcon(link.DisplayName)"></i>
-                            </a>
-                        }
+                        <a href="@GetSetting("Social_Facebook", "https://facebook.com", "https://facebook.com")" class="social-icon" target="_blank" title="Facebook"><i class="fa-brands fa-facebook-f"></i></a>
+                        <a href="@GetSetting("Social_Twitter", "https://twitter.com", "https://twitter.com")" class="social-icon" target="_blank" title="Twitter/X"><i class="fa-brands fa-x-twitter"></i></a>
+                        <a href="@GetSetting("Social_Instagram", "https://instagram.com", "https://instagram.com")" class="social-icon" target="_blank" title="Instagram"><i class="fa-brands fa-instagram"></i></a>
+                        <a href="@GetSetting("Social_LinkedIn", "https://linkedin.com", "https://linkedin.com")" class="social-icon" target="_blank" title="LinkedIn"><i class="fa-brands fa-linkedin-in"></i></a>
+                        <a href="@GetSetting("Social_YouTube", "https://youtube.com", "https://youtube.com")" class="social-icon" target="_blank" title="YouTube"><i class="fa-brands fa-youtube"></i></a>
+                        <a href="@GetSetting("Social_WhatsApp", "https://wa.me/201000000000", "https://wa.me/201000000000")" class="social-icon" target="_blank" title="WhatsApp"><i class="fa-brands fa-whatsapp"></i></a>
                     </div>
                 </div>
 
                 <div>
-                    <h4 class="footer-heading">روابط هامة</h4>
+                    <h4 class="footer-heading">@(isRtl ? "روابط هامة" : "Quick Links")</h4>
                     <ul class="footer-links">
-                        <li><a href="/Home/About"><i class="fa-solid fa-angle-left"></i> @GetSetting("Nav_About", "من نحن")</a></li>
-                        <li><a href="/Courses/Open"><i class="fa-solid fa-angle-left"></i> @GetSetting("Nav_Courses", "البرامج المتاحة")</a></li>
-                        <li><a href="/Home/Tracks"><i class="fa-solid fa-angle-left"></i> @GetSetting("Nav_Tracks", "مساراتنا")</a></li>
-                        <li><a href="/Home/VerifyCertificate"><i class="fa-solid fa-angle-left"></i> @GetSetting("Nav_Verify", "التوثيق")</a></li>
+                        <li><a href="/Home/About"><i class="fa-solid @(isRtl ? "fa-angle-left" : "fa-angle-right")"></i> @GetSetting("Nav_About", "من نحن", "About Us")</a></li>
+                        <li><a href="/Courses/Open"><i class="fa-solid @(isRtl ? "fa-angle-left" : "fa-angle-right")"></i> @GetSetting("Nav_Courses", "البرامج المتاحة", "Available Programs")</a></li>
+                        <li><a href="/Home/Tracks"><i class="fa-solid @(isRtl ? "fa-angle-left" : "fa-angle-right")"></i> @GetSetting("Nav_Tracks", "مساراتنا", "Our Tracks")</a></li>
+                        <li><a href="/Home/VerifyCertificate"><i class="fa-solid @(isRtl ? "fa-angle-left" : "fa-angle-right")"></i> @GetSetting("Nav_Verify", "التحقق من الشهادة", "Verify Certificate")</a></li>
+                    </ul>
+                </div>
+
+                <!-- تم إصلاح قسم التواصل معنا -->
+                <div>
+                    <h4 class="footer-heading">@(isRtl ? "تواصل معنا" : "Contact Us")</h4>
+                    <ul class="footer-links">
+                        <li>
+                            <span style="color: #cbd5e1; display:flex; align-items:center; gap:10px;">
+                                <i class="fa-solid fa-phone" style="color: var(--secondary-color); width: 20px; text-align: center;"></i> 
+                                <span dir="ltr">@GetSetting("ContactPhone", "+20 100 000 0000", "+20 100 000 0000")</span>
+                            </span>
+                        </li>
+                        <li>
+                            <span style="color: #cbd5e1; display:flex; align-items:center; gap:10px;">
+                                <i class="fa-solid fa-envelope" style="color: var(--secondary-color); width: 20px; text-align: center;"></i> 
+                                <span dir="ltr">@GetSetting("ContactEmail", "info@abstraction.com", "info@abstraction.com")</span>
+                            </span>
+                        </li>
+                        <li>
+                            <span style="color: #cbd5e1; display:flex; align-items:center; gap:10px;">
+                                <i class="fa-solid fa-location-dot" style="color: var(--secondary-color); width: 20px; text-align: center;"></i> 
+                                <span>@GetSetting("ContactAddress", "القاهرة، جمهورية مصر العربية", "Cairo, Egypt")</span>
+                            </span>
+                        </li>
                     </ul>
                 </div>
 
                 <div>
-                    <h4 class="footer-heading">تواصل معنا</h4>
-                    <ul class="footer-links">
-                        @foreach (var contact in allSettings.Where(s => s.Group == "Contact" && !s.Key.Contains("Hero")))
-                        {
-                            <li>
-                                <span style="color: #cbd5e1; display:flex; align-items:center; gap:8px;">
-                                    @{
-                                        string icon = "fa-info-circle";
-                                        if (contact.DisplayName.Contains("هاتف") || contact.DisplayName.Contains("موبايل") || contact.DisplayName.Contains("رقم")) icon = "fa-phone";
-                                        else if (contact.DisplayName.Contains("بريد") || contact.DisplayName.Contains("إيميل")) icon = "fa-envelope";
-                                        else if (contact.DisplayName.Contains("عنوان") || contact.DisplayName.Contains("موقع") || contact.DisplayName.Contains("مكان")) icon = "fa-location-dot";
-                                    }
-                                    <i class="fa-solid @icon" style="color: var(--secondary-color);"></i> @contact.Value
-                                </span>
-                            </li>
-                        }
-                    </ul>
-                </div>
-
-                <div>
-                    <h4 class="footer-heading">إنضم كخبير</h4>
-                    <p class="footer-text" style="margin-bottom: 15px;">هل تمتلك الخبرة والشغف للتدريس؟ انضم لنخبة المحاضرين لدينا.</p>
+                    <h4 class="footer-heading">@(isRtl ? "إنضم كخبير" : "Join as Expert")</h4>
+                    <p class="footer-text" style="margin-bottom: 15px;">@(isRtl ? "هل تمتلك الخبرة والشغف للتدريس؟ انضم لنخبة المحاضرين لدينا." : "Do you have the expertise and passion to teach? Join our elite instructors.")</p>
                     <a href="/Home/JoinAsInstructor" class="btn btn-outline" style="border-color: rgba(255,255,255,0.2); color: white; width: 100%;">
-                        قدم طلب انضمام <i class="fa-solid fa-chalkboard-user"></i>
+                        @(isRtl ? "قدم طلب انضمام" : "Apply Now") <i class="fa-solid fa-chalkboard-user"></i>
                     </a>
                 </div>
             </div>
 
             <div class="footer-bottom">
-                <span>&copy; @DateTime.Now.Year - @GetSetting("SiteName"). جميع الحقوق محفوظة.</span>
-                <span style="color: #475569; font-size: 0.9rem;">@GetSetting("CopyrightText", "تم التطوير بواسطة GMTWEB")</span>
+                <span>&copy; @DateTime.Now.Year - @GetSetting("SiteName", "أبستراكشن", "Abstraction"). @(isRtl ? "جميع الحقوق محفوظة." : "All Rights Reserved.")</span>
+                <span style="color: #475569; font-size: 0.9rem;">@GetSetting("CopyrightText", isRtl ? "تم التطوير بواسطة GMTWEB" : "Developed by GMTWEB", "Developed by GMTWEB")</span>
             </div>
         </div>
     </footer>

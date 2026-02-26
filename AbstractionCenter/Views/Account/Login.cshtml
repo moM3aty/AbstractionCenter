@@ -1,5 +1,8 @@
-﻿@{
-    ViewData["Title"] = "تسجيل الدخول";
+﻿@using Microsoft.AspNetCore.Localization
+@{
+    var requestCulture = Context.Features.Get<IRequestCultureFeature>();
+    bool isRtl = requestCulture?.RequestCulture.UICulture.Name == "ar" || requestCulture?.RequestCulture.UICulture.Name == null;
+    ViewData["Title"] = isRtl ? "تسجيل الدخول" : "Login";
 }
 
 <style>
@@ -31,11 +34,13 @@
         border: 1px solid rgba(212, 175, 55, 0.2);
         position: relative;
         z-index: 10;
+        flex-direction: @(isRtl ? "row" : "row-reverse");
     }
 
     .auth-form-section {
         flex: 1.2;
         padding: 60px 50px;
+        text-align: @(isRtl ? "right" : "left");
     }
 
     .auth-image-section {
@@ -55,7 +60,7 @@
             position: absolute;
             top: 0;
             bottom: 0;
-            left: 0;
+            @(isRtl ? "left" : "right"): 0;
             width: 6px;
             background: var(--secondary-color);
         }
@@ -101,6 +106,7 @@
         font-size: 1.05rem;
         background: #f8fafc;
         transition: 0.3s;
+        text-align: @(isRtl ? "right" : "left");
     }
 
         .form-control:focus {
@@ -127,6 +133,7 @@
         justify-content: center;
         gap: 10px;
         margin-top: 15px;
+        font-family: inherit;
     }
 
         .btn-login:hover {
@@ -135,36 +142,33 @@
         }
 
     @@media (max-width: 992px) {
-        .auth-card
-
-    {
-        flex-direction: column-reverse;
-    }
-
-    .auth-image-section {
-        padding: 40px 20px;
-    }
-
-        .auth-image-section::after {
-            width: 100%;
-            height: 6px;
-            top: auto;
-            left: 0;
-            bottom: 0;
+        .auth-card {
+            flex-direction: column-reverse;
         }
 
-    .auth-form-section {
-        padding: 40px 30px;
-    }
+        .auth-image-section {
+            padding: 40px 20px;
+        }
 
+            .auth-image-section::after {
+                width: 100%;
+                height: 6px;
+                top: auto;
+                left: 0;
+                bottom: 0;
+            }
+
+        .auth-form-section {
+            padding: 40px 30px;
+        }
     }
 </style>
 
 <div class="auth-bg">
     <div class="auth-card">
         <div class="auth-form-section">
-            <h2 style="font-size: 2.5rem; color: var(--primary-color); margin-bottom: 10px; font-weight: 900;">مرحباً بعودتك!</h2>
-            <p style="color: #64748b; margin-bottom: 40px; font-size: 1.15rem;">سجل دخولك للوصول إلى مساحتك الأكاديمية الملكية.</p>
+            <h2 style="font-size: 2.5rem; color: var(--primary-color); margin-bottom: 10px; font-weight: 900;">@(isRtl ? "مرحباً بعودتك!" : "Welcome Back!")</h2>
+            <p style="color: #64748b; margin-bottom: 40px; font-size: 1.15rem;">@(isRtl ? "سجل دخولك للوصول إلى مساحتك الأكاديمية الملكية." : "Sign in to access your premium academic space.")</p>
 
             @if (!ViewData.ModelState.IsValid)
             {
@@ -177,34 +181,34 @@
                 @Html.AntiForgeryToken()
 
                 <div class="form-group">
-                    <label for="email">البريد الإلكتروني</label>
-                    <input type="email" id="email" name="email" class="form-control" placeholder="name@example.com" required />
+                    <label for="email">@(isRtl ? "البريد الإلكتروني" : "Email Address")</label>
+                    <input type="email" id="email" name="email" class="form-control" placeholder="name@example.com" required dir="ltr" style="text-align: left;" />
                 </div>
 
                 <div class="form-group">
-                    <label for="password">كلمة المرور</label>
-                    <input type="password" id="password" name="password" class="form-control" placeholder="••••••••" required />
+                    <label for="password">@(isRtl ? "كلمة المرور" : "Password")</label>
+                    <input type="password" id="password" name="password" class="form-control" placeholder="••••••••" required dir="ltr" style="text-align: left;" />
                 </div>
 
                 <div class="form-group" style="display: flex; align-items: center; gap: 10px;">
                     <input type="checkbox" id="rememberMe" name="rememberMe" style="width: 20px; height: 20px; accent-color: var(--secondary-color); cursor: pointer;" />
-                    <label for="rememberMe" style="margin: 0; font-weight: 700; cursor: pointer; color: #475569;">تذكر بيانات الدخول</label>
+                    <label for="rememberMe" style="margin: 0; font-weight: 700; cursor: pointer; color: #475569;">@(isRtl ? "تذكر بيانات الدخول" : "Remember me")</label>
                 </div>
 
                 <button type="submit" class="btn-login">
-                    تسجيل الدخول <i class="fa-solid fa-arrow-left-to-bracket"></i>
+                    @(isRtl ? "تسجيل الدخول" : "Login") <i class="fa-solid @(isRtl ? "fa-arrow-left-to-bracket" : "fa-arrow-right-to-bracket")" style="margin-@(isRtl ? "right" : "left"): 8px;"></i>
                 </button>
 
-                <p style="text-align: center; margin-top: 30px; color: #64748b; font-weight: 700; font-size: 1.1rem;">
-                    ليس لديك حساب؟ <a href="/Account/Register" style="color: var(--primary-color); border-bottom: 2px solid var(--secondary-color); padding-bottom: 2px; transition: 0.3s;">أنشئ حسابك الآن</a>
+                <p style="text-align: center; margin-top: 30px; color: #64748b; font-weight: 700; font-size: 1.05rem;">
+                    <i class="fa-solid fa-lock" style="color: var(--secondary-color);"></i> @(isRtl ? "منصة مغلقة: الحسابات تُمنح للمسجلين رسمياً فقط." : "Closed Platform: Accounts are granted to officially registered users only.")
                 </p>
             </form>
         </div>
 
         <div class="auth-image-section">
             <i class="fa-solid fa-crown"></i>
-            <h3>ابستراكشن سنتر</h3>
-            <p>بوابتك نحو التميز الأكاديمي والمهني. تابع تقدمك وتفاعل مع دوراتك في بيئة تعليمية راقية ومتطورة.</p>
+            <h3>@(isRtl ? "ابستراكشن سنتر" : "Abstraction Center")</h3>
+            <p>@(isRtl ? "بوابتك نحو التميز الأكاديمي والمهني. تابع تقدمك وتفاعل مع دوراتك في بيئة تعليمية راقية ومتطورة." : "Your gateway to academic and professional excellence. Track your progress and interact with your courses in a refined educational environment.")</p>
         </div>
     </div>
 </div>

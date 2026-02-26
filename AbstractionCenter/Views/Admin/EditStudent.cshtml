@@ -1,0 +1,231 @@
+﻿@model AbstractionCenter.Models.Entities.ApplicationUser
+@{
+    ViewData["Title"] = "تعديل بيانات العضو";
+}
+
+<style>
+    .premium-form-card {
+        background: #ffffff;
+        border-radius: 30px;
+        padding: 50px;
+        box-shadow: 0 20px 50px -15px rgba(11, 17, 32, 0.1);
+        border: 1px solid rgba(212, 175, 55, 0.15);
+        max-width: 900px;
+        margin: 0 auto;
+    }
+
+    .form-header {
+        text-align: center;
+        margin-bottom: 45px;
+        position: relative;
+    }
+
+    .form-header-icon {
+        width: 90px;
+        height: 90px;
+        background: linear-gradient(135deg, rgba(212, 175, 55, 0.15), rgba(212, 175, 55, 0.05));
+        color: #d4af37;
+        border-radius: 25px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2.8rem;
+        margin: 0 auto 20px;
+        border: 1px solid rgba(212, 175, 55, 0.3);
+        transform: rotate(10deg);
+    }
+
+    .form-header h2 {
+        color: #0b1120;
+        font-size: 2.2rem;
+        font-weight: 900;
+        margin-bottom: 10px;
+    }
+
+    .form-header p {
+        color: #64748b;
+        font-size: 1.1rem;
+    }
+
+    .form-section-title {
+        font-size: 1.1rem;
+        font-weight: 900;
+        color: #0b1120;
+        margin: 40px 0 20px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        border-bottom: 2px solid #f1f5f9;
+        padding-bottom: 10px;
+    }
+
+        .form-section-title i {
+            color: #d4af37;
+        }
+
+    .form-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 25px;
+    }
+
+    .form-group {
+        margin-bottom: 25px;
+    }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: 800;
+            color: #0b1120;
+            font-size: 1.05rem;
+        }
+
+    .form-control {
+        width: 100%;
+        padding: 16px 20px;
+        border: 2px solid #e2e8f0;
+        border-radius: 16px;
+        font-family: inherit;
+        font-size: 1rem;
+        background: #f8fafc;
+        transition: all 0.3s ease;
+        color: #1e293b;
+    }
+
+        .form-control:focus {
+            outline: none;
+            border-color: #d4af37;
+            background: #ffffff;
+            box-shadow: 0 0 0 4px rgba(212, 175, 55, 0.1);
+        }
+
+        .form-control:disabled {
+            background: #f1f5f9;
+            cursor: not-allowed;
+            color: #94a3b8;
+        }
+
+    .btn-save-pro {
+        background: linear-gradient(135deg, #0b1120, #1e293b);
+        color: #d4af37;
+        border: none;
+        padding: 20px;
+        border-radius: 50px;
+        font-weight: 900;
+        font-size: 1.25rem;
+        cursor: pointer;
+        box-shadow: 0 15px 30px -10px rgba(11, 17, 32, 0.3);
+        transition: all 0.4s ease;
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 12px;
+        margin-top: 20px;
+    }
+
+        .btn-save-pro:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px -10px rgba(11, 17, 32, 0.5);
+            color: white;
+        }
+
+    .security-notice {
+        background: rgba(11, 17, 32, 0.03);
+        border: 1px solid #e2e8f0;
+        padding: 20px;
+        border-radius: 16px;
+        margin-bottom: 25px;
+        font-size: 0.9rem;
+        color: #64748b;
+        font-weight: 600;
+    }
+
+    @@media (max-width: 768px) {
+        .form-grid
+
+    {
+        grid-template-columns: 1fr;
+    }
+
+    .premium-form-card {
+        padding: 30px 20px;
+    }
+
+    }
+</style>
+
+<div>
+    <div style="margin-bottom: 30px;">
+        <a href="/Admin/ManageUsers" style="color: #0b1120; font-weight: 900; text-decoration: none; background: white; padding: 12px 25px; border-radius: 15px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); display: inline-flex; align-items: center; gap: 10px;">
+            <i class="fa-solid fa-arrow-right"></i> العودة لقائمة الأعضاء
+        </a>
+    </div>
+
+    <div class="premium-form-card">
+        <div class="form-header">
+            <div class="form-header-icon"><i class="fa-solid fa-user-gear"></i></div>
+            <h2>تحديث بيانات العضو</h2>
+            <p>أنت تقوم بتحديث الملف الشخصي لـ: <strong style="color: #d4af37;">@Model.Email</strong></p>
+        </div>
+
+        <form asp-action="EditStudent" method="post">
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="Id" value="@Model.Id" />
+
+            <!-- القسم الأول: المعلومات الأساسية -->
+            <div class="form-section-title"><i class="fa-solid fa-address-card"></i> المعلومات الأساسية</div>
+            <div class="form-grid">
+                <div class="form-group">
+                    <label>الاسم بالكامل</label>
+                    <input type="text" name="FullName" value="@Model.FullName" class="form-control" placeholder="أدخل الاسم الرباعي..." required />
+                </div>
+                <div class="form-group">
+                    <label>البريد الإلكتروني (اسم المستخدم)</label>
+                    <input type="email" value="@Model.Email" class="form-control" disabled />
+                    <small style="color: #94a3b8; font-weight: 700;">لا يمكن تغيير البريد الإلكتروني لدواعي أمان النظام.</small>
+                </div>
+            </div>
+
+            <div class="form-grid">
+                <div class="form-group">
+                    <label>رقم الهاتف / الواتساب</label>
+                    <input type="text" name="PhoneNumber" value="@Model.PhoneNumber" class="form-control" placeholder="01000000000" />
+                </div>
+                <div class="form-group">
+                    <label>التخصص أو المسمى الوظيفي</label>
+                    <input type="text" name="Specialization" value="@Model.Specialization" class="form-control" placeholder="مثال: طالب، مبرمج، محاسب..." />
+                </div>
+            </div>
+
+            <!-- القسم الثاني: تغيير كلمة المرور (جديد) -->
+            <div class="form-section-title"><i class="fa-solid fa-shield-halved"></i> أمان الحساب وتعديل كلمة المرور</div>
+            <div class="security-notice">
+                <i class="fa-solid fa-circle-info" style="color: #d4af37;"></i> اترك حقول كلمة المرور فارغة إذا كنت لا ترغب في تغييرها.
+            </div>
+
+            <div class="form-grid">
+                <div class="form-group">
+                    <label>كلمة المرور الجديدة</label>
+                    <input type="password" name="NewPassword" id="NewPassword" class="form-control" placeholder="••••••••" minlength="6" />
+                </div>
+                <div class="form-group">
+                    <label>تأكيد كلمة المرور الجديدة</label>
+                    <input type="password" name="ConfirmPassword" id="ConfirmPassword" class="form-control" placeholder="••••••••" minlength="6" />
+                </div>
+            </div>
+
+            @if (!ViewData.ModelState.IsValid)
+            {
+                <div style="background: rgba(239, 68, 68, 0.1); color: #dc2626; padding: 20px; border-radius: 16px; margin-top: 20px; font-weight: 800; border: 1px solid rgba(239, 68, 68, 0.2);">
+                    @Html.ValidationSummary(false, "", new { @style = "list-style-type: none; margin: 0; padding: 0;" })
+                </div>
+            }
+
+            <button type="submit" class="btn-save-pro">
+                حفظ التغييرات النهائية <i class="fa-solid fa-check-double"></i>
+            </button>
+        </form>
+    </div>
+</div>

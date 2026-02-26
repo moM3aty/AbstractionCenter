@@ -1,9 +1,8 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using AbstractionCenter.Models.Entities;
-using AbstractionCenter.Services;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
+using System.Linq;
 
 namespace AbstractionCenter.Controllers
 {
@@ -11,13 +10,11 @@ namespace AbstractionCenter.Controllers
     {
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly UserManager<ApplicationUser> _userManager;
-        private readonly IFileUploaderService _fileUploader; // خدمة رفع الملفات
 
-        public AccountController(SignInManager<ApplicationUser> signInManager, UserManager<ApplicationUser> userManager, IFileUploaderService fileUploader)
+        public AccountController(SignInManager<ApplicationUser> signInManager, UserManager<ApplicationUser> userManager)
         {
             _signInManager = signInManager;
             _userManager = userManager;
-            _fileUploader = fileUploader;
         }
 
         [HttpGet]
@@ -37,18 +34,19 @@ namespace AbstractionCenter.Controllers
                 var user = await _userManager.FindByEmailAsync(email);
                 if (user != null)
                 {
-                    // --- تنفيذ ميزة الطرد للجهزة الأخرى ---
-                    // بتحديث الـ SecurityStamp يتم إبطال مفعول كل الجلسات السابقة (Cookies) المفتوحة لهذا الحساب
+                    if (!user.IsActive)
+                    {
+                        ModelState.AddModelError(string.Empty, "عذراً، هذا الحساب غير مفعل حالياً. يرجى مراجعة الإدارة.");
+                        return View();
+                    }
+
                     await _userManager.UpdateSecurityStampAsync(user);
 
                     var result = await _signInManager.PasswordSignInAsync(user, password, rememberMe, lockoutOnFailure: false);
 
                     if (result.Succeeded)
                     {
-                        var roles = await _userManager.GetRolesAsync(user);
-                        if (roles.Contains("Admin")) return RedirectToAction("Index", "Admin");
-                        if (roles.Contains("Instructor")) return RedirectToAction("Dashboard", "Instructor");
-                        return RedirectToAction("Dashboard", "Student");
+                        return RedirectToDashboard();
                     }
                 }
                 ModelState.AddModelError(string.Empty, "البريد الإلكتروني أو كلمة المرور غير صحيحة.");
@@ -56,58 +54,32 @@ namespace AbstractionCenter.Controllers
             return View();
         }
 
-        [HttpGet]
-        public IActionResult Register()
-        {
-            if (User.Identity.IsAuthenticated) return RedirectToDashboard();
-            ViewData["Title"] = "إنشاء حساب جديد";
-            return View();
-        }
-
+        // --- الوظيفة الجديدة لإصلاح خطأ تغيير الباسورد عبر AJAX ---
         [HttpPost]
         [ValidateAntiForgeryToken]
-        // تم إضافة استقبال الصورة الشخصية ProfilePictureFile
-        public async Task<IActionResult> Register(string fullName, string email, string password, string confirmPassword, IFormFile? profilePictureFile)
+        public async Task<IActionResult> AdminResetPassword(string userId, string newPassword)
         {
-            if (password != confirmPassword)
+            // التأكد من أن المستخدم الحالي لديه صلاحية (أدمن أو هو نفسه المحاضر)
+            var currentUser = await _userManager.GetUserAsync(User);
+            if (currentUser == null) return Json(new { success = false, message = "غير مصرح لك بهذا الإجراء." });
+
+            var userToChange = await _userManager.FindByIdAsync(userId);
+            if (userToChange == null) return Json(new { success = false, message = "المستخدم غير موجود." });
+
+            // إزالة كلمة المرور القديمة وتعيين الجديدة (طريقة Reset الإدارية)
+            var removeResult = await _userManager.RemovePasswordAsync(userToChange);
+            var addResult = await _userManager.AddPasswordAsync(userToChange, newPassword);
+
+            if (addResult.Succeeded)
             {
-                ModelState.AddModelError(string.Empty, "كلمتا المرور غير متطابقتين.");
-                return View();
+                return Json(new { success = true });
             }
 
-            if (ModelState.IsValid)
+            return Json(new
             {
-                // رفع الصورة إذا وجدت
-                string profilePicPath = null;
-                if (profilePictureFile != null)
-                {
-                    profilePicPath = await _fileUploader.UploadFileAsync(profilePictureFile, "profiles");
-                }
-
-                var user = new ApplicationUser
-                {
-                    UserName = email,
-                    Email = email,
-                    FullName = fullName,
-                    ProfilePicture = profilePicPath, // حفظ مسار الصورة
-                    CreatedAt = System.DateTime.Now
-                };
-
-                var result = await _userManager.CreateAsync(user, password);
-
-                if (result.Succeeded)
-                {
-                    await _userManager.AddToRoleAsync(user, "Student");
-                    await _signInManager.SignInAsync(user, isPersistent: false);
-                    return RedirectToAction("Dashboard", "Student");
-                }
-
-                foreach (var error in result.Errors)
-                {
-                    ModelState.AddModelError(string.Empty, error.Description);
-                }
-            }
-            return View();
+                success = false,
+                message = string.Join(", ", addResult.Errors.Select(e => e.Description))
+            });
         }
 
         [HttpPost]

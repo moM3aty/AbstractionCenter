@@ -1,0 +1,249 @@
+﻿/* Abstraction Center - Premium Royal Design System v2.0 */
+
+@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800;900&display=swap');
+
+:root {
+    /* Royal Color Palette */
+    --primary-color: #0b1120; /* كحلي ليلي شديد العمق */
+    --primary-light: #1e293b;
+    --secondary-color: #d4af37; /* ذهبي ملكي نقي */
+    --secondary-light: #fef08a; /* ذهبي فاتح للإضاءة */
+    --accent-color: #f59e0b;
+    /* Backgrounds */
+    --background-light: #f8fafc;
+    --surface-white: #ffffff;
+    --glass-bg: rgba(255, 255, 255, 0.85);
+    --glass-border: rgba(212, 175, 55, 0.25);
+    /* Text Colors */
+    --text-dark: #0f172a;
+    --text-muted: #64748b;
+    --text-light: #f1f5f9;
+    /* Shadows & Effects */
+    --shadow-sm: 0 4px 6px -1px rgba(11, 17, 32, 0.05);
+    --shadow-md: 0 10px 25px -5px rgba(11, 17, 32, 0.08);
+    --shadow-premium: 0 25px 50px -12px rgba(11, 17, 32, 0.15);
+    --shadow-gold: 0 10px 30px -10px rgba(212, 175, 55, 0.4);
+    /* Border Radius */
+    --radius-sm: 10px;
+    --radius-md: 16px;
+    --radius-lg: 24px;
+    --radius-xl: 32px;
+    /* Transitions */
+    --transition-smooth: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Cairo', sans-serif;
+    background-color: var(--background-light);
+    color: var(--text-dark);
+    line-height: 1.7;
+    direction: rtl;
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+}
+
+a {
+    text-decoration: none;
+    color: inherit;
+    transition: var(--transition-smooth);
+}
+
+.container {
+    width: 100%;
+    max-width: 1320px;
+    margin: 0 auto;
+    padding: 0 24px;
+}
+
+/* --- Premium Typography --- */
+h1, h2, h3, h4, h5, h6 {
+    color: var(--primary-color);
+    line-height: 1.3;
+}
+
+/* --- Premium Navbar --- */
+.navbar {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    background: var(--glass-bg);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--glass-border);
+    z-index: 1000;
+    padding: 18px 0;
+    box-shadow: var(--shadow-sm);
+    transition: var(--transition-smooth);
+}
+
+.logo {
+    font-size: 1.8rem;
+    font-weight: 900;
+    color: var(--primary-color);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+    .logo i {
+        color: var(--secondary-color);
+        font-size: 2rem;
+    }
+
+    .logo span {
+        background: linear-gradient(to left, var(--secondary-color), #b48a25);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+.nav-links {
+    display: flex;
+    list-style: none;
+    gap: 35px;
+}
+
+    .nav-links a {
+        font-weight: 700;
+        font-size: 1.05rem;
+        color: var(--text-dark);
+        position: relative;
+        padding: 5px 0;
+    }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            right: 0;
+            width: 0;
+            height: 3px;
+            background: linear-gradient(to left, var(--secondary-color), #fef08a);
+            transition: width 0.3s ease;
+            border-radius: 5px;
+        }
+
+        .nav-links a:hover::after, .nav-links a.active::after {
+            width: 100%;
+        }
+
+.nav-actions {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+}
+
+/* --- Royal Buttons --- */
+.btn {
+    padding: 14px 32px;
+    border-radius: 50px;
+    font-weight: 800;
+    font-size: 1.05rem;
+    cursor: pointer;
+    border: none;
+    transition: var(--transition-smooth);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    font-family: inherit;
+    text-align: center;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, var(--secondary-color), #e5c058);
+    color: var(--primary-color);
+    box-shadow: var(--shadow-gold);
+}
+
+    .btn-primary:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 15px 35px -5px rgba(212, 175, 55, 0.6);
+        background: linear-gradient(135deg, #e5c058, var(--secondary-color));
+    }
+
+.btn-outline {
+    border: 2px solid var(--secondary-color);
+    color: var(--primary-color);
+    background: transparent;
+}
+
+    .btn-outline:hover {
+        background: var(--secondary-color);
+        color: var(--surface-white);
+        box-shadow: var(--shadow-gold);
+    }
+
+/* --- Grid System --- */
+.grid-3 {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 40px;
+}
+
+.grid-2 {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
+    gap: 40px;
+}
+
+/* --- Premium Glass Cards --- */
+.glass-card {
+    background: var(--surface-white);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    padding: 40px;
+    box-shadow: var(--shadow-md);
+    transition: var(--transition-smooth);
+    position: relative;
+    overflow: hidden;
+}
+
+    .glass-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: 100%;
+        height: 4px;
+        background: linear-gradient(to left, var(--secondary-color), transparent);
+        opacity: 0;
+        transition: var(--transition-smooth);
+    }
+
+    .glass-card:hover {
+        transform: translateY(-8px);
+        box-shadow: var(--shadow-premium);
+        border-color: var(--glass-border);
+    }
+
+        .glass-card:hover::before {
+            opacity: 1;
+        }
+
+/* --- Responsive Adjustments --- */
+@media (max-width: 1024px) {
+    .nav-links {
+        display: none; /* Can be replaced with a hamburger menu later */
+    }
+}
+
+@media (max-width: 768px) {
+    .grid-3, .grid-2 {
+        grid-template-columns: 1fr;
+    }
+
+    .btn {
+        width: 100%;
+        padding: 12px 20px;
+    }
+
+    .navbar {
+        padding: 15px 0;
+    }
+}

@@ -1,10 +1,23 @@
-﻿@inject AbstractionCenter.Data.ApplicationDbContext DbContext
+﻿@using Microsoft.AspNetCore.Localization
+@inject AbstractionCenter.Data.ApplicationDbContext DbContext
 @{
-    ViewData["Title"] = "تواصل معنا";
+    var requestCulture = Context.Features.Get<IRequestCultureFeature>();
+    bool isRtl = requestCulture?.RequestCulture.UICulture.Name == "ar" || requestCulture?.RequestCulture.UICulture.Name == null;
+    ViewData["Title"] = isRtl ? "تواصل معنا" : "Contact Us";
+
     var allSettings = DbContext.SiteSettings.ToList();
-    var settingsDict = allSettings.ToDictionary(s => s.Key, s => s.Value);
+    var settingsDict = allSettings.ToDictionary(s => s.Key, s => s);
     var contactInfo = allSettings.Where(s => s.Group == "Contact").ToList();
-    string GetSetting(string key, string fallback = "") => settingsDict.ContainsKey(key) ? settingsDict[key] : fallback;
+    string GetSetting(string key, string fallbackAr, string fallbackEn)
+    {
+        if (settingsDict.ContainsKey(key))
+        {
+            var setting = settingsDict[key];
+            if (isRtl) return setting.Value;
+            return !string.IsNullOrEmpty(setting.ValueEn) ? setting.ValueEn : setting.Value;
+        }
+        return isRtl ? fallbackAr : fallbackEn;
+    }
 }
 
 <style>
@@ -15,14 +28,6 @@
         color: white;
         position: relative;
     }
-
-        .contact-hero::after {
-            content: '';
-            position: absolute;
-            inset: 0;
-            opacity: 0.05;
-            background-image: url('data:image/svg+xml,%3Csvg width=\'60\' height=\'60\' viewBox=\'0 0 60 60\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cg fill=\'none\' fill-rule=\'evenodd\'%3E%3Cg fill=\'%23d4af37\' fill-opacity=\'1\'%3E%3Cpath d=\'M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z\'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E');
-        }
 
     .contact-wrapper {
         padding: 80px 0 120px;
@@ -55,7 +60,7 @@
     }
 
         .info-card:hover {
-            transform: translateX(-10px);
+            transform: translateX( @(isRtl ? "-10px" : "10px") );
             border-color: var(--secondary-color);
             box-shadow: var(--shadow-md);
         }
@@ -110,7 +115,6 @@
             background: white;
             box-shadow: 0 0 0 4px rgba(212,175,55,0.1);
         }
-
     @@media (max-width: 992px) {
         .contact-grid
 
@@ -130,53 +134,57 @@
         <div style="width: 80px; height: 80px; background: rgba(212,175,55,0.1); border: 1px solid rgba(212,175,55,0.3); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 2.2rem; color: var(--secondary-color); margin: 0 auto 20px;">
             <i class="fa-solid fa-headset"></i>
         </div>
-        <h1 style="font-size: 3.5rem; font-weight: 900; margin-bottom: 15px;">@GetSetting("Contact_HeroTitle", "يسعدنا تواصلك")</h1>
-        <p style="font-size: 1.2rem; color: #cbd5e1; max-width: 600px; margin: 0 auto;">@GetSetting("Contact_HeroSubtitle", "نحن هنا للإجابة على جميع استفساراتك ومساعدتك في اتخاذ الخطوة القادمة.")</p>
+        <h1 style="font-size: 3.5rem; font-weight: 900; margin-bottom: 15px;">@GetSetting("Contact_HeroTitle", "يسعدنا تواصلك", "We'd Love to Hear From You")</h1>
+        <p style="font-size: 1.2rem; color: #cbd5e1; max-width: 600px; margin: 0 auto;">@GetSetting("Contact_HeroSubtitle", "نحن هنا للإجابة على جميع استفساراتك ومساعدتك في اتخاذ الخطوة القادمة.", "We are here to answer all your inquiries and help you take the next step.")</p>
     </div>
 </section>
 
 <section class="contact-wrapper">
     <div class="container contact-grid">
-        <!-- Info Cards -->
         <div class="info-cards">
             @foreach (var info in contactInfo.Where(c => !c.Key.Contains("Hero")))
             {
                 <div class="info-card">
                     @{
                         string icon = "fa-info-circle";
-                        if (info.DisplayName.Contains("هاتف") || info.DisplayName.Contains("رقم")) icon = "fa-phone-volume";
-                        else if (info.DisplayName.Contains("بريد")) icon = "fa-envelope-open-text";
-                        else if (info.DisplayName.Contains("عنوان") || info.DisplayName.Contains("موقع")) icon = "fa-map-location-dot";
+                        if (info.DisplayName.Contains("هاتف") || info.DisplayName.Contains("رقم") || info.DisplayName.ToLower().Contains("phone")) icon = "fa-phone-volume";
+                        else if (info.DisplayName.Contains("بريد") || info.DisplayName.ToLower().Contains("email")) icon = "fa-envelope-open-text";
+                        else if (info.DisplayName.Contains("عنوان") || info.DisplayName.Contains("موقع") || info.DisplayName.ToLower().Contains("address")) icon = "fa-map-location-dot";
                     }
                     <div class="info-icon"><i class="fa-solid @icon"></i></div>
                     <div>
-                        <h3 style="color: var(--primary-color); font-size: 1.1rem; margin-bottom: 5px; font-weight: 800;">@info.DisplayName</h3>
-                        <p style="color: #64748b; font-weight: 700; margin: 0; direction: ltr; text-align: right;">@info.Value</p>
+                        <h3 style="color: var(--primary-color); font-size: 1.1rem; margin-bottom: 5px; font-weight: 800;">
+                            @(isRtl? info.DisplayName: (info.DisplayName.Contains("هاتف") ? "Phone Number" : info.DisplayName.Contains("بريد") ? "Email" : "Address"))
+                        </h3>
+                        <p style="color: #64748b; font-weight: 700; margin: 0; direction: ltr; text-align: @(isRtl ? "right" : "left");">
+                            @(isRtl? info.Value: (!string.IsNullOrEmpty(info.ValueEn) ? info.ValueEn : info.Value))
+                        </p>
                     </div>
                 </div>
             }
         </div>
 
-        <!-- Contact Form -->
         <div class="form-card">
-            <h2 style="color: var(--primary-color); font-weight: 900; margin-bottom: 30px; font-size: 1.8rem;"><i class="fa-regular fa-paper-plane" style="color: var(--secondary-color);"></i> أرسل استفسارك</h2>
+            <h2 style="color: var(--primary-color); font-weight: 900; margin-bottom: 30px; font-size: 1.8rem;">
+                <i class="fa-regular fa-paper-plane" style="color: var(--secondary-color);"></i> @(isRtl ? "أرسل استفسارك" : "Send Your Inquiry")
+            </h2>
             <form>
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
                     <div class="form-group">
-                        <label>الاسم بالكامل</label>
-                        <input type="text" class="form-control" placeholder="أدخل اسمك الكريم..." required>
+                        <label>@(isRtl ? "الاسم بالكامل" : "Full Name")</label>
+                        <input type="text" class="form-control" placeholder="@(isRtl ? "أدخل اسمك الكريم..." : "Enter your full name...")" required>
                     </div>
                     <div class="form-group">
-                        <label>البريد الإلكتروني</label>
+                        <label>@(isRtl ? "البريد الإلكتروني" : "Email Address")</label>
                         <input type="email" class="form-control" placeholder="name@example.com" required>
                     </div>
                 </div>
                 <div class="form-group">
-                    <label>الرسالة / الاستفسار</label>
-                    <textarea class="form-control" rows="6" placeholder="اكتب تفاصيل استفسارك هنا وسنقوم بالرد عليك في أقرب وقت..." required></textarea>
+                    <label>@(isRtl ? "الرسالة / الاستفسار" : "Message / Inquiry")</label>
+                    <textarea class="form-control" rows="6" placeholder="@(isRtl ? "اكتب تفاصيل استفسارك هنا وسنقوم بالرد عليك في أقرب وقت..." : "Write your inquiry details here and we will get back to you ASAP...")" required></textarea>
                 </div>
                 <button type="button" class="btn btn-primary" style="width: 100%; font-size: 1.2rem; padding: 18px;">
-                    إرسال الرسالة الآن <i class="fa-solid fa-paper-plane" style="margin-right: 8px;"></i>
+                    @(isRtl ? "إرسال الرسالة الآن" : "Send Message Now") <i class="fa-solid fa-paper-plane" style="margin-@(isRtl ? "right" : "left"): 8px;"></i>
                 </button>
             </form>
         </div>

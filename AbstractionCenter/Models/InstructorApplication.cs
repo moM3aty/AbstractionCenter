@@ -24,34 +24,67 @@ namespace AbstractionCenter.Models.Entities
     // 1. الوحدة الدراسية (مجلد يحتوي على الدروس)
     public class Lesson
     {
-        [Key] public int Id { get; set; }
-        [Required] public int CourseId { get; set; }
-        [ForeignKey("CourseId")] public Course Course { get; set; }
-        [Required] public string Title { get; set; }
+        [Key]
+        public int Id { get; set; }
+
+        [Required]
+        public int BatchId { get; set; }
+        [ForeignKey("BatchId")]
+        public Batch Batch { get; set; }
+
+        [Required]
+        public string Title { get; set; }
+
         public int Order { get; set; }
+
         public DateTime CreatedAt { get; set; } = DateTime.Now;
 
-        // علاقة 1 إلى متعدد: الوحدة تحتوي على محتويات متعددة
         public ICollection<LessonContent>? Contents { get; set; }
     }
 
     // 2. محتوى الدرس (فيديو، PDF، أو واجب)
     public class LessonContent
     {
-        [Key] public int Id { get; set; }
-        [Required] public int LessonId { get; set; }
-        [ForeignKey("LessonId")] public Lesson Lesson { get; set; }
-        [Required] public string Title { get; set; }
+        [Key]
+        public int Id { get; set; }
+
+        [Required]
+        public int LessonId { get; set; }
+        [ForeignKey("LessonId")]
+        public Lesson Lesson { get; set; }
+
+        [Required]
+        public string Title { get; set; }
+
         public ContentType Type { get; set; }
+
+        // للفيديوهات (سيتم عرضها في iframe محمي لمنع التحميل)
         public string? VideoUrl { get; set; }
+
+        // للملفات (PDF)
         public string? FilePath { get; set; }
-        [NotMapped] public IFormFile? UploadedFile { get; set; }
+        [NotMapped]
+        public IFormFile? UploadedFile { get; set; }
+
+        // للواجبات
         public string? Description { get; set; }
+
+        // --- التعديل الجديد ---
+        // روابط الاختبارات الخارجية (Google Forms, Microsoft Forms)
+        public string? QuizUrl { get; set; }
+
         public int Order { get; set; }
         public DateTime CreatedAt { get; set; } = DateTime.Now;
     }
 
-    public enum ContentType { Video, Pdf, Assignment }
+    // إضافة نوع (ExternalQuiz) للروابط الخارجية
+    public enum ContentType
+    {
+        Video,
+        Pdf,
+        Assignment,
+        ExternalQuiz
+    }
 
     // 3. أسئلة التسجيل المخصصة
     public class CourseQuestion

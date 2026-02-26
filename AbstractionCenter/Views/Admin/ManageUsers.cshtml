@@ -1,4 +1,6 @@
-﻿@model IEnumerable<AbstractionCenter.Models.Entities.ApplicationUser>
+﻿@using Microsoft.AspNetCore.Identity
+@inject UserManager<AbstractionCenter.Models.Entities.ApplicationUser> UserManager
+@model IEnumerable<AbstractionCenter.Models.Entities.ApplicationUser>
 @{
     ViewData["Title"] = "إدارة المستخدمين والصلاحيات";
 }
@@ -28,7 +30,7 @@
         display: flex;
         align-items: center;
         width: 100%;
-        max-width: 450px;
+        max-width: 350px;
         border: 2px solid #e2e8f0;
         transition: all 0.4s ease;
     }
@@ -56,6 +58,29 @@
             font-size: 1.2rem;
         }
 
+    .btn-add-pro {
+        background: linear-gradient(135deg, var(--mc-primary, #0b1120), #1e293b);
+        color: #d4af37;
+        border: none;
+        padding: 12px 25px;
+        border-radius: 50px;
+        font-weight: 800;
+        font-size: 1rem;
+        cursor: pointer;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        transition: 0.3s;
+        box-shadow: 0 10px 20px -5px rgba(11, 17, 32, 0.3);
+    }
+
+        .btn-add-pro:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 30px -5px rgba(11, 17, 32, 0.4);
+            color: white;
+        }
+
     .table-responsive {
         width: 100%;
         overflow-x: auto;
@@ -73,9 +98,9 @@
             text-align: right;
             padding: 18px 20px;
             background: #f8fafc;
-            color: #0b1120 !important;
+            color: #0b1120;
             font-size: 0.95rem;
-            font-weight: 800 !important;
+            font-weight: 800;
             border-bottom: 2px solid #e2e8f0;
         }
 
@@ -109,8 +134,15 @@
         box-shadow: 0 4px 10px rgba(212, 175, 55, 0.1);
     }
 
+        .user-avatar-pro img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 14px;
+        }
+
     .role-select-pro {
-        padding: 10px 40px 10px 15px;
+        padding: 8px 35px 8px 10px;
         border: 2px solid #e2e8f0;
         border-radius: 12px;
         font-family: inherit;
@@ -120,61 +152,157 @@
         outline: none;
         transition: 0.3s;
         appearance: none;
-        background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23d4af37%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E');
+        background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23d4af37%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%0-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E');
         background-repeat: no-repeat;
         background-position: right 12px top 50%;
         background-size: 10px auto;
         cursor: pointer;
+        font-size: 0.85rem;
     }
 
-        .role-select-pro:focus {
-            border-color: #d4af37;
-            background-color: white;
-            box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.1);
-        }
+    .btn-action-pro {
+        width: 38px;
+        height: 38px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: 0.3s;
+        cursor: pointer;
+        border: none;
+        font-size: 1rem;
+    }
 
     .btn-confirm-pro {
         background: #0b1120;
         color: #d4af37;
-        border: none;
-        width: 42px;
-        height: 42px;
-        border-radius: 12px;
-        cursor: pointer;
-        transition: 0.3s;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 1.1rem;
     }
 
         .btn-confirm-pro:hover {
             background: #d4af37;
             color: #0b1120;
-            transform: scale(1.1) rotate(5deg);
-            box-shadow: 0 5px 15px rgba(212, 175, 55, 0.4);
+            transform: scale(1.1);
         }
+
+    .btn-edit-pro {
+        background: rgba(59, 130, 246, 0.1);
+        color: #2563eb;
+        text-decoration: none;
+    }
+
+        .btn-edit-pro:hover {
+            background: #2563eb;
+            color: white;
+            transform: scale(1.1);
+        }
+
+    .toggle-switch {
+        position: relative;
+        display: inline-block;
+        width: 46px;
+        height: 24px;
+    }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+    .slider {
+        position: absolute;
+        cursor: pointer;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: #cbd5e1;
+        transition: .4s;
+        border-radius: 34px;
+    }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 16px;
+            width: 16px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+    input:checked + .slider {
+        background-color: #10b981;
+    }
+
+        input:checked + .slider:before {
+            transform: translateX(22px);
+        }
+
+    .role-badge {
+        padding: 5px 12px;
+        border-radius: 8px;
+        font-size: 0.8rem;
+        font-weight: 800;
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+    }
+
+    .role-admin {
+        background: rgba(212, 175, 55, 0.1);
+        color: #b48a25;
+        border: 1px solid rgba(212, 175, 55, 0.3);
+    }
+
+    .role-instructor {
+        background: rgba(59, 130, 246, 0.1);
+        color: #2563eb;
+        border: 1px solid rgba(59, 130, 246, 0.3);
+    }
+
+    .role-student {
+        background: rgba(100, 116, 139, 0.1);
+        color: #475569;
+        border: 1px solid rgba(100, 116, 139, 0.3);
+    }
 </style>
 
 <div class="premium-table-card">
     <div class="toolbar">
-        <h3 style="color: #0b1120; font-size: 1.6rem; font-weight: 900; margin: 0; display: flex; align-items: center; gap: 12px;">
-            <i class="fa-solid fa-users-gear" style="color: #d4af37;"></i> قاعدة بيانات المستخدمين
-        </h3>
+        <div style="display: flex; align-items: center; gap: 20px;">
+            <h3 style="color: #0b1120; font-size: 1.6rem; font-weight: 900; margin: 0; display: flex; align-items: center; gap: 12px;">
+                <i class="fa-solid fa-users-gear" style="color: #d4af37;"></i> إدارة الأعضاء
+            </h3>
+            <a href="/Admin/CreateStudent" class="btn-add-pro">
+                <i class="fa-solid fa-user-plus"></i> إضافة طالب جديد
+            </a>
+        </div>
+
         <div class="search-box-pro">
             <i class="fa-solid fa-magnifying-glass"></i>
-            <input type="text" placeholder="ابحث بالاسم، البريد أو ID..." id="userSearchPro">
+            <input type="text" placeholder="ابحث بالاسم أو البريد..." id="userSearchPro">
         </div>
     </div>
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div style="background: rgba(16, 185, 129, 0.1); color: #059669; padding: 15px 25px; border-radius: 12px; margin-bottom: 20px; font-weight: bold; border: 1px solid #10b981;">
+            <i class="fa-solid fa-circle-check"></i> @TempData["SuccessMessage"]
+        </div>
+    }
 
     <div class="table-responsive">
         <table class="modern-data-table">
             <thead>
                 <tr>
-                    <th>ملف المستخدم</th>
-                    <th>البريد الإلكتروني</th>
-                    <th>تاريخ التسجيل</th>
-                    <th>إدارة الصلاحيات (Role)</th>
+                    <th>المستخدم</th>
+                    <th>البريد</th>
+                    <th>الصلاحية</th>
+                    <th>الحالة</th>
+                    <th>التحكم والإجراءات</th>
                 </tr>
             </thead>
             <tbody>
@@ -183,35 +311,77 @@
                     foreach (var user in Model)
                     {
                         var initial = string.IsNullOrEmpty(user.FullName) ? "U" : user.FullName.Substring(0, 1).ToUpper();
+                        var userRoles = await UserManager.GetRolesAsync(user);
+                        var currentRole = userRoles.FirstOrDefault() ?? "Student";
+
                         <tr>
                             <td>
-                                <div style="display: flex; align-items: center; gap: 15px;">
-                                    <div class="user-avatar-pro">@initial</div>
+                                <div style="display: flex; align-items: center; gap: 12px;">
+                                    <div class="user-avatar-pro">
+                                        @if (!string.IsNullOrEmpty(user.ProfilePicture))
+                                        {
+                                            <img src="@user.ProfilePicture" alt="@user.FullName" />
+                                        }
+                                        else
+                                        {
+                                            @initial
+                                        }
+                                    </div>
                                     <div>
-                                        <div style="color: #0b1120; font-weight: 900; font-size: 1.1rem;">@(string.IsNullOrEmpty(user.FullName) ? "غير محدد" : user.FullName)</div>
-                                        <div style="font-size: 0.85rem; color: #64748b; font-weight: normal; margin-top: 3px;"><i class="fa-solid fa-fingerprint" style="color:#d4af37;"></i> ID: @user.Id.Substring(0, 8)...</div>
+                                        <div style="color: #0b1120; font-weight: 900; font-size: 1rem;">@(string.IsNullOrEmpty(user.FullName) ? "غير محدد" : user.FullName)</div>
+                                        <div style="font-size: 0.75rem; color: #64748b;">@user.Id.Substring(0, 8)</div>
                                     </div>
                                 </div>
                             </td>
-                            <td style="color: #475569; font-weight: 700;">
-                                <i class="fa-regular fa-envelope" style="color: #94a3b8; margin-left: 5px;"></i> @user.Email
-                            </td>
-                            <td style="color: #475569; font-weight: 700;">
-                                <i class="fa-regular fa-calendar" style="color: #94a3b8; margin-left: 5px;"></i> @user.CreatedAt.ToString("dd MMM yyyy")
+                            <td style="color: #475569; font-weight: 600; font-size: 0.9rem;">
+                                @user.Email
                             </td>
                             <td>
-                                <form asp-controller="Admin" asp-action="ChangeUserRole" method="post" style="display: flex; gap: 12px; align-items: center;">
+                                @if (currentRole == "Admin")
+                                {
+                                    <span class="role-badge role-admin"><i class="fa-solid fa-user-shield"></i> مدير</span>
+                                }
+                                else if (currentRole == "Instructor")
+                                {
+                                    <span class="role-badge role-instructor"><i class="fa-solid fa-chalkboard-user"></i> محاضر</span>
+                                }
+                                else
+                                {
+                                    <span class="role-badge role-student"><i class="fa-solid fa-user-graduate"></i> طالب</span>
+                                }
+                            </td>
+                            <td>
+                                <form asp-controller="Admin" asp-action="ToggleUserStatus" method="post" style="display:flex; align-items:center; gap:8px;">
                                     <input type="hidden" name="userId" value="@user.Id" />
-                                    <!-- Here we assume the default role is somewhat selected, you can enhance by fetching real role if needed in the view -->
-                                    <select name="newRole" class="role-select-pro">
-                                        <option value="Student">طالب (Student)</option>
-                                        <option value="Instructor">محاضر (Instructor)</option>
-                                        <option value="Admin">مدير نظام (Admin)</option>
-                                    </select>
-                                    <button type="submit" class="btn-confirm-pro" title="حفظ الصلاحية">
-                                        <i class="fa-solid fa-check-double"></i>
-                                    </button>
+                                    <label class="toggle-switch">
+                                        <input type="checkbox" name="isActive" value="true" @(user.IsActive ? "checked" : "") onchange="this.form.submit()">
+                                        <span class="slider"></span>
+                                    </label>
+                                    <span style="font-size: 0.8rem; font-weight: 800; color: @(user.IsActive ? "#10b981" : "#64748b");">
+                                        @(user.IsActive ? "نشط" : "معطل")
+                                    </span>
                                 </form>
+                            </td>
+                            <td>
+                                <div style="display: flex; gap: 8px; align-items: center;">
+                                    <!-- زر تعديل البيانات الشخصية -->
+                                    <a href="/Admin/EditStudent?userId=@user.Id" class="btn-action-pro btn-edit-pro" title="تعديل بيانات البروفايل">
+                                        <i class="fa-solid fa-user-pen"></i>
+                                    </a>
+
+                                    <!-- نموذج تغيير الرتبة -->
+                                    <form asp-controller="Admin" asp-action="ChangeUserRole" method="post" style="display: flex; gap: 5px; align-items: center;">
+                                        <input type="hidden" name="userId" value="@user.Id" />
+                                        <select name="newRole" class="role-select-pro">
+                                            <option value="Student" selected="@(currentRole == "Student")">طالب</option>
+                                            <option value="Instructor" selected="@(currentRole == "Instructor")">محاضر</option>
+                                            <option value="Admin" selected="@(currentRole == "Admin")">مدير</option>
+                                        </select>
+                                        <button type="submit" class="btn-action-pro btn-confirm-pro" title="حفظ الصلاحية الجديدة">
+                                            <i class="fa-solid fa-check"></i>
+                                        </button>
+                                    </form>
+                                </div>
                             </td>
                         </tr>
                     }
@@ -219,12 +389,7 @@
                 else
                 {
                     <tr>
-                        <td colspan="4">
-                            <div style="text-align: center; padding: 80px 20px;">
-                                <i class="fa-solid fa-users-slash" style="font-size: 4rem; color: #cbd5e1; margin-bottom: 20px;"></i>
-                                <h3 style="color: #0b1120; font-weight: 800;">لا يوجد مستخدمين مسجلين</h3>
-                            </div>
-                        </td>
+                        <td colspan="5" style="text-align: center; padding: 80px 20px; color: #94a3b8;">لا يوجد أعضاء حالياً.</td>
                     </tr>
                 }
             </tbody>

@@ -77,28 +77,6 @@
             box-shadow: 0 0 0 4px rgba(212, 175, 55, 0.15);
         }
 
-    .form-row {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 25px;
-    }
-
-    .section-divider {
-        color: #0b1120;
-        font-size: 1.4rem;
-        font-weight: 900;
-        margin: 40px 0 25px;
-        padding-bottom: 15px;
-        border-bottom: 2px solid #e2e8f0;
-        display: flex;
-        align-items: center;
-        gap: 10px;
-    }
-
-        .section-divider i {
-            color: #d4af37;
-        }
-
     .btn-submit {
         background: linear-gradient(135deg, #0b1120, #1e293b);
         color: #d4af37;
@@ -130,6 +108,7 @@
         color: #64748b;
         font-weight: 700;
         transition: 0.3s;
+        text-decoration: none;
     }
 
         .btn-cancel:hover {
@@ -154,27 +133,12 @@
             border-radius: 10px;
             border: 2px solid rgba(212, 175, 55, 0.3);
         }
-
-    @@media (max-width: 768px) {
-        .form-row
-
-    {
-        grid-template-columns: 1fr;
-    }
-
-    .premium-form-card {
-        padding: 30px 20px;
-    }
-
-    }
 </style>
 
 <div class="premium-form-card">
     <div class="form-header">
-        <div class="form-header-icon">
-            <i class="fa-solid fa-pen-nib" style="transform: rotate(-10deg);"></i>
-        </div>
-        <h2>تعديل مسار تدريبي</h2>
+        <div class="form-header-icon"><i class="fa-solid fa-pen-nib" style="transform: rotate(-10deg);"></i></div>
+        <h2>تعديل المسار التدريبي</h2>
         <p>أنت تقوم حالياً بتحديث بيانات: <strong style="color: #d4af37;">@Model.Title</strong></p>
     </div>
 
@@ -189,73 +153,30 @@
         </div>
 
         <div class="form-group">
-            <label>وصف الدورة (نبذة تعريفية)</label>
+            <label>وصف الدورة (الكتالوج)</label>
             <textarea asp-for="Description" class="form-control" rows="5" required></textarea>
         </div>
 
-        <div class="form-row">
-            <div class="form-group">
-                <label>تحديث صورة الغلاف</label>
-                <div style="position: relative;">
-                    <input asp-for="ImageFile" type="file" class="form-control" accept="image/*" style="padding-left: 45px;" />
-                    <i class="fa-solid fa-image" style="position: absolute; left: 18px; top: 18px; color: #d4af37; font-size: 1.2rem; pointer-events: none;"></i>
-                </div>
-                @if (!string.IsNullOrEmpty(Model.ImageUrl))
-                {
-                    <div class="current-image-preview">
-                        <img src="@Model.ImageUrl" alt="Current Cover" />
-                        <div>
-                            <strong style="display: block; color: #0b1120; font-size: 0.9rem;">الغلاف الحالي</strong>
-                            <span style="color: #64748b; font-size: 0.8rem;">اترك الحقل فارغاً للاحتفاظ بهذه الصورة</span>
-                        </div>
+        <div class="form-group">
+            <label>تحديث صورة الغلاف</label>
+            <div style="position: relative;">
+                <input asp-for="ImageFile" type="file" class="form-control" accept="image/*" style="padding-left: 45px;" />
+                <i class="fa-solid fa-image" style="position: absolute; left: 18px; top: 18px; color: #d4af37; font-size: 1.2rem; pointer-events: none;"></i>
+            </div>
+            @if (!string.IsNullOrEmpty(Model.ImageUrl))
+            {
+                <div class="current-image-preview">
+                    <img src="@Model.ImageUrl" alt="Current Cover" />
+                    <div>
+                        <strong style="display: block; color: #0b1120; font-size: 0.9rem;">الغلاف الحالي</strong>
+                        <span style="color: #64748b; font-size: 0.8rem;">اترك الحقل فارغاً للاحتفاظ بهذه الصورة</span>
                     </div>
-                }
-            </div>
-
-            <div class="form-group">
-                <label>تاريخ البدء المتوقع</label>
-                <input asp-for="StartDate" type="date" class="form-control" value="@Model.StartDate.ToString("yyyy-MM-dd")" required />
-            </div>
-        </div>
-
-        <div class="form-group">
-            <label>حالة الدورة</label>
-            <select asp-for="Status" class="form-control">
-                <option value="0">مفتوحة للتسجيل</option>
-                <option value="1">قيد التنفيذ</option>
-                <option value="2">مكتملة</option>
-                <option value="3">مغلقة</option>
-            </select>
-        </div>
-
-        <div class="section-divider">
-            <i class="fa-solid fa-user-tie"></i> إدارة هيئة التدريس
-        </div>
-
-        <div class="form-group">
-            <label>المحاضر المسؤول</label>
-            <select asp-for="RegistrarUserId" class="form-control" required>
-                @if (ViewBag.Instructors != null)
-                {
-                    foreach (var inst in ViewBag.Instructors)
-                    {
-                        if (inst.Id == Model.RegistrarUserId)
-                        {
-                            <option value="@inst.Id" selected="selected">@inst.FullName - (@inst.Specialization)</option>
-                        }
-                        else
-                        {
-                            <option value="@inst.Id">@inst.FullName - (@inst.Specialization)</option>
-                        }
-                    }
-                }
-            </select>
+                </div>
+            }
         </div>
 
         <div style="margin-top: 50px;">
-            <button type="submit" class="btn-submit">
-                حفظ التعديلات <i class="fa-solid fa-floppy-disk"></i>
-            </button>
+            <button type="submit" class="btn-submit">حفظ التعديلات <i class="fa-solid fa-floppy-disk"></i></button>
             <a href="/Admin/ManageCourses" class="btn-cancel">إلغاء والعودة للقائمة</a>
         </div>
     </form>

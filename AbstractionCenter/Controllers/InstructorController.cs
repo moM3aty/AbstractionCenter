@@ -3,13 +3,19 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using AbstractionCenter.Data;
 using AbstractionCenter.Models.Entities;
-using AbstractionCenter.Services;
 using Microsoft.EntityFrameworkCore;
 using System.Threading.Tasks;
 using System.Linq;
+using Microsoft.AspNetCore.Http;
+using AbstractionCenter.Services;
+using System.Collections.Generic;
+using System;
 
 namespace AbstractionCenter.Controllers
 {
+    /// <summary>
+    /// المتحكم الرئيسي لإدارة شؤون المحاضرين، المناهج، التقييمات، والطلاب.
+    /// </summary>
     [Authorize(Roles = "Instructor")]
     public class InstructorController : Controller
     {
@@ -24,203 +30,265 @@ namespace AbstractionCenter.Controllers
             _fileUploader = fileUploader;
         }
 
+        // --- 1. لوحة تحكم المحاضر الرئيسية ---
         public async Task<IActionResult> Dashboard()
         {
-            ViewData["Title"] = "لوحة تحكم المحاضر";
-            var user = await _userManager.GetUserAsync(User);
-            var myCourses = await _context.Courses.Where(c => c.RegistrarUserId == user.Id).OrderByDescending(c => c.CreatedAt).ToListAsync();
-            ViewData["InstructorName"] = user.FullName ?? user.Email;
-            return View(myCourses);
-        }
-
-        [HttpGet]
-        public async Task<IActionResult> ManageCourse(int id)
-        {
+            ViewData["Title"] = "الأكاديمية - لوحة المحاضر";
             var user = await _userManager.GetUserAsync(User);
 
-            // التعديل هنا: قمنا بإضافة FinalExam.Questions لكي تظهر أسئلة الاختبار في الشاشة!
-            var course = await _context.Courses
-                .Include(c => c.Lessons)
-                .Include(c => c.CustomQuestions)
-                .Include(c => c.FinalExam)
-                    .ThenInclude(e => e.Questions)
-                .FirstOrDefaultAsync(c => c.Id == id && c.RegistrarUserId == user.Id);
-
-            if (course == null) return RedirectToAction("AccessDenied", "Account");
-
-            return View(course);
-        }
-
-
-[HttpPost]
-public async Task<IActionResult> ReorderCourseQuestion(int id, string direction)
-        {
-            var question = await _context.CourseQuestions.FindAsync(id);
-            if (question == null) return NotFound();
-
-            var courseQuestions = await _context.CourseQuestions
-                .Where(q => q.CourseId == question.CourseId)
-                .OrderBy(q => q.Order)
+            var myBatches = await _context.Batches
+                .Include(b => b.Course)
+                .Where(b => b.InstructorId == user.Id)
+                .OrderByDescending(b => b.StartDate)
                 .ToListAsync();
 
-            int index = courseQuestions.FindIndex(q => q.Id == id);
-
-            if (direction == "up" && index > 0)
-            {
-                // التبديل مع السؤال الذي قبله
-                var prev = courseQuestions[index - 1];
-                int temp = prev.Order;
-                prev.Order = question.Order;
-                question.Order = temp;
-            }
-            else if (direction == "down" && index < courseQuestions.Count - 1)
-            {
-                // التبديل مع السؤال الذي بعده
-                var next = courseQuestions[index + 1];
-                int temp = next.Order;
-                next.Order = question.Order;
-                question.Order = temp;
-            }
-
-            await _context.SaveChangesAsync();
-            // إعادة التوجيه للصفحة ليقوم الـ AJAX بسحب الترتيب الجديد
-            return RedirectToAction("ManageCourse", new { id = question.CourseId });
+            ViewData["InstructorName"] = user.FullName ?? user.Email;
+            return View(myBatches);
         }
 
-        [HttpPost]
-        public async Task<IActionResult> DeleteExamQuestion(int id)
-        {
-            var eq = await _context.ExamQuestions.FindAsync(id);
-            if (eq != null)
-            {
-                _context.ExamQuestions.Remove(eq);
-                await _context.SaveChangesAsync();
-                return Ok();
-            }
-            return NotFound();
-        }
-
-        
-        // --- 1. إنشاء وحدة دراسية (Lesson Folder) ---
-                [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> AddLessonModule(int courseId, string title, int order)
+        // --- 2. إدارة الدفعة (المنهج، الطلاب، الاختبارات) ---
+        [HttpGet]
+        public async Task<IActionResult> ManageBatch(int id)
         {
             var user = await _userManager.GetUserAsync(User);
-            if (!await _context.Courses.AnyAsync(c => c.Id == courseId && c.RegistrarUserId == user.Id)) return Unauthorized();
 
-            _context.Lessons.Add(new Lesson { CourseId = courseId, Title = title, Order = order });
-            await _context.SaveChangesAsync();
-            return RedirectToAction("ManageCourse", new { id = courseId });
+            var batch = await _context.Batches
+                .Include(b => b.Course).ThenInclude(c => c.CustomQuestions)
+                .Include(b => b.Instructor)
+                .Include(b => b.Lessons)
+                .Include(b => b.EnrolledStudents).ThenInclude(es => es.Student)
+                .Include(b => b.FinalExam).ThenInclude(e => e.Questions)
+                .FirstOrDefaultAsync(b => b.Id == id && b.InstructorId == user.Id);
+
+            if (batch == null) return RedirectToAction("AccessDenied", "Account");
+            return View(batch);
         }
 
-        // --- 2. إدارة محتوى الوحدة من الداخل (الشاشة الجديدة) ---
+        // --- 3. إدارة الدروس والوحدات (AJAX Support) ---
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> AddLessonModule(int batchId, string title, int order)
+        {
+            var user = await _userManager.GetUserAsync(User);
+            if (!await _context.Batches.AnyAsync(b => b.Id == batchId && b.InstructorId == user.Id))
+                return Unauthorized();
+
+            var lesson = new Lesson { BatchId = batchId, Title = title, Order = order };
+            _context.Lessons.Add(lesson);
+            await _context.SaveChangesAsync();
+
+            return Json(new { success = true, id = lesson.Id, title = lesson.Title, order = lesson.Order });
+        }
+
         [HttpGet]
         public async Task<IActionResult> ManageLessonDetails(int id)
         {
             var user = await _userManager.GetUserAsync(User);
             var lesson = await _context.Lessons
-                .Include(l => l.Course)
+                .Include(l => l.Batch).ThenInclude(b => b.Course)
                 .Include(l => l.Contents)
                 .FirstOrDefaultAsync(l => l.Id == id);
 
-            if (lesson == null || lesson.Course.RegistrarUserId != user.Id) return Unauthorized();
+            if (lesson == null || lesson.Batch.InstructorId != user.Id) return Unauthorized();
             return View(lesson);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> AddLessonContent(int lessonId, string title, ContentType type, string? videoUrl, string? description, int order, IFormFile? uploadedFile)
+        public async Task<IActionResult> AddLessonContent(int lessonId, string title, ContentType type, string? videoUrl, string? description, string? quizUrl, int order, IFormFile? uploadedFile)
         {
-            var lesson = await _context.Lessons.FindAsync(lessonId);
-            if (lesson == null) return NotFound();
+            var lesson = await _context.Lessons.Include(l => l.Batch).FirstOrDefaultAsync(l => l.Id == lessonId);
+            var user = await _userManager.GetUserAsync(User);
 
-            string filePath = null;
-            if (uploadedFile != null && type == ContentType.Pdf)
+            if (lesson == null || lesson.Batch.InstructorId != user.Id) return Unauthorized();
+
+            string? filePath = null;
+            // معالجة رفع ملفات الـ PDF
+            if (type == ContentType.Pdf && uploadedFile != null)
             {
-                filePath = await _fileUploader.UploadFileAsync(uploadedFile, "lessons_content");
+                filePath = await _fileUploader.UploadFileAsync(uploadedFile, "course_materials");
             }
 
-            _context.LessonContents.Add(new LessonContent
+            var content = new LessonContent
             {
                 LessonId = lessonId,
                 Title = title,
                 Type = type,
                 VideoUrl = videoUrl,
                 Description = description,
-                FilePath = filePath,
-                Order = order
-            });
+                QuizUrl = quizUrl,
+                Order = order,
+                FilePath = filePath
+            };
+            _context.LessonContents.Add(content);
+
+            // إرسال إشعارات للطلاب المسجلين بالدفعة
+            var studentIds = await _context.StudentBatches
+                .Where(sb => sb.BatchId == lesson.BatchId)
+                .Select(sb => sb.StudentId)
+                .ToListAsync();
+
+            foreach (var sId in studentIds)
+            {
+                _context.Notifications.Add(new Notification
+                {
+                    UserId = sId,
+                    Title = "محتوى جديد",
+                    Message = $"قام المحاضر بإضافة {title} في وحدة {lesson.Title}."
+                });
+            }
 
             await _context.SaveChangesAsync();
             return RedirectToAction("ManageLessonDetails", new { id = lessonId });
         }
 
-        // --- 3. إدارة الفورم الديناميكي ---
+        // --- 4. تقييم واجبات الطلاب ---
+        [HttpGet]
+        public async Task<IActionResult> ViewSubmissions(int lessonContentId)
+        {
+            var submissions = await _context.AssignmentSubmissions
+                .Include(s => s.Student)
+                .Include(s => s.LessonContent)
+                .Where(s => s.LessonContentId == lessonContentId)
+                .OrderByDescending(s => s.SubmissionDate)
+                .ToListAsync();
+
+            var content = await _context.LessonContents.FindAsync(lessonContentId);
+            ViewBag.ContentTitle = content?.Title;
+            ViewBag.LessonId = content?.LessonId;
+
+            return View(submissions);
+        }
+
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> AddCourseQuestion(int courseId, string questionText, bool isRequired, int order)
+        public async Task<IActionResult> GradeSubmission(int submissionId, double grade, string feedback)
         {
-            _context.CourseQuestions.Add(new CourseQuestion { CourseId = courseId, QuestionText = questionText, IsRequired = isRequired, Order = order });
+            var sub = await _context.AssignmentSubmissions.Include(s => s.LessonContent).FirstOrDefaultAsync(s => s.Id == submissionId);
+            if (sub == null) return NotFound();
+
+            sub.Grade = grade;
+            sub.InstructorFeedback = feedback;
+            sub.IsGraded = true;
+
+            _context.Notifications.Add(new Notification
+            {
+                UserId = sub.StudentId,
+                Title = "تم تقييم واجبك",
+                Message = $"قام المحاضر بتقييم حل الواجب الخاص بك ({sub.LessonContent.Title}). الدرجة: {grade}/100."
+            });
+
             await _context.SaveChangesAsync();
-            return RedirectToAction("ManageCourse", new { id = courseId });
+            TempData["SuccessMessage"] = "تم حفظ التقييم وإرسال إشعار للطالب.";
+            return RedirectToAction("ViewSubmissions", new { lessonContentId = sub.LessonContentId });
         }
 
+        // --- 5. إدارة الطلاب داخل الدفعة (AJAX) ---
         [HttpPost]
-        public async Task<IActionResult> DeleteCourseQuestion(int id)
+        public async Task<IActionResult> AddStudentToBatch(int batchId, string studentEmail)
         {
-            var question = await _context.CourseQuestions.FindAsync(id);
-            if (question != null)
-            {
-                _context.CourseQuestions.Remove(question);
-                await _context.SaveChangesAsync();
-                return Ok();
-            }
-            return NotFound();
-        }
+            var user = await _userManager.FindByEmailAsync(studentEmail);
+            if (user == null)
+                return Json(new { success = false, message = "هذا البريد غير مسجل في المنصة كطالب." });
 
-        // --- 4. إعدادات الاختبار النهائي ---
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> SaveExamSettings(int courseId, double passingScorePercentage)
-        {
-            var exam = await _context.FinalExams.FirstOrDefaultAsync(e => e.CourseId == courseId);
-            if (exam == null)
+            var exists = await _context.StudentBatches.AnyAsync(sb => sb.BatchId == batchId && sb.StudentId == user.Id);
+            if (exists)
+                return Json(new { success = false, message = "هذا الطالب مسجل بالفعل في هذه الدفعة." });
+
+            var enrollment = new StudentBatch
             {
-                _context.FinalExams.Add(new FinalExam { CourseId = courseId, PassingScorePercentage = passingScorePercentage });
-            }
-            else
-            {
-                exam.PassingScorePercentage = passingScorePercentage;
-            }
+                BatchId = batchId,
+                StudentId = user.Id,
+                Status = StudentAcademicStatus.Registered
+            };
+            _context.StudentBatches.Add(enrollment);
             await _context.SaveChangesAsync();
-            return RedirectToAction("ManageCourse", new { id = courseId });
+
+            return Json(new { success = true, fullName = user.FullName, email = user.Email });
+        }
+
+        // --- 6. الاختبار النهائي وبنك الأسئلة (AJAX) ---
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> SaveExamSettings(int batchId, double passingScorePercentage)
+        {
+            var batch = await _context.Batches.Include(b => b.FinalExam).FirstOrDefaultAsync(b => b.Id == batchId);
+            if (batch != null)
+            {
+                if (batch.FinalExam == null)
+                {
+                    var newExam = new FinalExam { CourseId = batch.CourseId, PassingScorePercentage = passingScorePercentage };
+                    _context.FinalExams.Add(newExam);
+                    await _context.SaveChangesAsync();
+                    batch.FinalExamId = newExam.Id;
+                }
+                else
+                {
+                    batch.FinalExam.PassingScorePercentage = passingScorePercentage;
+                }
+                await _context.SaveChangesAsync();
+            }
+            return RedirectToAction("ManageBatch", new { id = batchId });
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> AddExamQuestion(int courseId, string questionText, string option1, string option2, string option3, string option4, int correctOption)
+        public async Task<IActionResult> AddExamQuestion(int batchId, string questionText, string option1, string option2, string option3, string option4, int correctOption)
         {
-            var exam = await _context.FinalExams.FirstOrDefaultAsync(e => e.CourseId == courseId);
-            if (exam == null)
+            var batch = await _context.Batches.Include(b => b.FinalExam).FirstOrDefaultAsync(b => b.Id == batchId);
+            if (batch == null) return Json(new { success = false });
+
+            if (batch.FinalExam == null)
             {
-                exam = new FinalExam { CourseId = courseId, PassingScorePercentage = 70 };
-                _context.FinalExams.Add(exam);
+                var newExam = new FinalExam { CourseId = batch.CourseId, PassingScorePercentage = 70 };
+                _context.FinalExams.Add(newExam);
+                await _context.SaveChangesAsync();
+                batch.FinalExamId = newExam.Id;
                 await _context.SaveChangesAsync();
             }
 
-            _context.ExamQuestions.Add(new ExamQuestion
+            var q = new ExamQuestion
             {
-                FinalExamId = exam.Id,
+                FinalExamId = batch.FinalExamId.Value,
                 QuestionText = questionText,
                 Option1 = option1,
                 Option2 = option2,
                 Option3 = option3,
                 Option4 = option4,
                 CorrectOption = correctOption
-            });
+            };
+            _context.ExamQuestions.Add(q);
             await _context.SaveChangesAsync();
-            return RedirectToAction("ManageCourse", new { id = courseId });
+
+            return Json(new { success = true, id = q.Id, questionText = q.QuestionText, correctOption = q.CorrectOption });
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> DeleteExamQuestion(int id)
+        {
+            var eq = await _context.ExamQuestions.FindAsync(id);
+            if (eq != null) { _context.ExamQuestions.Remove(eq); await _context.SaveChangesAsync(); return Json(new { success = true }); }
+            return Json(new { success = false });
+        }
+
+        // --- 7. تخصيص استمارة التسجيل ---
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> AddCourseQuestion(int courseId, string questionText, bool isRequired, int order)
+        {
+            var q = new CourseQuestion { CourseId = courseId, QuestionText = questionText, IsRequired = isRequired, Order = order };
+            _context.CourseQuestions.Add(q);
+            await _context.SaveChangesAsync();
+
+            return Json(new { success = true, id = q.Id, text = q.QuestionText, isRequired = q.IsRequired, order = q.Order });
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> DeleteCourseQuestion(int id)
+        {
+            var question = await _context.CourseQuestions.FindAsync(id);
+            if (question != null) { _context.CourseQuestions.Remove(question); await _context.SaveChangesAsync(); return Json(new { success = true }); }
+            return Json(new { success = false });
         }
     }
 }

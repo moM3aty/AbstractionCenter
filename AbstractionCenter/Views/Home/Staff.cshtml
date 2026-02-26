@@ -1,6 +1,23 @@
-﻿@model IEnumerable<AbstractionCenter.Models.Entities.ApplicationUser>
+﻿@using Microsoft.AspNetCore.Localization
+@model IEnumerable<AbstractionCenter.Models.Entities.ApplicationUser>
+@inject AbstractionCenter.Data.ApplicationDbContext DbContext
 @{
-    ViewData["Title"] = "هيئة التدريس";
+    var requestCulture = Context.Features.Get<IRequestCultureFeature>();
+    bool isRtl = requestCulture?.RequestCulture.UICulture.Name == "ar" || requestCulture?.RequestCulture.UICulture.Name == null;
+    ViewData["Title"] = isRtl ? "فريق التدريب" : "Our Experts";
+
+    var allSettings = DbContext.SiteSettings.ToList();
+    var settingsDict = allSettings.ToDictionary(s => s.Key, s => s);
+    string GetSetting(string key, string fallbackAr, string fallbackEn)
+    {
+        if (settingsDict.ContainsKey(key))
+        {
+            var setting = settingsDict[key];
+            if (isRtl) return setting.Value;
+            return !string.IsNullOrEmpty(setting.ValueEn) ? setting.ValueEn : setting.Value;
+        }
+        return isRtl ? fallbackAr : fallbackEn;
+    }
 }
 
 <style>
@@ -88,17 +105,17 @@
         <div style="width: 80px; height: 80px; background: rgba(212,175,55,0.1); border: 1px solid rgba(212,175,55,0.3); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 2.2rem; color: var(--secondary-color); margin: 0 auto 20px;">
             <i class="fa-solid fa-user-tie"></i>
         </div>
-        <h1 style="font-size: 3.5rem; font-weight: 900; margin-bottom: 20px;">نخبة من <span style="color: var(--secondary-color);">الخبراء</span></h1>
-        <p style="color: #cbd5e1; font-size: 1.2rem; max-width: 700px; margin: 0 auto;">نفخر في ابستراكشن بنخبة من أفضل الخبراء الأكاديميين والمهنيين الذين ينقلون خبراتهم العملية لك لضمان أعلى جودة تعليمية.</p>
+        <h1 style="font-size: 3.5rem; font-weight: 900; margin-bottom: 20px;color:#cbd5e1;">@GetSetting("Staff_HeroTitle", "نخبة من الخبراء", "Elite Experts")</h1>
+        <p style="color: #cbd5e1; font-size: 1.2rem; max-width: 700px; margin: 0 auto;">@GetSetting("Staff_HeroSubtitle", "نفخر في ابستراكشن بنخبة من أفضل الخبراء الأكاديميين والمهنيين الذين ينقلون خبراتهم العملية لك لضمان أعلى جودة تعليمية.", "We take pride in our elite group of academic and professional experts who transfer their practical experiences to you to ensure the highest educational quality.")</p>
     </div>
 </section>
 
 <section style="padding: 100px 0; background: #f8fafc;">
     <div class="container">
         <div class="grid-3">
-            @if (Model != null && Model.Any())
+            @if (Model != null && Model.Any(u => u.IsActive))
             {
-                foreach (var instructor in Model)
+                foreach (var instructor in Model.Where(u => u.IsActive))
                 {
                     <div class="staff-card">
                         <div class="staff-img">
@@ -112,7 +129,7 @@
                             }
                         </div>
                         <h3 class="staff-name">@instructor.FullName</h3>
-                        <div class="staff-title">@(string.IsNullOrEmpty(instructor.Specialization) ? "محاضر معتمد" : instructor.Specialization)</div>
+                        <div class="staff-title">@(string.IsNullOrEmpty(instructor.Specialization) ? (isRtl ? "محاضر معتمد" : "Certified Instructor") : instructor.Specialization)</div>
                     </div>
                 }
             }
@@ -120,7 +137,7 @@
             {
                 <div style="grid-column: 1/-1; text-align: center; padding: 60px; background: white; border-radius: var(--radius-lg); border: 1px dashed #e2e8f0;">
                     <i class="fa-solid fa-users-slash" style="font-size: 4rem; color: #cbd5e1; margin-bottom: 20px;"></i>
-                    <h3 style="color: var(--primary-color); font-weight: 900; font-size: 1.5rem;">جاري تحديث قائمة هيئة التدريس...</h3>
+                    <h3 style="color: var(--primary-color); font-weight: 900; font-size: 1.5rem;">@(isRtl ? "لا يوجد مدربين متاحين حالياً..." : "No instructors available currently...")</h3>
                 </div>
             }
         </div>

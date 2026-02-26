@@ -1,10 +1,9 @@
-﻿@model IEnumerable<AbstractionCenter.Models.Entities.Course>
+﻿@model IEnumerable<AbstractionCenter.Models.Entities.Batch>
 @{
     ViewData["Title"] = "لوحة تحكم المحاضر";
 }
 
 <style>
-    /* --- الهوية الملكية للمحاضر --- */
     :root {
         --inst-bg: #f8fafc;
         --inst-surface: #ffffff;
@@ -24,7 +23,6 @@
         padding-bottom: 60px;
     }
 
-    /* --- الهيدر الفخم --- */
     .hero-dashboard {
         background: linear-gradient(135deg, var(--inst-primary), var(--inst-primary-light));
         border-radius: var(--inst-radius);
@@ -48,13 +46,6 @@
             height: 350px;
             background: radial-gradient(circle, var(--inst-gold-glow) 0%, transparent 70%);
             border-radius: 50%;
-        }
-
-        .hero-dashboard::after {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background-image: url('data:image/svg+xml,%3Csvg width=\'40\' height=\'40\' viewBox=\'0 0 40 40\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cpath d=\'M20 20.5V18H0v-2h20v-2H0v-2h20v-2H0V8h20V6H0V4h20V2H0V0h22v20h2V0h2v20h2V0h2v20h2V0h2v20h2V0h2v2H20v-1.5zM0 20h2v20H0V20zm4 0h2v20H4V20zm4 0h2v20H8V20zm4 0h2v20h-2V20zm4 0h2v20h-2V20zm4 4h20v2H20v-2zm0 4h20v2H20v-2zm0 4h20v2H20v-2zm0 4h20v2H20v-2z\' fill=\'%23d4af37\' fill-opacity=\'0.03\' fill-rule=\'evenodd\'/%3E%3C/svg%3E');
         }
 
     .hero-content {
@@ -114,7 +105,6 @@
             font-weight: 700;
         }
 
-    /* --- قسم الدورات --- */
     .section-title {
         color: var(--inst-primary);
         font-size: 1.6rem;
@@ -206,8 +196,15 @@
         font-size: 1.3rem;
         font-weight: 900;
         color: var(--inst-primary);
-        margin-bottom: 15px;
+        margin-bottom: 5px;
         line-height: 1.5;
+    }
+
+    .luxury-batch-name {
+        color: #3b82f6;
+        font-size: 1rem;
+        font-weight: 800;
+        margin-bottom: 15px;
     }
 
     .luxury-card-meta {
@@ -219,11 +216,6 @@
         font-size: 0.9rem;
         font-weight: 700;
     }
-
-        .luxury-card-meta i {
-            color: var(--inst-gold);
-            margin-left: 5px;
-        }
 
     .luxury-btn {
         background: #f8fafc;
@@ -268,16 +260,15 @@
 </style>
 
 <div class="dashboard-wrapper">
-    <!-- الهيدر الفخم -->
     <div class="hero-dashboard">
         <div class="hero-content">
             <h1>مرحباً بك، <span>@ViewData["InstructorName"]</span></h1>
-            <p>مساحتك الأكاديمية الملكية. أدر دوراتك، ارفع محتواك، وصمم رحلة تعليمية استثنائية لطلابك.</p>
+            <p>مساحتك الأكاديمية الملكية. أدر دفعاتك التدريبية، ارفع محتواك، وصمم رحلة تعليمية استثنائية لطلابك.</p>
         </div>
         <div class="hero-stats">
             <div class="stat-badge">
                 <h3>@(Model?.Count() ?? 0)</h3>
-                <p>دورات مسندة إليك</p>
+                <p>دفعات مسندة</p>
             </div>
             <div class="stat-badge">
                 <h3><i class="fa-solid fa-certificate" style="color: var(--inst-gold);"></i></h3>
@@ -286,45 +277,45 @@
         </div>
     </div>
 
-    <h2 class="section-title"><i class="fa-solid fa-laptop-code"></i> الأكاديمية (البرامج التدريبية)</h2>
+    <h2 class="section-title"><i class="fa-solid fa-laptop-code"></i> الدفعات المسندة إليك</h2>
 
     <div class="courses-grid">
         @if (Model != null && Model.Any())
         {
-            foreach (var course in Model)
+            foreach (var batch in Model)
             {
                 <div class="luxury-card">
                     <div class="luxury-card-img">
                         <div class="card-badge">
-                            @if (course.Status == AbstractionCenter.Models.Entities.CourseStatus.OpenForRegistration)
+                            @if (batch.Status == AbstractionCenter.Models.Entities.BatchStatus.OpenForRegistration)
                             {
-                                <span><i class="fa-solid fa-door-open"></i> متاحة للتسجيل</span>
+                                <span><i class="fa-solid fa-door-open"></i> تسجيل مفتوح</span>
                             }
                             else
                             {
-                                <span style="color:#94a3b8;"><i class="fa-solid fa-lock"></i> مغلقة / قيد التنفيذ</span>
+                                <span style="color:#94a3b8;"><i class="fa-solid fa-lock"></i> قيد التنفيذ / مغلقة</span>
                             }
                         </div>
-                        @if (!string.IsNullOrEmpty(course.ImageUrl))
+                        @if (!string.IsNullOrEmpty(batch.Course?.ImageUrl))
                         {
-                            <img src="@course.ImageUrl" alt="@course.Title" />
+                            <img src="@batch.Course.ImageUrl" alt="@batch.Course.Title" />
                         }
                         else
                         {
                             <div style="width:100%; height:100%; display:flex; align-items:center; justify-content:center; background: #1e293b;">
-                                <i class="fa-solid fa-award" style="font-size: 5rem; color: rgba(212,175,55,0.2);"></i>
+                                <i class="fa-solid fa-layer-group" style="font-size: 5rem; color: rgba(212,175,55,0.2);"></i>
                             </div>
                         }
                         <div class="overlay"></div>
                     </div>
 
                     <div class="luxury-card-content">
-                        <div class="luxury-card-title">@course.Title</div>
+                        <div class="luxury-card-title">@batch.Course?.Title</div>
+                        <div class="luxury-batch-name"><i class="fa-solid fa-users-rectangle"></i> @batch.BatchName</div>
                         <div class="luxury-card-meta">
-                            <span><i class="fa-regular fa-calendar-days"></i> @course.StartDate.ToString("dd MMM yyyy")</span>
-                            <span>#@course.Id</span>
+                            <span><i class="fa-regular fa-calendar-days" style="color:var(--inst-gold)"></i> تبدأ: @batch.StartDate.ToString("dd MMM yyyy")</span>
                         </div>
-                        <a href="/Instructor/ManageCourse/@course.Id" class="luxury-btn">
+                        <a href="/Instructor/ManageBatch/@batch.Id" class="luxury-btn">
                             إدارة المنهج والمحتوى <i class="fa-solid fa-arrow-left-long"></i>
                         </a>
                     </div>
@@ -337,8 +328,8 @@
                 <div style="width: 90px; height: 90px; background: rgba(212, 175, 55, 0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; border: 1px solid rgba(212, 175, 55, 0.3);">
                     <i class="fa-solid fa-folder-open" style="font-size: 2.5rem; color: var(--inst-gold);"></i>
                 </div>
-                <h3 style="color: var(--inst-primary); font-weight: 900; font-size: 1.6rem; margin-bottom: 10px;">لا توجد مسارات مسندة إليك</h3>
-                <p style="color: var(--inst-muted); font-size: 1.05rem;">تواصل مع إدارة المركز لربط حسابك بالدورات لتتمكن من رفع المادة العلمية.</p>
+                <h3 style="color: var(--inst-primary); font-weight: 900; font-size: 1.6rem; margin-bottom: 10px;">لا توجد دفعات مسندة إليك حالياً</h3>
+                <p style="color: var(--inst-muted); font-size: 1.05rem;">تواصل مع إدارة المركز لربط حسابك بالدفعات لتتمكن من رفع المادة العلمية.</p>
             </div>
         }
     </div>

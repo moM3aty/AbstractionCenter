@@ -1,70 +1,61 @@
-﻿using AbstractionCenter.Data;
+﻿using Microsoft.AspNetCore.Mvc;
 using AbstractionCenter.Models.Entities;
-using AbstractionCenter.Services;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
+using AbstractionCenter.Data;
+using Microsoft.EntityFrameworkCore;
 using System.Threading.Tasks;
+using System.Linq;
+using AbstractionCenter.Services;
+using System;
 
 namespace AbstractionCenter.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly ILogger<HomeController> _logger;
         private readonly ApplicationDbContext _context;
         private readonly IFileUploaderService _fileUploader;
 
-        public HomeController(ILogger<HomeController> logger, ApplicationDbContext context, IFileUploaderService fileUploader)
+        public HomeController(ApplicationDbContext context, IFileUploaderService fileUploader)
         {
-            _logger = logger;
             _context = context;
             _fileUploader = fileUploader;
         }
 
         public IActionResult Index()
         {
-            ViewData["Title"] = "الرئيسية";
             return View();
         }
 
         public IActionResult About()
         {
-            ViewData["Title"] = "من نحن";
             return View();
         }
 
         public IActionResult Tracks()
         {
-            ViewData["Title"] = "المسارات التدريبية";
             return View();
         }
 
-        public async Task<IActionResult> Staff([FromServices] UserManager<ApplicationUser> userManager)
+        public async Task<IActionResult> Staff()
         {
-            ViewData["Title"] = "هيئة التدريس";
-            var instructors = await userManager.GetUsersInRoleAsync("Instructor");
+            // جلب المدربين النشطين فقط
+            var instructors = await _context.Users
+                .Where(u => u.IsActive)
+                .ToListAsync();
+
+            // تصفية إضافية عبر الـ Role إذا لزم الأمر، لكننا نعتمد على IsActive حالياً
+            // var instructorRole = await _context.Roles.FirstOrDefaultAsync(r => r.Name == "Instructor");
+
             return View(instructors);
         }
 
         public IActionResult Contact()
         {
-            ViewData["Title"] = "تواصل معنا";
             return View();
         }
 
-        [HttpGet]
-        public IActionResult VerifyCertificate(string serialNumber)
-        {
-            ViewData["Title"] = "التحقق من الشهادة";
-            ViewBag.SerialNumber = serialNumber;
-            return View();
-        }
-
-        // --- الميزة الجديدة: فورم تسجيل المحاضرين ---
         [HttpGet]
         public IActionResult JoinAsInstructor()
         {
-            ViewData["Title"] = "انضم كمدرب / محاضر";
             return View();
         }
 
@@ -74,29 +65,50 @@ namespace AbstractionCenter.Controllers
         {
             if (ModelState.IsValid)
             {
-                // رفع السيرة الذاتية (CV)
+                if (application.ProfilePictureFile != null)
+                {
+                    application.ProfilePicturePath = await _fileUploader.UploadFileAsync(application.ProfilePictureFile, "profiles");
+                }
                 if (application.CVFile != null)
                 {
                     application.CVPath = await _fileUploader.UploadFileAsync(application.CVFile, "cvs");
                 }
 
-                // رفع الصورة الشخصية
-                if (application.ProfilePictureFile != null)
-                {
-                    application.ProfilePicturePath = await _fileUploader.UploadFileAsync(application.ProfilePictureFile, "profiles");
-                }
-
-                application.AppliedAt = System.DateTime.Now;
+                application.AppliedAt = DateTime.Now;
                 application.Status = RequestStatus.Pending;
 
                 _context.InstructorApplications.Add(application);
                 await _context.SaveChangesAsync();
 
-                TempData["SuccessMessage"] = "تم إرسال طلبك بنجاح. سيتم مراجعة بياناتك والتواصل معك قريباً.";
-                return RedirectToAction(nameof(Index));
+                TempData["SuccessMessage"] = "تم إرسال طلبك بنجاح! ستقوم الإدارة بمراجعته والتواصل معك قريباً.";
+                return RedirectToAction(nameof(JoinAsInstructor));
             }
 
             return View(application);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> VerifyCertificate(string serialNumber)
+        {
+            ViewBag.SerialNumber = serialNumber;
+            if (!string.IsNullOrEmpty(serialNumber))
+            {
+                var certificate = await _context.Certificates
+                    .Include(c => c.Student)
+                    .Include(c => c.Batch).ThenInclude(b => b.Course)
+                    .FirstOrDefaultAsync(c => c.UniqueSerialNumber == serialNumber && c.IsApproved);
+
+                if (certificate != null)
+                {
+                    ViewBag.Certificate = certificate;
+                    ViewBag.IsValid = true;
+                }
+                else
+                {
+                    ViewBag.IsValid = false;
+                }
+            }
+            return View();
         }
     }
 }

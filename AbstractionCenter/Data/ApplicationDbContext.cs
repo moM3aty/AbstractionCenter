@@ -12,32 +12,35 @@ namespace AbstractionCenter.Data
         }
 
         public DbSet<Course> Courses { get; set; }
-        public DbSet<StudentCourse> StudentCourses { get; set; }
-        public DbSet<Assignment> Assignments { get; set; }
-        public DbSet<Certificate> Certificates { get; set; }
-        public DbSet<RegistrationRequest> RegistrationRequests { get; set; }
+        public DbSet<Batch> Batches { get; set; }
+        public DbSet<StudentBatch> StudentBatches { get; set; }
         public DbSet<SiteSetting> SiteSettings { get; set; }
-
-        public DbSet<InstructorApplication> InstructorApplications { get; set; }
-
-        // الجداول الجديدة للدروس والمحتوى
         public DbSet<Lesson> Lessons { get; set; }
         public DbSet<LessonContent> LessonContents { get; set; }
-
-        // جداول الفورم الديناميكي
-        public DbSet<CourseQuestion> CourseQuestions { get; set; }
-        public DbSet<RegistrationAnswer> RegistrationAnswers { get; set; }
-
-        // جداول الاختبار النهائي
+        public DbSet<Assignment> Assignments { get; set; }
+        public DbSet<AssignmentSubmission> AssignmentSubmissions { get; set; }
         public DbSet<FinalExam> FinalExams { get; set; }
         public DbSet<ExamQuestion> ExamQuestions { get; set; }
+        public DbSet<Certificate> Certificates { get; set; }
+        public DbSet<RegistrationRequest> RegistrationRequests { get; set; }
+        public DbSet<InstructorApplication> InstructorApplications { get; set; }
+        public DbSet<CourseQuestion> CourseQuestions { get; set; }
+        public DbSet<RegistrationAnswer> RegistrationAnswers { get; set; }
+        public DbSet<Notification> Notifications { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
 
-            builder.Entity<StudentCourse>()
-                .HasOne(sc => sc.Course)
+            // --- منع الحذف المتسلسل (Cascade Delete) لتجنب أخطاء SQL Server ---
+
+            builder.Entity<StudentBatch>()
+                .HasOne(sb => sb.Batch)
+                .WithMany(b => b.EnrolledStudents)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            builder.Entity<StudentBatch>()
+                .HasOne(sb => sb.Student)
                 .WithMany()
                 .OnDelete(DeleteBehavior.Restrict);
 
@@ -48,6 +51,37 @@ namespace AbstractionCenter.Data
 
             builder.Entity<RegistrationAnswer>()
                 .HasOne(ra => ra.CourseQuestion)
+                .WithMany()
+                .OnDelete(DeleteBehavior.Restrict);
+
+            builder.Entity<AssignmentSubmission>()
+                .HasOne(a => a.Student)
+                .WithMany()
+                .OnDelete(DeleteBehavior.Restrict);
+
+            builder.Entity<AssignmentSubmission>()
+                .HasOne(a => a.LessonContent)
+                .WithMany()
+                .OnDelete(DeleteBehavior.Cascade);
+
+            // === التعديلات الجديدة لحل مشكلة الـ Certificates ===
+            builder.Entity<Certificate>()
+                .HasOne(c => c.Batch)
+                .WithMany()
+                .OnDelete(DeleteBehavior.Restrict);
+
+            builder.Entity<Certificate>()
+                .HasOne(c => c.Student)
+                .WithMany()
+                .OnDelete(DeleteBehavior.Restrict);
+
+            builder.Entity<Batch>()
+                .HasOne(b => b.Instructor)
+                .WithMany()
+                .OnDelete(DeleteBehavior.Restrict);
+
+            builder.Entity<RegistrationRequest>()
+                .HasOne(r => r.Batch)
                 .WithMany()
                 .OnDelete(DeleteBehavior.Restrict);
         }

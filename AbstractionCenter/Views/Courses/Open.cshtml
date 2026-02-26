@@ -1,264 +1,330 @@
-﻿@model IEnumerable<AbstractionCenter.Models.Entities.Course>
+﻿@using Microsoft.AspNetCore.Localization
+@model IEnumerable<AbstractionCenter.Models.Entities.Batch>
 @{
-    ViewData["Title"] = "الدورات المتاحة للتسجيل";
+    var requestCulture = Context.Features.Get<IRequestCultureFeature>();
+    bool isRtl = requestCulture?.RequestCulture.UICulture.Name == "ar" || requestCulture?.RequestCulture.UICulture.Name == null;
+    ViewData["Title"] = isRtl ? "دليل البرامج التدريبية" : "Course Catalog";
 }
 
 <style>
-    .courses-hero {
-        background: linear-gradient(135deg, var(--primary-color), #1e293b);
-        padding: 160px 0 100px;
+    .courses-page {
+        background: #f8fafc;
+        padding: 120px 0 100px;
+    }
+
+    /* --- Enhanced Hero --- */
+    .catalog-hero {
         text-align: center;
-        color: white;
+        margin-bottom: 80px;
         position: relative;
     }
 
-        .courses-hero::after {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background-image: url('data:image/svg+xml,%3Csvg width=\'60\' height=\'60\' viewBox=\'0 0 60 60\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cg fill=\'none\' fill-rule=\'evenodd\'%3E%3Cg fill=\'%23d4af37\' fill-opacity=\'0.05\'%3E%3Cpath d=\'M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z\'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E');
-        }
-
-    .course-card-pro {
-        background: white;
-        border-radius: var(--radius-lg);
-        overflow: hidden;
-        border: 1px solid #e2e8f0;
-        box-shadow: var(--shadow-md);
-        transition: all 0.4s ease;
-        display: flex;
-        flex-direction: column;
-        position: relative;
-    }
-
-        .course-card-pro:hover {
-            transform: translateY(-10px);
-            box-shadow: var(--shadow-premium);
-            border-color: var(--secondary-color);
-        }
-
-    .card-img-wrapper {
-        height: 220px;
-        position: relative;
-        overflow: hidden;
-        background: var(--primary-color);
-    }
-
-        .card-img-wrapper img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            transition: transform 0.5s ease;
-            opacity: 0.9;
-        }
-
-    .course-card-pro:hover .card-img-wrapper img {
-        transform: scale(1.08);
-        opacity: 1;
-    }
-
-    .card-img-wrapper .overlay {
-        position: absolute;
-        inset: 0;
-        background: linear-gradient(to top, rgba(11,17,32,0.9), transparent);
-    }
-
-    .card-badge {
-        position: absolute;
-        top: 15px;
-        right: 15px;
-        background: rgba(11, 17, 32, 0.8);
-        color: var(--secondary-color);
-        padding: 8px 18px;
-        border-radius: 30px;
-        font-size: 0.9rem;
-        font-weight: 800;
-        backdrop-filter: blur(5px);
-        border: 1px solid rgba(212, 175, 55, 0.3);
-        z-index: 2;
-    }
-
-    .card-body-pro {
-        padding: 30px;
-        flex-grow: 1;
-        display: flex;
-        flex-direction: column;
-        position: relative;
-        z-index: 5;
-        margin-top: -50px;
-    }
-
-    .card-title-pro {
-        font-size: 1.4rem;
-        font-weight: 900;
-        color: white;
-        margin-bottom: 20px;
-        line-height: 1.5;
-        text-shadow: 0 2px 4px rgba(0,0,0,0.5);
-    }
-
-    .card-date {
-        color: var(--secondary-color);
-        font-weight: 800;
-        font-size: 0.95rem;
-        margin-bottom: 15px;
-        display: flex;
-        align-items: center;
-        gap: 8px;
-    }
-
-    .card-desc {
-        color: #475569;
-        line-height: 1.7;
-        margin-bottom: 25px;
-        flex-grow: 1;
-        font-size: 1.05rem;
-    }
-
-    .card-footer-pro {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 15px;
-        padding-top: 20px;
-        border-top: 1px solid #e2e8f0;
-    }
-
-    .btn-register-pro {
-        background: linear-gradient(135deg, var(--secondary-color), #fef08a);
-        color: var(--primary-color);
-        padding: 12px 25px;
-        border-radius: 12px;
-        font-weight: 900;
-        text-decoration: none;
+    .catalog-badge {
         display: inline-flex;
         align-items: center;
         gap: 8px;
-        transition: 0.3s;
-        box-shadow: 0 5px 15px rgba(212, 175, 55, 0.3);
-        flex-grow: 1;
-        justify-content: center;
+        background: rgba(212, 175, 55, 0.1);
+        color: #b48a25;
+        padding: 10px 25px;
+        border-radius: 50px;
+        font-weight: 900;
+        font-size: 0.95rem;
+        margin-bottom: 25px;
+        border: 1px solid rgba(212, 175, 55, 0.3);
     }
 
-        .btn-register-pro:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(212, 175, 55, 0.5);
-        }
-
-    .btn-whatsapp-pro {
-        width: 48px;
-        height: 48px;
-        border-radius: 12px;
-        background: rgba(37, 211, 102, 0.1);
-        color: #25d366;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 1.5rem;
-        transition: 0.3s;
-        border: 1px solid rgba(37, 211, 102, 0.3);
-        flex-shrink: 0;
+    .catalog-hero h1 {
+        font-size: 4rem;
+        font-weight: 900;
+        color: var(--primary-color);
+        margin-bottom: 20px;
     }
 
-        .btn-whatsapp-pro:hover {
-            background: #25d366;
-            color: white;
-            transform: translateY(-2px) rotate(-10deg);
-            box-shadow: 0 5px 15px rgba(37, 211, 102, 0.4);
+        .catalog-hero h1 span {
+            background: linear-gradient(to left, #d4af37, #b48a25);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
 
-    .instructor-tag {
-        display: flex;
-        align-items: center;
-        gap: 8px;
+    .catalog-hero p {
+        font-size: 1.3rem;
         color: #64748b;
-        font-size: 0.9rem;
-        font-weight: 700;
-        margin-top: 15px;
+        max-width: 800px;
+        margin: 0 auto;
+        line-height: 1.8;
     }
 
-        .instructor-tag i {
-            color: var(--primary-color);
+    /* --- Premium Grid --- */
+    .luxury-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+        gap: 40px;
+    }
+
+    .luxury-course-card {
+        background: white;
+        border-radius: 30px;
+        overflow: hidden;
+        box-shadow: 0 10px 30px rgba(11, 17, 32, 0.05);
+        border: 1px solid #e2e8f0;
+        transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+        display: flex;
+        flex-direction: column;
+    }
+
+        .luxury-course-card:hover {
+            transform: translateY(-15px);
+            box-shadow: 0 40px 80px -15px rgba(11, 17, 32, 0.15);
+            border-color: var(--secondary-color);
         }
+
+    .card-media {
+        height: 260px;
+        position: relative;
+        overflow: hidden;
+        background: #0b1120;
+    }
+
+        .card-media img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: 0.8s;
+            opacity: 0.85;
+        }
+
+    .luxury-course-card:hover .card-media img {
+        transform: scale(1.1);
+        opacity: 1;
+    }
+
+    .card-media .overlay {
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(to top, rgba(11,17,32,0.95) 0%, transparent 100%);
+    }
+
+    .card-status {
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        background: rgba(255,255,255,0.9);
+        backdrop-filter: blur(10px);
+        color: var(--primary-color);
+        padding: 8px 20px;
+        border-radius: 50px;
+        font-weight: 900;
+        font-size: 0.85rem;
+        z-index: 5;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+
+    .card-body {
+        padding: 35px;
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
+        margin-top: -60px;
+        position: relative;
+        z-index: 10;
+    }
+
+    .course-title-main {
+        font-size: 1.6rem;
+        font-weight: 900;
+        color: white;
+        margin-top: -20px;
+        line-height: 1.4;
+        min-height: 4.4rem;
+        text-shadow: 0 2px 10px rgba(0,0,0,0.3);
+    }
+
+    .instructor-info {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        margin-bottom: 25px;
+        background: #f8fafc;
+        padding: 15px;
+        border-radius: 20px;
+        border: 1px solid #f1f5f9;
+    }
+
+    .inst-img {
+        width: 45px;
+        height: 45px;
+        border-radius: 50%;
+        border: 2px solid var(--secondary-color);
+        object-fit: cover;
+    }
+
+    .inst-text strong {
+        display: block;
+        color: var(--primary-color);
+        font-size: 0.95rem;
+    }
+
+    .inst-text span {
+        color: #64748b;
+        font-size: 0.8rem;
+        font-weight: 700;
+    }
+
+    .course-description {
+        color: #475569;
+        font-size: 1.05rem;
+        line-height: 1.7;
+        margin-bottom: 30px;
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        flex-grow: 1;
+    }
+
+    .batch-meta-grid {
+        display: grid;
+        grid-template-columns: 1fr 1.2fr;
+        gap: 15px;
+        margin-bottom: 35px;
+    }
+
+    .meta-box {
+        background: #fcfcfd;
+        border: 1px solid #f1f5f9;
+        padding: 12px;
+        border-radius: 15px;
+        text-align: center;
+    }
+
+        .meta-box i {
+            color: var(--secondary-color);
+            margin-bottom: 5px;
+            display: block;
+            font-size: 1.1rem;
+        }
+
+        .meta-box span {
+            font-size: 0.8rem;
+            color: #94a3b8;
+            font-weight: 800;
+            display: block;
+            margin-bottom: 2px;
+        }
+
+        .meta-box strong {
+            color: var(--primary-color);
+            font-size: 0.95rem;
+            font-weight: 900;
+        }
+
+    .btn-register-luxury {
+        background: linear-gradient(135deg, var(--secondary-color), #b48a25);
+        color: #0b1120;
+        padding: 18px;
+        border-radius: 20px;
+        font-weight: 900;
+        text-decoration: none;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 10px;
+        font-size: 1.15rem;
+        transition: 0.3s;
+        box-shadow: 0 10px 25px rgba(212,175,55,0.3);
+    }
+
+        .btn-register-luxury:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(212,175,55,0.5);
+            color: white;
+        }
+
+    @@media (max-width: 768px) {
+        .catalog-hero h1 {
+            font-size: 2.5rem;
+        }
+
+        .luxury-grid {
+            grid-template-columns: 1fr;
+            padding: 0 20px;
+        }
+    }
 </style>
 
-<section class="courses-hero">
-    <div class="container" style="position: relative; z-index: 10;">
-        <div style="width: 80px; height: 80px; background: rgba(212,175,55,0.1); border: 1px solid rgba(212,175,55,0.3); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 2.2rem; color: var(--secondary-color); margin: 0 auto 20px;">
-            <i class="fa-solid fa-graduation-cap"></i>
-        </div>
-        <h1 style="font-size: 3.5rem; font-weight: 900; margin-bottom: 20px;">البرامج <span style="color: var(--secondary-color);">التدريبية</span></h1>
-        <p style="color: #cbd5e1; font-size: 1.2rem; max-width: 700px; margin: 0 auto;">استثمر في مستقبلك وسجل الآن في أحدث الدورات المتاحة لتطوير مهاراتك ومواكبة سوق العمل.</p>
-
-        @if (TempData["SuccessMessage"] != null)
-        {
-            <div style="background: rgba(16, 185, 129, 0.2); border: 1px solid #10b981; color: white; padding: 15px 25px; border-radius: 16px; margin: 30px auto 0; max-width: 600px; font-weight: 800; font-size: 1.1rem; display: flex; align-items: center; justify-content: center; gap: 10px;">
-                <i class="fa-solid fa-circle-check" style="color: #10b981; font-size: 1.5rem;"></i> @TempData["SuccessMessage"]
-            </div>
-        }
-        @if (TempData["InfoMessage"] != null)
-        {
-            <div style="background: rgba(245, 158, 11, 0.2); border: 1px solid var(--secondary-color); color: white; padding: 15px 25px; border-radius: 16px; margin: 30px auto 0; max-width: 600px; font-weight: 800; font-size: 1.1rem; display: flex; align-items: center; justify-content: center; gap: 10px;">
-                <i class="fa-solid fa-circle-info" style="color: var(--secondary-color); font-size: 1.5rem;"></i> @TempData["InfoMessage"]
-            </div>
-        }
-    </div>
-</section>
-
-<section style="padding: 100px 0; background: #f8fafc;">
+<div class="courses-page">
     <div class="container">
-        <div class="grid-3">
+        <!-- Hero Section -->
+        <div class="catalog-hero">
+            <div class="catalog-badge">
+                <i class="fa-solid fa-crown"></i> @(isRtl ? "استكشف بوابتك للمستقبل" : "Explore Your Portal to Future")
+            </div>
+            <h1>@(isRtl ? "دليل البرامج" : "Learning") <span>@(isRtl ? "الأكاديمية" : "Catalog")</span></h1>
+            <p>@(isRtl ? "اختر من بين مجموعتنا الواسعة من المسارات التدريبية المصممة بعناية فائقة لتتوافق مع معايير سوق العمل الدولية وتصنع منك خبيراً في مجالك." : "Choose from our wide range of carefully designed training tracks tailored to meet international job market standards and make you an expert in your field.")</p>
+        </div>
+
+        <div class="luxury-grid">
             @if (Model != null && Model.Any())
             {
-                foreach (var course in Model)
+                foreach (var batch in Model)
                 {
-                    <div class="course-card-pro">
-                        <div class="card-img-wrapper">
-                            <div class="card-badge"><i class="fa-solid fa-door-open"></i> متاح للتسجيل</div>
-                            @if (!string.IsNullOrEmpty(course.ImageUrl))
+                    <div class="luxury-course-card">
+                        <div class="card-media">
+                            <div class="card-status"><i class="fa-solid fa-door-open"></i> @(isRtl ? "متاح حالياً" : "Registration Open")</div>
+                            @if (!string.IsNullOrEmpty(batch.Course?.ImageUrl))
                             {
-                                <img src="@course.ImageUrl" alt="@course.Title" />
+                                <img src="@batch.Course.ImageUrl" alt="@batch.Course.Title" />
                             }
                             else
                             {
-                                <div style="width:100%; height:100%; display:flex; align-items:center; justify-content:center;">
-                                    <i class="fa-solid fa-award" style="font-size: 5rem; color: rgba(255,255,255,0.1);"></i>
+                                <div style="width:100%; height:100%; display:flex; align-items:center; justify-content:center; background:#1e293b;">
+                                    <i class="fa-solid fa-layer-group" style="font-size:6rem; color:rgba(212,175,55,0.1);"></i>
                                 </div>
                             }
                             <div class="overlay"></div>
                         </div>
 
-                        <div class="card-body-pro">
-                            <h3 class="card-title-pro">@course.Title</h3>
-                            <div class="card-date"><i class="fa-regular fa-calendar-days"></i> موعد البدء: @course.StartDate.ToString("dd MMMM yyyy")</div>
-                            <p class="card-desc">@course.Description</p>
+                        <div class="card-body">
+                            <h2 class="course-title-main">@batch.Course?.Title</h2>
 
-                            <div class="card-footer-pro">
-                                <a href="/Courses/Register/@course.Id" class="btn-register-pro">
-                                    <i class="fa-solid fa-pen-to-square"></i> سجل في الدورة
-                                </a>
-                                @if (!string.IsNullOrEmpty(course.RegistrarWhatsApp))
-                                {
-                                    <a href="https://wa.me/@course.RegistrarWhatsApp" target="_blank" class="btn-whatsapp-pro" title="استفسر عبر واتساب">
-                                        <i class="fa-brands fa-whatsapp"></i>
-                                    </a>
-                                }
+                            <div class="instructor-info">
+                                <img src="@(batch.Instructor?.ProfilePicture ?? "https://ui-avatars.com/api/?name=Inst&background=0b1120&color=d4af37")" class="inst-img" alt="Instructor" />
+                                <div class="inst-text">
+                                    <span>@(isRtl ? "بإشراف الخبير" : "Under Expert")</span>
+                                    <strong>@(batch.Instructor?.FullName ?? (isRtl ? "إدارة المركز" : "Academic Admin"))</strong>
+                                </div>
                             </div>
-                            <div class="instructor-tag">
-                                <i class="fa-solid fa-chalkboard-user"></i> إشراف: @course.RegistrarName
+
+                            <p class="course-description">@(batch.Course?.Description)</p>
+
+                            <div class="batch-meta-grid">
+                                <div class="meta-box">
+                                    <i class="fa-solid fa-users-rectangle"></i>
+                                    <span>@(isRtl ? "الدفعة" : "Batch")</span>
+                                    <strong>@batch.BatchName</strong>
+                                </div>
+                                <div class="meta-box">
+                                    <i class="fa-solid fa-calendar-day"></i>
+                                    <span>@(isRtl ? "موعد البدء" : "Start Date")</span>
+                                    <strong>@batch.StartDate.ToString("dd MMMM yyyy")</strong>
+                                </div>
                             </div>
+
+                            <a href="/Courses/Register/@batch.Id" class="btn-register-luxury">
+                                @(isRtl ? "تقديم طلب انضمام" : "Enroll Now") <i class="fa-solid @(isRtl ? "fa-arrow-left" : "fa-arrow-right")"></i>
+                            </a>
                         </div>
                     </div>
                 }
             }
             else
             {
-                <div style="grid-column: 1 / -1; text-align: center; padding: 80px 20px; background: white; border-radius: var(--radius-lg); box-shadow: var(--shadow-sm); border: 2px dashed #e2e8f0;">
+                <div style="grid-column: 1 / -1; text-align: center; padding: 100px 20px; background: white; border-radius: 40px; border: 2px dashed #e2e8f0;">
                     <i class="fa-solid fa-box-open" style="font-size: 5rem; color: #cbd5e1; margin-bottom: 25px;"></i>
-                    <h3 style="color: var(--primary-color); font-weight: 900; font-size: 1.8rem; margin-bottom: 15px;">لا توجد دورات مفتوحة للتسجيل حالياً</h3>
-                    <p style="color: #64748b; font-size: 1.1rem;">يرجى متابعة المنصة قريباً للاطلاع على أحدث المسارات التدريبية المتاحة.</p>
+                    <h3 style="color: var(--primary-color); font-weight: 900; font-size: 2rem;">@(isRtl ? "لا توجد برامج متاحة حالياً" : "No Available Programs")</h3>
+                    <p style="color: #64748b; font-size: 1.2rem;">@(isRtl ? "يرجى مراجعة الموقع قريباً للاطلاع على أحدث الدفعات المفتوحة." : "Please check the website soon to see the latest open batches.")</p>
                 </div>
             }
         </div>
     </div>
-</section>
+</div>

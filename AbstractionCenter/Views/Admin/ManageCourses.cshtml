@@ -94,31 +94,11 @@
             background: #fcfcfd;
         }
 
-    .badge {
-        padding: 8px 15px;
-        border-radius: 10px;
-        font-size: 0.85rem;
-        font-weight: 800;
-        display: inline-block;
-    }
-
-    .badge-open {
-        background: rgba(16, 185, 129, 0.1);
-        color: #059669;
-        border: 1px solid rgba(16, 185, 129, 0.2);
-    }
-
-    .badge-closed {
-        background: rgba(239, 68, 68, 0.1);
-        color: #dc2626;
-        border: 1px solid rgba(239, 68, 68, 0.2);
-    }
-
     .btn-edit {
         background: #0b1120;
         color: #d4af37;
-        padding: 10px 20px;
-        border-radius: 12px;
+        padding: 10px 15px;
+        border-radius: 10px;
         font-size: 0.9rem;
         font-weight: 800;
         transition: all 0.3s ease;
@@ -135,6 +115,27 @@
             border-color: #d4af37;
             transform: translateY(-2px);
             box-shadow: 0 5px 15px rgba(212, 175, 55, 0.3);
+        }
+
+    .btn-batches {
+        background: rgba(59, 130, 246, 0.1);
+        color: #2563eb;
+        padding: 10px 15px;
+        border-radius: 10px;
+        font-size: 0.9rem;
+        font-weight: 800;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        border: 1px solid rgba(59, 130, 246, 0.2);
+    }
+
+        .btn-batches:hover {
+            background: #2563eb;
+            color: white;
+            transform: translateY(-2px);
         }
 
     .empty-state {
@@ -161,18 +162,24 @@
 
 <div class="premium-table-card">
     <div class="toolbar">
-        <h3 class="toolbar-title"><i class="fa-solid fa-layer-group"></i> الدورات والمسارات التدريبية</h3>
+        <h3 class="toolbar-title"><i class="fa-solid fa-layer-group"></i> الكتالوج العام للدورات</h3>
         <a href="/Admin/CreateCourse" class="btn-add"><i class="fa-solid fa-plus"></i> إنشاء دورة جديدة</a>
     </div>
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div style="background: rgba(16, 185, 129, 0.1); color: #059669; padding: 15px 25px; border-radius: 12px; margin-bottom: 20px; font-weight: bold; border: 1px solid #10b981;">
+            <i class="fa-solid fa-circle-check"></i> @TempData["SuccessMessage"]
+        </div>
+    }
 
     <div class="table-responsive">
         <table class="modern-data-table">
             <thead>
                 <tr>
                     <th>معلومات الدورة</th>
-                    <th>المسؤول (المحاضر)</th>
-                    <th>تاريخ البدء</th>
-                    <th>حالة الدورة</th>
+                    <th>تاريخ الإنشاء</th>
+                    <th>عدد الدفعات</th>
                     <th>إجراءات الإدارة</th>
                 </tr>
             </thead>
@@ -186,27 +193,19 @@
                                 <div style="font-size: 1.15rem; font-weight: 900; color: #0b1120;">@course.Title</div>
                                 <div style="font-size: 0.85rem; color: #64748b; margin-top: 4px;"><i class="fa-solid fa-hashtag" style="color: #d4af37;"></i> رقم المرجع: @course.Id</div>
                             </td>
-                            <td>
-                                <div style="font-weight: 800; color: #1e293b;">@course.RegistrarName</div>
-                                <div style="color: #64748b; font-size: 0.85rem; margin-top: 4px;">
-                                    <i class="fa-brands fa-whatsapp" style="color: #25d366; font-size: 1rem;"></i> @course.RegistrarWhatsApp
-                                </div>
-                            </td>
                             <td style="color: #475569; font-weight: 700;">
-                                <i class="fa-regular fa-calendar-days" style="color: #d4af37; margin-left: 5px;"></i> @course.StartDate.ToString("dd MMMM yyyy")
+                                <i class="fa-regular fa-calendar-days" style="color: #d4af37; margin-left: 5px;"></i> @course.CreatedAt.ToString("dd MMMM yyyy")
                             </td>
                             <td>
-                                @if (course.Status == AbstractionCenter.Models.Entities.CourseStatus.OpenForRegistration)
-                                {
-                                    <span class="badge badge-open"><i class="fa-solid fa-door-open"></i> متاحة للتسجيل</span>
-                                }
-                                else
-                                {
-                                    <span class="badge badge-closed"><i class="fa-solid fa-lock"></i> مغلقة / قيد التنفيذ</span>
-                                }
+                                <span style="background: rgba(212, 175, 55, 0.1); color: #b48a25; padding: 6px 12px; border-radius: 8px; font-weight: 900; border: 1px solid rgba(212, 175, 55, 0.3);">
+                                    @(course.Batches?.Count ?? 0) دفعة
+                                </span>
                             </td>
                             <td>
-                                <a href="/Admin/EditCourse/@course.Id" class="btn-edit"><i class="fa-solid fa-pen-to-square"></i> تعديل الدورة</a>
+                                <div style="display: flex; gap: 10px;">
+                                    <a href="/Admin/ManageBatches?courseId=@course.Id" class="btn-batches"><i class="fa-solid fa-users-rectangle"></i> إدارة الدفعات</a>
+                                    <a href="/Admin/EditCourse/@course.Id" class="btn-edit"><i class="fa-solid fa-pen-to-square"></i> تعديل الدورة</a>
+                                </div>
                             </td>
                         </tr>
                     }
@@ -214,11 +213,11 @@
                 else
                 {
                     <tr>
-                        <td colspan="5">
+                        <td colspan="4">
                             <div class="empty-state">
                                 <i class="fa-solid fa-box-open"></i>
                                 <h3>لا توجد دورات مسجلة حالياً</h3>
-                                <p>قم بإضافة أول دورة تدريبية لتبدأ في استقبال الطلاب.</p>
+                                <p>قم بإضافة أول دورة تدريبية لتبدأ في فتح الدفعات للطلاب.</p>
                             </div>
                         </td>
                     </tr>

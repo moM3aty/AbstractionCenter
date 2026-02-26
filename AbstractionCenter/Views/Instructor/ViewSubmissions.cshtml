@@ -1,0 +1,207 @@
+﻿@model IEnumerable<AbstractionCenter.Models.Entities.AssignmentSubmission>
+@{
+    ViewData["Title"] = "تقييم الواجبات";
+}
+
+<style>
+    .premium-table-card {
+        background: #ffffff;
+        border-radius: 24px;
+        padding: 35px;
+        box-shadow: 0 15px 35px -10px rgba(11, 17, 32, 0.08);
+        border: 1px solid rgba(212, 175, 55, 0.15);
+    }
+
+    .toolbar-title {
+        color: #0b1120;
+        margin: 0 0 10px 0;
+        font-size: 1.6rem;
+        font-weight: 900;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+        .toolbar-title i {
+            color: #d4af37;
+        }
+
+    .table-responsive {
+        width: 100%;
+        overflow-x: auto;
+        border-radius: 16px;
+        border: 1px solid #e2e8f0;
+        margin-top: 30px;
+    }
+
+    .modern-data-table {
+        width: 100%;
+        border-collapse: collapse;
+        white-space: nowrap;
+    }
+
+        .modern-data-table th {
+            text-align: right;
+            padding: 18px 20px;
+            background: #f8fafc;
+            color: #0b1120;
+            font-size: 0.95rem;
+            font-weight: 800;
+            border-bottom: 2px solid #e2e8f0;
+        }
+
+        .modern-data-table td {
+            padding: 18px 20px;
+            color: #1e293b;
+            font-weight: 600;
+            font-size: 1rem;
+            border-bottom: 1px solid #f1f5f9;
+            vertical-align: middle;
+        }
+
+    .badge-graded {
+        background: rgba(16, 185, 129, 0.1);
+        color: #059669;
+        padding: 6px 12px;
+        border-radius: 8px;
+        font-size: 0.85rem;
+        font-weight: bold;
+    }
+
+    .badge-pending {
+        background: rgba(245, 158, 11, 0.1);
+        color: #d97706;
+        padding: 6px 12px;
+        border-radius: 8px;
+        font-size: 0.85rem;
+        font-weight: bold;
+    }
+
+    .grade-form {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+    }
+
+    .grade-input {
+        width: 80px;
+        padding: 10px;
+        border: 2px solid #e2e8f0;
+        border-radius: 10px;
+        font-weight: bold;
+    }
+
+    .feedback-input {
+        flex-grow: 1;
+        padding: 10px;
+        border: 2px solid #e2e8f0;
+        border-radius: 10px;
+    }
+
+    .btn-save-grade {
+        background: #0b1120;
+        color: #d4af37;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 10px;
+        font-weight: bold;
+        cursor: pointer;
+        transition: 0.3s;
+    }
+
+        .btn-save-grade:hover {
+            background: #d4af37;
+            color: #0b1120;
+        }
+
+    .btn-download-sol {
+        background: rgba(59, 130, 246, 0.1);
+        color: #2563eb;
+        padding: 8px 15px;
+        border-radius: 10px;
+        text-decoration: none;
+        font-size: 0.9rem;
+        font-weight: bold;
+        transition: 0.3s;
+    }
+
+        .btn-download-sol:hover {
+            background: #2563eb;
+            color: white;
+        }
+</style>
+
+<div>
+    <div style="margin-bottom: 20px;">
+        <a href="/Instructor/ManageLessonDetails/@ViewBag.LessonId" style="color: #64748b; font-weight: bold; text-decoration: none;">
+            <i class="fa-solid fa-arrow-right"></i> العودة للوحدة
+        </a>
+    </div>
+
+    <div class="premium-table-card">
+        <h3 class="toolbar-title"><i class="fa-solid fa-clipboard-check"></i> تقييم الحلول</h3>
+        <p style="color: #64748b; font-size: 1.1rem; margin-bottom: 0;">الواجب: <strong>@ViewBag.ContentTitle</strong></p>
+
+        @if (TempData["SuccessMessage"] != null)
+        {
+            <div style="background: rgba(16, 185, 129, 0.1); color: #059669; padding: 15px 25px; border-radius: 12px; margin-top: 20px; font-weight: bold; border: 1px solid #10b981;">
+                <i class="fa-solid fa-circle-check"></i> @TempData["SuccessMessage"]
+            </div>
+        }
+
+        <div class="table-responsive">
+            <table class="modern-data-table">
+                <thead>
+                    <tr>
+                        <th>الطالب</th>
+                        <th>تاريخ التسليم</th>
+                        <th>ملف الحل</th>
+                        <th>التقييم والملاحظات</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model != null && Model.Any())
+                    {
+                        foreach (var sub in Model)
+                        {
+                            <tr>
+                                <td style="font-weight: 800; color: #0b1120;">@sub.Student.FullName</td>
+                                <td style="color: #64748b; font-size: 0.9rem;">@sub.SubmissionDate.ToString("dd MMM yyyy, hh:mm tt")</td>
+                                <td>
+                                    <a href="@sub.FilePath" target="_blank" class="btn-download-sol"><i class="fa-solid fa-download"></i> استعراض المرفق</a>
+                                </td>
+                                <td>
+                                    <form asp-action="GradeSubmission" method="post" class="grade-form">
+                                        @Html.AntiForgeryToken()
+                                        <input type="hidden" name="submissionId" value="@sub.Id" />
+
+                                        <input type="number" name="grade" class="grade-input" placeholder="الدرجة /100" value="@sub.Grade" min="0" max="100" required />
+                                        <input type="text" name="feedback" class="feedback-input" placeholder="ملاحظاتك للطالب..." value="@sub.InstructorFeedback" />
+
+                                        <button type="submit" class="btn-save-grade">حفظ التقييم</button>
+                                    </form>
+
+                                    @if (sub.IsGraded)
+                                    {
+                                        <div style="margin-top: 10px;">
+                                            <span class="badge-graded"><i class="fa-solid fa-check"></i> تم التقييم</span>
+                                        </div>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="4" style="text-align: center; padding: 50px; color: #94a3b8;">
+                                <i class="fa-solid fa-inbox" style="font-size: 3rem; opacity: 0.5; margin-bottom: 15px;"></i>
+                                <h4>لم يقم أي طالب بتسليم هذا الواجب بعد.</h4>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

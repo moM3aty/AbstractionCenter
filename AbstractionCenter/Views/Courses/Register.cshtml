@@ -1,6 +1,9 @@
-﻿@model AbstractionCenter.Models.Entities.Course
+﻿@using Microsoft.AspNetCore.Localization
+@model AbstractionCenter.Models.Entities.Batch
 @{
-    ViewData["Title"] = "التسجيل في: " + Model.Title;
+    var requestCulture = Context.Features.Get<IRequestCultureFeature>();
+    bool isRtl = requestCulture?.RequestCulture.UICulture.Name == "ar" || requestCulture?.RequestCulture.UICulture.Name == null;
+    ViewData["Title"] = (isRtl ? "التسجيل في: " : "Register in: ") + Model.Course?.Title;
 }
 
 <style>
@@ -11,115 +14,182 @@
     }
 
     .form-card {
-        background: white; border-radius: 24px; padding: 60px;
+        background: white;
+        border-radius: 24px;
+        padding: 60px;
         box-shadow: 0 25px 50px -12px rgba(11, 17, 32, 0.15);
-        max-width: 900px; margin: 0 auto;
+        max-width: 900px;
+        margin: 0 auto;
         border: 1px solid rgba(212, 175, 55, 0.2);
         border-top: 8px solid var(--secondary-color);
+        text-align: @(isRtl ? "right" : "left");
     }
 
     .course-header-card {
         background: linear-gradient(135deg, var(--primary-color), #1e293b);
-        color: white; padding: 40px; border-radius: 20px;
-        margin-bottom: 40px; text-align: center;
+        color: white;
+        padding: 40px;
+        border-radius: 20px;
+        margin-bottom: 40px;
+        text-align: center;
         box-shadow: 0 15px 30px rgba(11, 17, 32, 0.2);
     }
-    .course-header-card h2 { color: var(--secondary-color); font-weight: 900; font-size: 2.2rem; margin-bottom: 15px; }
 
-    .form-group { margin-bottom: 25px; }
-    .form-group label { display: block; margin-bottom: 10px; font-weight: 800; color: var(--primary-color); font-size: 1.05rem; }
-    
-    .form-control {
-        width: 100%; padding: 16px 20px; border: 2px solid #e2e8f0;
-        border-radius: 16px; font-family: inherit; font-size: 1.05rem; background: #fcfcfd; transition: 0.3s;
+        .course-header-card h2 {
+            color: var(--secondary-color);
+            font-weight: 900;
+            font-size: 2.2rem;
+            margin-bottom: 10px;
+        }
+
+    .batch-badge {
+        display: inline-block;
+        background: rgba(255,255,255,0.1);
+        padding: 8px 20px;
+        border-radius: 30px;
+        font-weight: 800;
+        border: 1px solid rgba(255,255,255,0.2);
+        margin-top: 15px;
     }
-    .form-control:focus { outline: none; border-color: var(--secondary-color); background: white; box-shadow: 0 0 0 4px rgba(212, 175, 55, 0.15); }
+
+    .form-group {
+        margin-bottom: 25px;
+    }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: 800;
+            color: var(--primary-color);
+            font-size: 1.05rem;
+        }
+
+    .form-control {
+        width: 100%;
+        padding: 16px 20px;
+        border: 2px solid #e2e8f0;
+        border-radius: 16px;
+        font-family: inherit;
+        font-size: 1.05rem;
+        background: #fcfcfd;
+        transition: 0.3s;
+    }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--secondary-color);
+            background: white;
+            box-shadow: 0 0 0 4px rgba(212, 175, 55, 0.15);
+        }
 
     .section-title {
-        color: var(--primary-color); font-size: 1.5rem; font-weight: 900; margin: 40px 0 25px;
-        border-bottom: 2px solid #e2e8f0; padding-bottom: 15px; display: flex; align-items: center; gap: 10px;
+        color: var(--primary-color);
+        font-size: 1.5rem;
+        font-weight: 900;
+        margin: 40px 0 25px;
+        border-bottom: 2px solid #e2e8f0;
+        padding-bottom: 15px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
     }
-    .section-title i { color: var(--secondary-color); }
+
+        .section-title i {
+            color: var(--secondary-color);
+        }
 
     .btn-submit-reg {
         background: linear-gradient(135deg, var(--secondary-color), #fef08a);
-        color: var(--primary-color); border: none; padding: 20px; width: 100%;
-        border-radius: 50px; font-weight: 900; font-size: 1.25rem; cursor: pointer;
-        box-shadow: 0 15px 30px rgba(212, 175, 55, 0.3); transition: all 0.4s ease;
-        display: flex; align-items: center; justify-content: center; gap: 10px; margin-top: 40px;
+        color: var(--primary-color);
+        border: none;
+        padding: 20px;
+        width: 100%;
+        border-radius: 50px;
+        font-weight: 900;
+        font-size: 1.25rem;
+        cursor: pointer;
+        box-shadow: 0 15px 30px rgba(212, 175, 55, 0.3);
+        transition: all 0.4s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        margin-top: 40px;
+        font-family: inherit;
     }
-    .btn-submit-reg:hover { transform: translateY(-5px); box-shadow: 0 20px 40px rgba(212, 175, 55, 0.5); }
 
-    @@media (max-width: 768px) { .form-card { padding: 40px 20px; } }
+        .btn-submit-reg:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(212, 175, 55, 0.5);
+        }
 </style>
 
 <div class="form-wrapper">
     <div class="form-card">
         <div class="course-header-card">
-            <h2>@Model.Title</h2>
-            <p style="margin: 0; color: #cbd5e1; font-size: 1.15rem;">يرجى ملء الاستمارة التالية بدقة ليتم اعتماد انضمامك للدورة ومراجعتها من قبل الإدارة.</p>
+            <h2>@Model.Course?.Title</h2>
+            <div class="batch-badge">@Model.BatchName</div>
+            <p style="margin: 20px 0 0 0; color: #cbd5e1; font-size: 1.1rem;">@(isRtl ? "يرجى ملء الاستمارة بدقة ليتم اعتماد انضمامك للدفعة." : "Please fill out the form accurately to approve your enrollment.")</p>
         </div>
 
         <form asp-action="SubmitRegistration" method="post">
-            <input type="hidden" name="courseId" value="@Model.Id" />
+            <input type="hidden" name="batchId" value="@Model.Id" />
 
-            <h3 class="section-title"><i class="fa-solid fa-address-card"></i> البيانات الأساسية</h3>
+            <h3 class="section-title"><i class="fa-solid fa-address-card"></i> @(isRtl ? "البيانات الأساسية" : "Basic Information")</h3>
 
             <div class="form-group">
-                <label>الاسم رباعي (كما سيظهر في الشهادة)</label>
-                <input type="text" name="fullName" class="form-control" placeholder="أدخل اسمك بالكامل..." required />
+                <label>@(isRtl ? "الاسم رباعي (كما سيظهر في الشهادة)" : "Full Name (As it will appear on the certificate)")</label>
+                <input type="text" name="fullName" class="form-control" placeholder="@(isRtl ? "أدخل اسمك بالكامل..." : "Enter your full name...")" required />
             </div>
 
             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;">
                 <div class="form-group">
-                    <label>التخصص (الدراسي أو المهني)</label>
-                    <input type="text" name="specialization" class="form-control" placeholder="مثال: طالب حاسبات، مهندس..." required />
+                    <label>@(isRtl ? "التخصص (الدراسي أو المهني)" : "Specialization (Academic or Professional)")</label>
+                    <input type="text" name="specialization" class="form-control" placeholder="@(isRtl ? "مثال: مهندس برمجيات..." : "e.g., Software Engineer...")" required />
                 </div>
                 <div class="form-group">
-                    <label>مستواك الحالي في هذا المجال</label>
+                    <label>@(isRtl ? "مستواك الحالي في هذا المجال" : "Current Level in this field")</label>
                     <select name="level" class="form-control" required>
-                        <option value="">-- اختر مستواك --</option>
-                        <option value="مبتدئ">مبتدئ</option>
-                        <option value="متوسط">متوسط</option>
-                        <option value="متقدم">متقدم</option>
+                        <option value="">-- @(isRtl ? "اختر مستواك" : "Select Level") --</option>
+                        <option value="@(isRtl ? "مبتدئ" : "Beginner")">@(isRtl ? "مبتدئ" : "Beginner")</option>
+                        <option value="@(isRtl ? "متوسط" : "Intermediate")">@(isRtl ? "متوسط" : "Intermediate")</option>
+                        <option value="@(isRtl ? "متقدم" : "Advanced")">@(isRtl ? "متقدم" : "Advanced")</option>
                     </select>
                 </div>
             </div>
 
             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;">
                 <div class="form-group">
-                    <label>رقم الواتساب <i class="fa-brands fa-whatsapp" style="color:#25d366;"></i></label>
-                    <input type="text" name="whatsAppNumber" class="form-control" placeholder="مثال: 0100000000" required />
+                    <label>@(isRtl ? "رقم الواتساب" : "WhatsApp Number") <i class="fa-brands fa-whatsapp" style="color:#25d366;"></i></label>
+                    <input type="text" name="whatsAppNumber" class="form-control" placeholder="0100000000" required dir="ltr" />
                 </div>
                 <div class="form-group">
-                    <label>رقم تلغرام (اختياري) <i class="fa-brands fa-telegram" style="color:#3b82f6;"></i></label>
-                    <input type="text" name="telegramNumber" class="form-control" placeholder="إذا وجد..." />
+                    <label>@(isRtl ? "رقم تلغرام (اختياري)" : "Telegram Number (Optional)") <i class="fa-brands fa-telegram" style="color:#3b82f6;"></i></label>
+                    <input type="text" name="telegramNumber" class="form-control" placeholder="@(isRtl ? "إذا وجد..." : "If any...")" dir="ltr" />
                 </div>
             </div>
 
-            @if (Model.CustomQuestions != null && Model.CustomQuestions.Any())
+            @if (Model.Course?.CustomQuestions != null && Model.Course.CustomQuestions.Any())
             {
-                <h3 class="section-title"><i class="fa-solid fa-clipboard-question"></i> تفاصيل إضافية خاصة بالدورة</h3>
-                
-                foreach (var q in Model.CustomQuestions.OrderBy(q => q.Order))
+                <h3 class="section-title"><i class="fa-solid fa-clipboard-question"></i> @(isRtl ? "تفاصيل إضافية للتقييم" : "Additional Evaluation Details")</h3>
+
+                foreach (var q in Model.Course.CustomQuestions.OrderBy(q => q.Order))
                 {
                     <div class="form-group">
                         <label>
-                            @q.QuestionText 
-                            @if(q.IsRequired){ <span style="color: #ef4444; font-size: 0.9rem;">(مطلوب)</span> }
+                            @q.QuestionText
+                            @if (q.IsRequired)
+                            {
+                                <span style="color: #ef4444; font-size: 0.9rem;">(@(isRtl ? "مطلوب" : "Required"))</span>
+                            }
                         </label>
                         <textarea name="customAnswers[@q.Id]" class="form-control" rows="2" @(q.IsRequired ? "required" : "")></textarea>
                     </div>
                 }
             }
 
-            <div class="form-group" style="margin-top: 30px;">
-                <label>رسالة أو ملاحظة لإدارة المركز (اختياري)</label>
-                <textarea name="message" class="form-control" rows="3" placeholder="هل لديك أي استفسار أو ملاحظة إضافية تود إخبارنا بها؟"></textarea>
-            </div>
-
             <button type="submit" class="btn-submit-reg">
-                تأكيد وإرسال طلب التسجيل <i class="fa-solid fa-check-circle"></i>
+                @(isRtl ? "تأكيد وإرسال طلب التسجيل" : "Confirm and Submit Request") <i class="fa-solid fa-check-circle" style="margin-@(isRtl ? "right" : "left"): 8px;"></i>
             </button>
         </form>
     </div>

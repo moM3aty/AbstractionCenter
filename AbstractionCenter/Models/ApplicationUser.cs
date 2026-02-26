@@ -9,10 +9,8 @@ namespace AbstractionCenter.Models.Entities
     {
         public string? FullName { get; set; }
 
-        // المسار المحفوظ في قاعدة البيانات
         public string? ProfilePicture { get; set; }
 
-        // خاصية غير مخزنة في الداتابيز، تُستخدم فقط لاستقبال الملف من الفورم
         [NotMapped]
         public IFormFile? ProfilePictureFile { get; set; }
 
@@ -20,7 +18,10 @@ namespace AbstractionCenter.Models.Entities
 
         public DateTime CreatedAt { get; set; } = DateTime.Now;
 
-        // التعديل الرابع: خاصية لمنع الدخول من أكثر من جهاز (تسجيل الجلسة الحالية)
         public string? CurrentSessionId { get; set; }
+
+        // --- التعديل الجديد بناءً على طلبك ---
+        // خاصية تفعيل/تعطيل المدرب (Active / Inactive) لظهوره في الموقع التعريفي
+        public bool IsActive { get; set; } = true;
     }
 }

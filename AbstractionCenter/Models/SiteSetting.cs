@@ -2,24 +2,19 @@
 
 namespace AbstractionCenter.Models.Entities
 {
-    /// <summary>
-    /// هذا النموذج سيجعل كل حرف في الموقع قابل للتعديل من لوحة الإدارة
-    /// يعتمد على فكرة (المفتاح والقيمة) مثل: Key = "ContactPhone", Value = "010000000"
-    /// </summary>
     public class SiteSetting
     {
         [Key]
-        [MaxLength(100)]
-        public string Key { get; set; } // مثال: HeroTitle, AboutUsText, FacebookLink
+        public string Key { get; set; }
 
-        [Required]
-        [Display(Name = "القيمة / النص")]
-        public string Value { get; set; } // النص الذي سيظهر للناس
+        [Display(Name = "القيمة (بالعربية)")]
+        public string Value { get; set; }
 
-        [MaxLength(50)]
-        public string Group { get; set; } // لتصنيفها في الإدارة: General, Home, Contact, About
+        // --- التعديل الجذري: إضافة حقل الترجمة الإنجليزية ---
+        [Display(Name = "القيمة (بالإنجليزية)")]
+        public string? ValueEn { get; set; }
 
-        [Display(Name = "اسم توضيحي للمدير")]
-        public string DisplayName { get; set; } // مثال: "عنوان الصفحة الرئيسية"
+        public string Group { get; set; }
+        public string DisplayName { get; set; }
     }
 }

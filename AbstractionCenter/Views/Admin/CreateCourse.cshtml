@@ -1,6 +1,6 @@
 ﻿@model AbstractionCenter.Models.Entities.Course
 @{
-    ViewData["Title"] = "إنشاء دورة تدريبية جديدة";
+    ViewData["Title"] = "إنشاء دورة تدريبية (مسار عام)";
 }
 
 <style>
@@ -77,28 +77,6 @@
             box-shadow: 0 0 0 4px rgba(212, 175, 55, 0.15);
         }
 
-    .form-row {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 25px;
-    }
-
-    .section-divider {
-        color: #0b1120;
-        font-size: 1.4rem;
-        font-weight: 900;
-        margin: 40px 0 25px;
-        padding-bottom: 15px;
-        border-bottom: 2px solid #e2e8f0;
-        display: flex;
-        align-items: center;
-        gap: 10px;
-    }
-
-        .section-divider i {
-            color: #d4af37;
-        }
-
     .btn-submit {
         background: linear-gradient(135deg, #d4af37, #fef08a);
         color: #0b1120;
@@ -137,28 +115,13 @@
         .btn-cancel:hover {
             color: #ef4444;
         }
-
-    @@media (max-width: 768px) {
-        .form-row
-
-    {
-        grid-template-columns: 1fr;
-    }
-
-    .premium-form-card {
-        padding: 30px 20px;
-    }
-
-    }
 </style>
 
 <div class="premium-form-card">
     <div class="form-header">
-        <div class="form-header-icon">
-            <i class="fa-solid fa-layer-group" style="transform: rotate(-10deg);"></i>
-        </div>
-        <h2>إعداد مسار تدريبي جديد</h2>
-        <p>قم بملء البيانات الأساسية لنشر الدورة على المنصة بأفضل صورة.</p>
+        <div class="form-header-icon"><i class="fa-solid fa-layer-group" style="transform: rotate(-10deg);"></i></div>
+        <h2>إعداد مسار تدريبي عام</h2>
+        <p>قم بإنشاء الكتالوج الأساسي للدورة (ستتمكن لاحقاً من إضافة الدفعات وتعيين المحاضرين لها).</p>
     </div>
 
     <form asp-action="CreateCourse" method="post" enctype="multipart/form-data">
@@ -167,64 +130,24 @@
         <div class="form-group">
             <label>اسم الدورة / المسار <span style="color: #ef4444;">*</span></label>
             <input asp-for="Title" class="form-control" placeholder="مثال: دبلومة البرمجة المتقدمة" required />
-            <span asp-validation-for="Title" class="text-danger" style="font-size: 0.85rem; font-weight: bold; color: #ef4444; margin-top: 5px; display: block;"></span>
+            <span asp-validation-for="Title" class="text-danger"></span>
         </div>
 
         <div class="form-group">
-            <label>وصف الدورة (نبذة تعريفية للطلاب) <span style="color: #ef4444;">*</span></label>
-            <textarea asp-for="Description" class="form-control" rows="5" placeholder="اكتب نبذة شيقة عن الدورة ومخرجاتها التعليمية..." required></textarea>
+            <label>وصف الدورة (يظهر في الموقع للطلاب) <span style="color: #ef4444;">*</span></label>
+            <textarea asp-for="Description" class="form-control" rows="5" placeholder="اكتب نبذة عن الدورة ومخرجاتها..." required></textarea>
         </div>
 
-        <div class="form-row">
-            <div class="form-group">
-                <label>صورة غلاف الدورة (JPG, PNG)</label>
-                <div style="position: relative;">
-                    <input asp-for="ImageFile" type="file" class="form-control" accept="image/*" style="padding-left: 45px;" />
-                    <i class="fa-solid fa-cloud-arrow-up" style="position: absolute; left: 18px; top: 18px; color: #d4af37; font-size: 1.2rem; pointer-events: none;"></i>
-                </div>
+        <div class="form-group">
+            <label>صورة غلاف الدورة</label>
+            <div style="position: relative;">
+                <input asp-for="ImageFile" type="file" class="form-control" accept="image/*" style="padding-left: 45px;" />
+                <i class="fa-solid fa-cloud-arrow-up" style="position: absolute; left: 18px; top: 18px; color: #d4af37; font-size: 1.2rem; pointer-events: none;"></i>
             </div>
-
-            <div class="form-group">
-                <label>تاريخ البدء المتوقع <span style="color: #ef4444;">*</span></label>
-                <input asp-for="StartDate" type="date" class="form-control" required />
-            </div>
-        </div>
-
-        <div class="form-group">
-            <label>حالة الدورة الافتراضية</label>
-            <select asp-for="Status" class="form-control">
-                <option value="0">مفتوحة للتسجيل (مرئية للطلاب)</option>
-                <option value="1">قيد التنفيذ (مغلقة للتسجيل ولكن نشطة)</option>
-                <option value="2">مكتملة</option>
-                <option value="3">مغلقة (مخفية)</option>
-            </select>
-        </div>
-
-        <div class="section-divider">
-            <i class="fa-solid fa-chalkboard-user"></i> تعيين هيئة التدريس
-        </div>
-
-        <div class="form-group">
-            <label>اختر المحاضر المسؤول عن الدورة <span style="color: #ef4444;">*</span></label>
-            <select asp-for="RegistrarUserId" class="form-control" required>
-                <option value="">-- انقر لاختيار محاضر معتمد من القائمة --</option>
-                @if (ViewBag.Instructors != null)
-                {
-                    foreach (var inst in ViewBag.Instructors)
-                    {
-                        <option value="@inst.Id">@inst.FullName - (@inst.Specialization)</option>
-                    }
-                }
-            </select>
-            <small style="color: #64748b; margin-top: 8px; display: block; font-weight: 600;">
-                <i class="fa-solid fa-circle-info" style="color: #3b82f6;"></i> سيتم سحب اسم المحاضر ورقم هاتفه تلقائياً ليظهر للطلاب للتواصل.
-            </small>
         </div>
 
         <div style="margin-top: 50px;">
-            <button type="submit" class="btn-submit">
-                نشر الدورة الآن <i class="fa-solid fa-rocket"></i>
-            </button>
+            <button type="submit" class="btn-submit">حفظ وإنشاء الدورة <i class="fa-solid fa-rocket"></i></button>
             <a href="/Admin/ManageCourses" class="btn-cancel">إلغاء والعودة للقائمة</a>
         </div>
     </form>

@@ -1,0 +1,223 @@
+﻿@model AbstractionCenter.Models.Entities.Course
+@{
+    ViewData["Title"] = "إدارة دفعات: " + Model.Title;
+}
+
+<style>
+    .premium-form-card {
+        background: #ffffff;
+        border-radius: 24px;
+        padding: 40px;
+        box-shadow: 0 15px 35px -10px rgba(11, 17, 32, 0.08);
+        border: 1px solid rgba(212, 175, 55, 0.15);
+        margin-bottom: 40px;
+    }
+
+    .form-header-icon {
+        width: 60px;
+        height: 60px;
+        background: rgba(212, 175, 55, 0.1);
+        color: #d4af37;
+        border-radius: 15px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.8rem;
+        margin-bottom: 20px;
+    }
+
+    .form-group {
+        margin-bottom: 20px;
+    }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 800;
+            color: #0b1120;
+        }
+
+    .form-control {
+        width: 100%;
+        padding: 14px 20px;
+        border: 2px solid #e2e8f0;
+        border-radius: 14px;
+        font-family: inherit;
+        font-size: 1rem;
+        background: #f8fafc;
+        transition: 0.3s;
+    }
+
+        .form-control:focus {
+            outline: none;
+            border-color: #d4af37;
+            background: white;
+            box-shadow: 0 0 0 4px rgba(212, 175, 55, 0.15);
+        }
+
+    .btn-submit {
+        background: linear-gradient(135deg, #0b1120, #1e293b);
+        color: #d4af37;
+        border: none;
+        padding: 15px 35px;
+        border-radius: 50px;
+        font-weight: 900;
+        font-size: 1.1rem;
+        cursor: pointer;
+        box-shadow: 0 10px 25px -5px rgba(11, 17, 32, 0.4);
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .modern-data-table {
+        width: 100%;
+        border-collapse: collapse;
+        white-space: nowrap;
+    }
+
+        .modern-data-table th {
+            text-align: right;
+            padding: 18px 20px;
+            background: #f8fafc;
+            color: #0b1120;
+            font-size: 0.95rem;
+            font-weight: 800;
+            border-bottom: 2px solid #e2e8f0;
+        }
+
+        .modern-data-table td {
+            padding: 18px 20px;
+            color: #1e293b;
+            font-weight: 600;
+            font-size: 1rem;
+            border-bottom: 1px solid #f1f5f9;
+            vertical-align: middle;
+        }
+
+    .badge-open {
+        background: rgba(16, 185, 129, 0.1);
+        color: #059669;
+        padding: 6px 12px;
+        border-radius: 8px;
+        font-size: 0.85rem;
+    }
+
+    .badge-closed {
+        background: rgba(239, 68, 68, 0.1);
+        color: #dc2626;
+        padding: 6px 12px;
+        border-radius: 8px;
+        font-size: 0.85rem;
+    }
+</style>
+
+<div>
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+        <h2 style="color: #0b1120; font-weight: 900; margin: 0;"><i class="fa-solid fa-layer-group" style="color: #d4af37;"></i> إدارة دفعات: @Model.Title</h2>
+        <a href="/Admin/ManageCourses" style="color: #64748b; font-weight: bold; text-decoration: none;"><i class="fa-solid fa-arrow-right"></i> عودة للدورات</a>
+    </div>
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div style="background: rgba(16, 185, 129, 0.1); color: #059669; padding: 15px 25px; border-radius: 16px; margin-bottom: 25px; font-weight: 800; border: 1px solid #10b981;">
+            <i class="fa-solid fa-circle-check"></i> @TempData["SuccessMessage"]
+        </div>
+    }
+
+    <!-- نموذج إضافة دفعة جديدة -->
+    <div class="premium-form-card">
+        <div class="form-header-icon"><i class="fa-solid fa-calendar-plus"></i></div>
+        <h3 style="color: #0b1120; font-weight: 900; margin-bottom: 20px;">فتح دفعة جديدة وتعيين محاضر</h3>
+
+        <form asp-action="CreateBatch" method="post">
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="CourseId" value="@Model.Id" />
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                <div class="form-group">
+                    <label>اسم الدفعة (يظهر للطلاب)</label>
+                    <input type="text" name="BatchName" class="form-control" placeholder="مثال: الدفعة الأولى - 2025" required />
+                </div>
+                <div class="form-group">
+                    <label>تاريخ البدء المتوقع</label>
+                    <input type="date" name="StartDate" class="form-control" required />
+                </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                <div class="form-group">
+                    <label>المحاضر المسؤول عن هذه الدفعة</label>
+                    <select name="InstructorId" class="form-control" required>
+                        <option value="">-- اختر محاضراً من هيئة التدريس --</option>
+                        @if (ViewBag.Instructors != null)
+                        {
+                            foreach (var inst in ViewBag.Instructors)
+                            {
+                                <option value="@inst.Id">@inst.FullName - (@inst.Specialization)</option>
+                            }
+                        }
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>حالة الدفعة</label>
+                    <select name="Status" class="form-control">
+                        <option value="0">مفتوحة للتسجيل</option>
+                        <option value="1">قيد التنفيذ</option>
+                        <option value="2">مكتملة</option>
+                        <option value="3">مغلقة</option>
+                    </select>
+                </div>
+            </div>
+
+            <button type="submit" class="btn-submit">حفظ وإطلاق الدفعة <i class="fa-solid fa-rocket"></i></button>
+        </form>
+    </div>
+
+    <!-- قائمة الدفعات الحالية -->
+    <div class="premium-form-card">
+        <h3 style="color: #0b1120; font-weight: 900; margin-bottom: 25px;"><i class="fa-solid fa-users-viewfinder" style="color: #d4af37;"></i> الدفعات المسجلة لهذا المسار</h3>
+
+        <div style="overflow-x: auto; border-radius: 16px; border: 1px solid #e2e8f0;">
+            <table class="modern-data-table">
+                <thead>
+                    <tr>
+                        <th>اسم الدفعة</th>
+                        <th>المحاضر</th>
+                        <th>تاريخ البدء</th>
+                        <th>الحالة</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model.Batches != null && Model.Batches.Any())
+                    {
+                        foreach (var batch in Model.Batches.OrderByDescending(b => b.StartDate))
+                        {
+                            <tr>
+                                <td style="font-weight: 900; color: #0b1120;">@batch.BatchName</td>
+                                <td><i class="fa-solid fa-chalkboard-user" style="color: #64748b; margin-left: 5px;"></i> @(batch.Instructor?.FullName ?? "غير محدد")</td>
+                                <td>@batch.StartDate.ToString("dd MMM yyyy")</td>
+                                <td>
+                                    @if (batch.Status == AbstractionCenter.Models.Entities.BatchStatus.OpenForRegistration)
+                                    {
+                                        <span class="badge-open">مفتوحة للتسجيل</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge-closed">مغلقة / قيد التنفيذ</span>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="4" style="text-align: center; padding: 40px; color: #64748b;">لا توجد دفعات تم إنشاؤها لهذه الدورة بعد.</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

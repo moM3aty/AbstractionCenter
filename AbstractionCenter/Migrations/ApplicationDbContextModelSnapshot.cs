@@ -50,6 +50,9 @@ namespace AbstractionCenter.Migrations
                     b.Property<string>("FullName")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
                     b.Property<bool>("LockoutEnabled")
                         .HasColumnType("bit");
 
@@ -134,6 +137,85 @@ namespace AbstractionCenter.Migrations
                     b.ToTable("Assignments");
                 });
 
+            modelBuilder.Entity("AbstractionCenter.Models.Entities.AssignmentSubmission", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("FilePath")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<double?>("Grade")
+                        .HasColumnType("float");
+
+                    b.Property<string>("InstructorFeedback")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsGraded")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("LessonContentId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("StudentId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<DateTime>("SubmissionDate")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("LessonContentId");
+
+                    b.HasIndex("StudentId");
+
+                    b.ToTable("AssignmentSubmissions");
+                });
+
+            modelBuilder.Entity("AbstractionCenter.Models.Entities.Batch", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("BatchName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("CourseId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("FinalExamId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("InstructorId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<DateTime>("StartDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CourseId");
+
+                    b.HasIndex("FinalExamId");
+
+                    b.HasIndex("InstructorId");
+
+                    b.ToTable("Batches");
+                });
+
             modelBuilder.Entity("AbstractionCenter.Models.Entities.Certificate", b =>
                 {
                     b.Property<int>("Id")
@@ -142,7 +224,7 @@ namespace AbstractionCenter.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("CourseId")
+                    b.Property<int>("BatchId")
                         .HasColumnType("int");
 
                     b.Property<bool>("IsApproved")
@@ -161,7 +243,7 @@ namespace AbstractionCenter.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CourseId");
+                    b.HasIndex("BatchId");
 
                     b.HasIndex("StudentId");
 
@@ -185,22 +267,6 @@ namespace AbstractionCenter.Migrations
 
                     b.Property<string>("ImageUrl")
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("RegistrarName")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("RegistrarUserId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("RegistrarWhatsApp")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("StartDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("Status")
-                        .HasColumnType("int");
 
                     b.Property<string>("Title")
                         .IsRequired()
@@ -296,8 +362,7 @@ namespace AbstractionCenter.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CourseId")
-                        .IsUnique();
+                    b.HasIndex("CourseId");
 
                     b.ToTable("FinalExams");
                 });
@@ -351,7 +416,7 @@ namespace AbstractionCenter.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("CourseId")
+                    b.Property<int>("BatchId")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("CreatedAt")
@@ -366,7 +431,7 @@ namespace AbstractionCenter.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CourseId");
+                    b.HasIndex("BatchId");
 
                     b.ToTable("Lessons");
                 });
@@ -394,6 +459,9 @@ namespace AbstractionCenter.Migrations
                     b.Property<int>("Order")
                         .HasColumnType("int");
 
+                    b.Property<string>("QuizUrl")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -409,6 +477,42 @@ namespace AbstractionCenter.Migrations
                     b.HasIndex("LessonId");
 
                     b.ToTable("LessonContents");
+                });
+
+            modelBuilder.Entity("AbstractionCenter.Models.Entities.Notification", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsRead")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("LinkUrl")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Message")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Notifications");
                 });
 
             modelBuilder.Entity("AbstractionCenter.Models.Entities.RegistrationAnswer", b =>
@@ -446,7 +550,7 @@ namespace AbstractionCenter.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("CourseId")
+                    b.Property<int>("BatchId")
                         .HasColumnType("int");
 
                     b.Property<string>("FullName")
@@ -483,7 +587,7 @@ namespace AbstractionCenter.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CourseId");
+                    b.HasIndex("BatchId");
 
                     b.HasIndex("StudentId");
 
@@ -493,8 +597,7 @@ namespace AbstractionCenter.Migrations
             modelBuilder.Entity("AbstractionCenter.Models.Entities.SiteSetting", b =>
                 {
                     b.Property<string>("Key")
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("DisplayName")
                         .IsRequired()
@@ -502,11 +605,13 @@ namespace AbstractionCenter.Migrations
 
                     b.Property<string>("Group")
                         .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Value")
                         .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ValueEn")
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Key");
@@ -514,7 +619,7 @@ namespace AbstractionCenter.Migrations
                     b.ToTable("SiteSettings");
                 });
 
-            modelBuilder.Entity("AbstractionCenter.Models.Entities.StudentCourse", b =>
+            modelBuilder.Entity("AbstractionCenter.Models.Entities.StudentBatch", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -522,7 +627,7 @@ namespace AbstractionCenter.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("CourseId")
+                    b.Property<int>("BatchId")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("EnrollmentDate")
@@ -537,11 +642,11 @@ namespace AbstractionCenter.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CourseId");
+                    b.HasIndex("BatchId");
 
                     b.HasIndex("StudentId");
 
-                    b.ToTable("StudentCourses");
+                    b.ToTable("StudentBatches");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -688,21 +793,65 @@ namespace AbstractionCenter.Migrations
                     b.Navigation("Course");
                 });
 
-            modelBuilder.Entity("AbstractionCenter.Models.Entities.Certificate", b =>
+            modelBuilder.Entity("AbstractionCenter.Models.Entities.AssignmentSubmission", b =>
                 {
-                    b.HasOne("AbstractionCenter.Models.Entities.Course", "Course")
+                    b.HasOne("AbstractionCenter.Models.Entities.LessonContent", "LessonContent")
                         .WithMany()
-                        .HasForeignKey("CourseId")
+                        .HasForeignKey("LessonContentId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("AbstractionCenter.Models.Entities.ApplicationUser", "Student")
                         .WithMany()
                         .HasForeignKey("StudentId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("LessonContent");
+
+                    b.Navigation("Student");
+                });
+
+            modelBuilder.Entity("AbstractionCenter.Models.Entities.Batch", b =>
+                {
+                    b.HasOne("AbstractionCenter.Models.Entities.Course", "Course")
+                        .WithMany("Batches")
+                        .HasForeignKey("CourseId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("AbstractionCenter.Models.Entities.FinalExam", "FinalExam")
+                        .WithMany()
+                        .HasForeignKey("FinalExamId");
+
+                    b.HasOne("AbstractionCenter.Models.Entities.ApplicationUser", "Instructor")
+                        .WithMany()
+                        .HasForeignKey("InstructorId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
                     b.Navigation("Course");
+
+                    b.Navigation("FinalExam");
+
+                    b.Navigation("Instructor");
+                });
+
+            modelBuilder.Entity("AbstractionCenter.Models.Entities.Certificate", b =>
+                {
+                    b.HasOne("AbstractionCenter.Models.Entities.Batch", "Batch")
+                        .WithMany()
+                        .HasForeignKey("BatchId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("AbstractionCenter.Models.Entities.ApplicationUser", "Student")
+                        .WithMany()
+                        .HasForeignKey("StudentId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Batch");
 
                     b.Navigation("Student");
                 });
@@ -732,8 +881,8 @@ namespace AbstractionCenter.Migrations
             modelBuilder.Entity("AbstractionCenter.Models.Entities.FinalExam", b =>
                 {
                     b.HasOne("AbstractionCenter.Models.Entities.Course", "Course")
-                        .WithOne("FinalExam")
-                        .HasForeignKey("AbstractionCenter.Models.Entities.FinalExam", "CourseId")
+                        .WithMany()
+                        .HasForeignKey("CourseId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -742,13 +891,13 @@ namespace AbstractionCenter.Migrations
 
             modelBuilder.Entity("AbstractionCenter.Models.Entities.Lesson", b =>
                 {
-                    b.HasOne("AbstractionCenter.Models.Entities.Course", "Course")
+                    b.HasOne("AbstractionCenter.Models.Entities.Batch", "Batch")
                         .WithMany("Lessons")
-                        .HasForeignKey("CourseId")
+                        .HasForeignKey("BatchId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Course");
+                    b.Navigation("Batch");
                 });
 
             modelBuilder.Entity("AbstractionCenter.Models.Entities.LessonContent", b =>
@@ -760,6 +909,17 @@ namespace AbstractionCenter.Migrations
                         .IsRequired();
 
                     b.Navigation("Lesson");
+                });
+
+            modelBuilder.Entity("AbstractionCenter.Models.Entities.Notification", b =>
+                {
+                    b.HasOne("AbstractionCenter.Models.Entities.ApplicationUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("AbstractionCenter.Models.Entities.RegistrationAnswer", b =>
@@ -783,28 +943,9 @@ namespace AbstractionCenter.Migrations
 
             modelBuilder.Entity("AbstractionCenter.Models.Entities.RegistrationRequest", b =>
                 {
-                    b.HasOne("AbstractionCenter.Models.Entities.Course", "Course")
+                    b.HasOne("AbstractionCenter.Models.Entities.Batch", "Batch")
                         .WithMany()
-                        .HasForeignKey("CourseId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("AbstractionCenter.Models.Entities.ApplicationUser", "Student")
-                        .WithMany()
-                        .HasForeignKey("StudentId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Course");
-
-                    b.Navigation("Student");
-                });
-
-            modelBuilder.Entity("AbstractionCenter.Models.Entities.StudentCourse", b =>
-                {
-                    b.HasOne("AbstractionCenter.Models.Entities.Course", "Course")
-                        .WithMany()
-                        .HasForeignKey("CourseId")
+                        .HasForeignKey("BatchId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
@@ -814,7 +955,26 @@ namespace AbstractionCenter.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Course");
+                    b.Navigation("Batch");
+
+                    b.Navigation("Student");
+                });
+
+            modelBuilder.Entity("AbstractionCenter.Models.Entities.StudentBatch", b =>
+                {
+                    b.HasOne("AbstractionCenter.Models.Entities.Batch", "Batch")
+                        .WithMany("EnrolledStudents")
+                        .HasForeignKey("BatchId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("AbstractionCenter.Models.Entities.ApplicationUser", "Student")
+                        .WithMany()
+                        .HasForeignKey("StudentId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Batch");
 
                     b.Navigation("Student");
                 });
@@ -870,13 +1030,18 @@ namespace AbstractionCenter.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("AbstractionCenter.Models.Entities.Course", b =>
+            modelBuilder.Entity("AbstractionCenter.Models.Entities.Batch", b =>
                 {
-                    b.Navigation("CustomQuestions");
-
-                    b.Navigation("FinalExam");
+                    b.Navigation("EnrolledStudents");
 
                     b.Navigation("Lessons");
+                });
+
+            modelBuilder.Entity("AbstractionCenter.Models.Entities.Course", b =>
+                {
+                    b.Navigation("Batches");
+
+                    b.Navigation("CustomQuestions");
                 });
 
             modelBuilder.Entity("AbstractionCenter.Models.Entities.FinalExam", b =>

@@ -151,12 +151,19 @@
 <div class="premium-table-card">
     <h3 class="toolbar-title"><i class="fa-solid fa-envelope-open-text"></i> صندوق طلبات التسجيل</h3>
 
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div style="background: rgba(16, 185, 129, 0.1); color: #059669; padding: 15px 25px; border-radius: 12px; margin-bottom: 20px; font-weight: bold; border: 1px solid #10b981;">
+            <i class="fa-solid fa-circle-check"></i> @TempData["SuccessMessage"]
+        </div>
+    }
+
     <div class="table-responsive">
         <table class="modern-data-table">
             <thead>
                 <tr>
                     <th>بيانات الطالب</th>
-                    <th>الدورة المطلوبة</th>
+                    <th>الدورة والدفعة</th>
                     <th>تاريخ الطلب</th>
                     <th>حالة الطلب</th>
                     <th>الإجراءات</th>
@@ -173,10 +180,11 @@
                                 <div style="font-size: 0.85rem; color: #64748b; margin-top: 4px;">المستوى: @(request.Level ?? "غير محدد")</div>
                             </td>
                             <td>
-                                <div style="color: #1e293b; font-weight: 800;">@(request.Course?.Title)</div>
+                                <div style="color: #1e293b; font-weight: 800;">@(request.Batch?.Course?.Title)</div>
+                                <div style="font-size: 0.85rem; color: #d4af37; font-weight: bold;">@(request.Batch?.BatchName)</div>
                             </td>
                             <td style="color: #64748b; font-weight: 700;">
-                                <i class="fa-regular fa-clock" style="color: #d4af37; margin-left: 5px;"></i> @request.RequestDate.ToString("dd MMM yyyy, hh:mm tt")
+                                <i class="fa-regular fa-clock" style="color: #d4af37; margin-left: 5px;"></i> @request.RequestDate.ToString("dd MMM yyyy")
                             </td>
                             <td>
                                 @if (request.Status == AbstractionCenter.Models.Entities.RequestStatus.Pending)

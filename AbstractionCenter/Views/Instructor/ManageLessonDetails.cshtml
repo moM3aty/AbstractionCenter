@@ -1,6 +1,6 @@
 ﻿@model AbstractionCenter.Models.Entities.Lesson
 @{
-    ViewData["Title"] = "إدارة محتوى الوحدة";
+    ViewData["Title"] = "إدارة محتوى الوحدة: " + Model.Title;
 }
 
 <style>
@@ -41,6 +41,7 @@
         border-radius: 12px;
         font-weight: 700;
         transition: 0.3s;
+        text-decoration: none;
         display: inline-flex;
         align-items: center;
         gap: 8px;
@@ -164,7 +165,6 @@
 
     }
 
-    /* Content Items List */
     .content-item {
         background: #ffffff;
         padding: 20px;
@@ -201,6 +201,10 @@
         background: linear-gradient(135deg, #10b981, #047857);
     }
 
+    .icon-quiz {
+        background: linear-gradient(135deg, #8b5cf6, #4338ca);
+    }
+
     @@media (max-width: 992px) {
         .content-grid
 
@@ -217,13 +221,13 @@
             <h1 style="font-size: 1.3rem; color: #cbd5e1; font-weight: normal; margin-bottom: 5px;">الوحدة @Model.Order</h1>
             <h2 style="font-size: 2rem; font-weight: 900; margin: 0; color: var(--md-gold);">@Model.Title</h2>
         </div>
-        <a href="/Instructor/ManageCourse/@Model.CourseId" class="btn-back">عودة للمنهج <i class="fa-solid fa-arrow-left"></i></a>
+        <a href="/Instructor/ManageBatch/@Model.BatchId" class="btn-back">عودة للمنهج <i class="fa-solid fa-arrow-left"></i></a>
     </div>
 
     <div class="content-grid">
         <!-- نموذج الإضافة -->
         <div class="premium-panel">
-            <h3 class="panel-title"><i class="fa-solid fa-cloud-arrow-up"></i> رفع مادة علمية</h3>
+            <h3 class="panel-title"><i class="fa-solid fa-cloud-arrow-up"></i> إضافة مادة علمية / اختبار</h3>
             <form action="/Instructor/AddLessonContent" method="post" enctype="multipart/form-data">
                 @Html.AntiForgeryToken()
                 <input type="hidden" name="lessonId" value="@Model.Id" />
@@ -231,27 +235,27 @@
                 <div class="form-group">
                     <label>نوع المحتوى</label>
                     <select name="type" id="contentTypeSelect" class="form-control" onchange="toggleFields()" required>
-                        <option value="0">مقطع فيديو (يوتيوب أو رابط خارجي)</option>
+                        <option value="0">مقطع فيديو (يوتيوب أو منصة خارجية)</option>
                         <option value="1">ملف مرفق (PDF للملخصات)</option>
                         <option value="2">مهمة تقييم / واجب تطبيقي</option>
+                        <option value="3">اختبار خارجي (روابط جوجل فورم أو غيره)</option>
                     </select>
                 </div>
 
                 <div class="form-group">
                     <label>العنوان المعروض للطالب</label>
-                    <input type="text" name="title" class="form-control" placeholder="مثال: الدرس الأول - تعريفيات عامة" required />
+                    <input type="text" name="title" class="form-control" placeholder="مثال: الدرس الأول..." required />
                 </div>
 
                 <div class="form-group">
-                    <label>ترتيب العرض</label>
+                    <label>ترتيب العرض داخل الوحدة</label>
                     <input type="number" name="order" class="form-control" value="@((Model.Contents?.Count ?? 0) + 1)" required />
                 </div>
 
-                <!-- حقول ديناميكية -->
                 <div id="field-video" class="dynamic-fields active">
                     <div class="form-group" style="margin: 0;">
-                        <label><i class="fa-brands fa-youtube" style="color: #ef4444;"></i> رابط الفيديو</label>
-                        <input type="url" name="videoUrl" class="form-control" placeholder="https://youtube.com/..." dir="ltr" />
+                        <label><i class="fa-brands fa-youtube" style="color: #ef4444;"></i> رابط الفيديو (يوتيوب أو غيره)</label>
+                        <input type="url" name="videoUrl" class="form-control" placeholder="https://..." dir="ltr" />
                     </div>
                 </div>
 
@@ -269,7 +273,14 @@
                     </div>
                 </div>
 
-                <button type="submit" class="btn-submit"><i class="fa-solid fa-upload"></i> رفع المحتوى للوحدة</button>
+                <div id="field-quiz" class="dynamic-fields">
+                    <div class="form-group" style="margin: 0;">
+                        <label><i class="fa-solid fa-link" style="color: #8b5cf6;"></i> رابط الاختبار الخارجي (Google Forms)</label>
+                        <input type="url" name="quizUrl" class="form-control" placeholder="https://forms.gle/..." dir="ltr" />
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-submit"><i class="fa-solid fa-upload"></i> حفظ المحتوى بالوحدة</button>
             </form>
         </div>
 
@@ -282,7 +293,7 @@
                     foreach (var item in Model.Contents.OrderBy(c => c.Order))
                     {
                         <div class="content-item">
-                            <div class="content-icon @(item.Type == AbstractionCenter.Models.Entities.ContentType.Video ? "icon-video" : item.Type == AbstractionCenter.Models.Entities.ContentType.Pdf ? "icon-pdf" : "icon-task")">
+                            <div class="content-icon @(item.Type == AbstractionCenter.Models.Entities.ContentType.Video ? "icon-video" : item.Type == AbstractionCenter.Models.Entities.ContentType.Pdf ? "icon-pdf" : item.Type == AbstractionCenter.Models.Entities.ContentType.ExternalQuiz ? "icon-quiz" : "icon-task")">
                                 @if (item.Type == AbstractionCenter.Models.Entities.ContentType.Video)
                                 {
                                     <i class="fa-solid fa-play"></i>
@@ -292,30 +303,49 @@
 
                                     <i class="fa-solid fa-file-pdf"></i>
                                 }
+                                else if (item.Type == AbstractionCenter.Models.Entities.ContentType.ExternalQuiz)
+                                {
+
+                                    <i class="fa-solid fa-clipboard-question"></i>
+                                }
                                 else
                                 {
 
                                     <i class="fa-solid fa-list-check"></i>
                                 }
                             </div>
-                            <div style="flex-grow: 1;">
-                                <strong style="color: var(--md-primary); font-size: 1.1rem; display: block;">@item.Title</strong>
-                                <span style="color: var(--md-muted); font-size: 0.85rem; font-weight: 600;">
-                                    @if (item.Type == AbstractionCenter.Models.Entities.ContentType.Video)
-                                    {
-                                        <span>فيديو تعليمي</span>
-                                    }
-                                    else if (item.Type == AbstractionCenter.Models.Entities.ContentType.Pdf)
-                                    {
+                            <div style="flex-grow: 1; display: flex; justify-content: space-between; align-items: center;">
+                                <div>
+                                    <strong style="color: var(--md-primary); font-size: 1.1rem; display: block;">@item.Title</strong>
+                                    <span style="color: var(--md-muted); font-size: 0.85rem; font-weight: 600;">
+                                        @if (item.Type == AbstractionCenter.Models.Entities.ContentType.Video)
+                                        {
+                                            <span>فيديو تعليمي</span>
+                                        }
+                                        else if (item.Type == AbstractionCenter.Models.Entities.ContentType.Pdf)
+                                        {
 
-                                        <span>مرفق بصيغة PDF</span>
-                                    }
-                                    else
-                                    {
+                                            <span>مرفق بصيغة PDF</span>
+                                        }
+                                        else if (item.Type == AbstractionCenter.Models.Entities.ContentType.ExternalQuiz)
+                                        {
 
-                                        <span>مهمة تقييمية</span>
-                                    }
-                                </span>
+                                            <span>اختبار / كويز خارجي</span>
+                                        }
+                                        else
+                                        {
+
+                                            <span>مهمة تقييمية</span>
+                                        }
+                                    </span>
+                                </div>
+
+                                @if (item.Type == AbstractionCenter.Models.Entities.ContentType.Assignment)
+                                {
+                                    <a href="/Instructor/ViewSubmissions?lessonContentId=@item.Id" class="btn-submit" style="width: auto; padding: 10px 20px; font-size: 0.95rem; margin: 0;">
+                                        <i class="fa-solid fa-clipboard-check"></i> تقييم الحلول
+                                    </a>
+                                }
                             </div>
                         </div>
                     }
@@ -325,7 +355,7 @@
                     <div style="text-align: center; padding: 50px; color: #94a3b8;">
                         <i class="fa-solid fa-inbox" style="font-size: 3.5rem; opacity: 0.3; margin-bottom: 15px;"></i>
                         <h4 style="color: var(--md-primary); font-weight: 800;">الوحدة فارغة حالياً</h4>
-                        <p>استخدم النموذج لإضافة الفيديوهات والملفات.</p>
+                        <p>استخدم النموذج لإضافة الفيديوهات، الملفات، وروابط الاختبارات.</p>
                     </div>
                 }
             </div>
@@ -349,6 +379,9 @@
             } else if(type === "2") {
                 document.getElementById('field-task').classList.add('active');
                 document.querySelector('textarea[name="description"]').setAttribute('required', 'required');
+            } else if(type === "3") {
+                document.getElementById('field-quiz').classList.add('active');
+                document.querySelector('input[name="quizUrl"]').setAttribute('required', 'required');
             }
         }
         document.addEventListener("DOMContentLoaded", toggleFields);

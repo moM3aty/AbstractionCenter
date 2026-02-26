@@ -23,77 +23,70 @@ namespace AbstractionCenter.Controllers
 
         public async Task<IActionResult> Open()
         {
-            ViewData["Title"] = "الدورات المتاحة للتسجيل";
-
-            var openCourses = await _context.Courses
-                .Where(c => c.Status == CourseStatus.OpenForRegistration)
-                .OrderByDescending(c => c.CreatedAt)
+            var openBatches = await _context.Batches
+                .Include(b => b.Course)
+                .Include(b => b.Instructor)
+                .Where(b => b.Status == BatchStatus.OpenForRegistration)
+                .OrderByDescending(b => b.StartDate)
                 .ToListAsync();
 
-            return View(openCourses);
+            return View(openBatches);
         }
 
-        // --- الميزة الجديدة: فتح فورم التسجيل الديناميكي للطالب ---
         [Authorize]
         [HttpGet]
         public async Task<IActionResult> Register(int id)
         {
-            // جلب الدورة والأسئلة الخاصة بها
-            var course = await _context.Courses
-                .Include(c => c.CustomQuestions)
-                .FirstOrDefaultAsync(c => c.Id == id);
+            var batch = await _context.Batches
+                .Include(b => b.Course).ThenInclude(c => c.CustomQuestions)
+                .FirstOrDefaultAsync(b => b.Id == id);
 
-            if (course == null || course.Status != CourseStatus.OpenForRegistration)
+            if (batch == null || batch.Status != BatchStatus.OpenForRegistration)
                 return NotFound();
 
             var user = await _userManager.GetUserAsync(User);
 
-            // منع الطالب من فتح الفورم إذا كان مسجلاً بالفعل
-            var isAlreadyEnrolled = await _context.StudentCourses.AnyAsync(sc => sc.CourseId == id && sc.StudentId == user.Id);
+            var isAlreadyEnrolled = await _context.StudentBatches.AnyAsync(sb => sb.BatchId == id && sb.StudentId == user.Id);
             if (isAlreadyEnrolled)
             {
-                TempData["InfoMessage"] = "أنت مسجل بالفعل في هذه الدورة.";
+                TempData["InfoMessage"] = "أنت مسجل بالفعل في هذه الدفعة.";
                 return RedirectToAction("Open");
             }
 
-            var hasPendingRequest = await _context.RegistrationRequests.AnyAsync(r => r.CourseId == id && r.StudentId == user.Id && r.Status == RequestStatus.Pending);
+            var hasPendingRequest = await _context.RegistrationRequests.AnyAsync(r => r.BatchId == id && r.StudentId == user.Id && r.Status == RequestStatus.Pending);
             if (hasPendingRequest)
             {
-                TempData["InfoMessage"] = "لديك طلب مسبق قيد المراجعة لهذه الدورة.";
+                TempData["InfoMessage"] = "لديك طلب مسبق قيد المراجعة لهذه الدفعة.";
                 return RedirectToAction("Open");
             }
 
-            return View(course); // إرسال الدورة (بما فيها الأسئلة) للفورم
+            return View(batch);
         }
 
-        // --- استقبال بيانات التسجيل والإجابات ---
         [Authorize]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> SubmitRegistration(int courseId, string fullName, string specialization, string level, string whatsAppNumber, string telegramNumber, string message, Dictionary<int, string> customAnswers)
+        public async Task<IActionResult> SubmitRegistration(int batchId, string fullName, string specialization, string level, string whatsAppNumber, string telegramNumber, Dictionary<int, string> customAnswers)
         {
             var user = await _userManager.GetUserAsync(User);
             if (user == null) return RedirectToAction("Login", "Account");
 
-            // إنشاء الطلب الأساسي
             var newRequest = new RegistrationRequest
             {
-                CourseId = courseId,
+                BatchId = batchId,
                 StudentId = user.Id,
                 FullName = fullName,
                 Specialization = specialization,
                 Level = level,
                 WhatsAppNumber = whatsAppNumber,
                 TelegramNumber = telegramNumber,
-                Message = message,
                 Status = RequestStatus.Pending,
                 RequestDate = System.DateTime.Now
             };
 
             _context.RegistrationRequests.Add(newRequest);
-            await _context.SaveChangesAsync(); // للحصول على Id الطلب لربط الإجابات به
+            await _context.SaveChangesAsync();
 
-            // حفظ إجابات الأسئلة المخصصة إن وجدت
             if (customAnswers != null && customAnswers.Any())
             {
                 foreach (var answer in customAnswers)
@@ -111,7 +104,7 @@ namespace AbstractionCenter.Controllers
                 await _context.SaveChangesAsync();
             }
 
-            TempData["SuccessMessage"] = "تم إرسال طلب التسجيل بنجاح! سيتم مراجعة بياناتك وإضافتك للدورة قريباً.";
+            TempData["SuccessMessage"] = "تم إرسال طلب التسجيل بنجاح! سيتم مراجعة بياناتك وإضافتك للدفعة قريباً.";
             return RedirectToAction("Open");
         }
     }

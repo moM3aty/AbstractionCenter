@@ -1,6 +1,9 @@
-﻿@model AbstractionCenter.Models.Entities.InstructorApplication
+﻿@using Microsoft.AspNetCore.Localization
+@model AbstractionCenter.Models.Entities.InstructorApplication
 @{
-    ViewData["Title"] = "انضم كمدرب / محاضر";
+    var requestCulture = Context.Features.Get<IRequestCultureFeature>();
+    bool isRtl = requestCulture?.RequestCulture.UICulture.Name == "ar" || requestCulture?.RequestCulture.UICulture.Name == null;
+    ViewData["Title"] = isRtl ? "انضم كمدرب / محاضر" : "Join as an Instructor";
 }
 
 <style>
@@ -63,15 +66,15 @@
     }
 
         .file-upload-wrapper i {
-            position: absolute;
-            left: 20px;
+            position: absolute; @(isRtl
+                        ? "left" : "right") : 20px;
             color: var(--secondary-color);
             font-size: 1.2rem;
             pointer-events: none;
         }
 
         .file-upload-wrapper input {
-            padding-left: 50px;
+            padding- @(isRtl ? "left" : "right") : 50px;
         }
 
     .btn-submit-join {
@@ -97,7 +100,6 @@
             transform: translateY(-5px);
             box-shadow: 0 20px 40px rgba(212, 175, 55, 0.5);
         }
-
     @@media (max-width: 768px) {
         .join-form-card
 
@@ -110,8 +112,8 @@
 
 <section class="join-hero">
     <div class="container">
-        <h1 style="font-size: 3.5rem; font-weight: 900; margin-bottom: 20px;">انضم إلى <span style="color: var(--secondary-color);">نخبة الخبراء</span></h1>
-        <p style="color: #cbd5e1; font-size: 1.2rem; max-width: 700px; margin: 0 auto;">شارك معرفتك وخبراتك مع آلاف الطلاب، وكن جزءاً من قصة نجاحهم في مسيرتهم المهنية.</p>
+        <h1 style="font-size: 3.5rem; font-weight: 900; margin-bottom: 20px;color:#fff;">@(isRtl ? "انضم إلى" : "Join Our") <span style="color: var(--secondary-color);">@(isRtl ? "نخبة الخبراء" : "Elite Experts")</span></h1>
+        <p style="color: #cbd5e1; font-size: 1.2rem; max-width: 700px; margin: 0 auto;">@(isRtl ? "شارك معرفتك وخبراتك مع آلاف الطلاب، وكن جزءاً من قصة نجاحهم في مسيرتهم المهنية." : "Share your knowledge and expertise with thousands of students, and be part of their career success story.")</p>
     </div>
 </section>
 
@@ -128,29 +130,29 @@
         <form asp-action="JoinAsInstructor" method="post" enctype="multipart/form-data">
             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;">
                 <div class="form-group">
-                    <label>الاسم بالكامل</label>
-                    <input asp-for="FullName" class="form-control" placeholder="أدخل اسمك الرباعي..." required />
+                    <label>@(isRtl ? "الاسم بالكامل" : "Full Name")</label>
+                    <input asp-for="FullName" class="form-control" placeholder="@(isRtl ? "أدخل اسمك الرباعي..." : "Enter your full name...")" required />
                     <span asp-validation-for="FullName" class="text-danger"></span>
                 </div>
                 <div class="form-group">
-                    <label>البريد الإلكتروني</label>
-                    <input asp-for="Email" type="email" class="form-control" placeholder="name@example.com" required />
+                    <label>@(isRtl ? "البريد الإلكتروني" : "Email Address")</label>
+                    <input asp-for="Email" type="email" class="form-control" placeholder="name@example.com" required dir="ltr" />
                 </div>
             </div>
 
             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;">
                 <div class="form-group">
-                    <label>رقم الهاتف / الواتساب</label>
-                    <input asp-for="PhoneNumber" class="form-control" placeholder="مثال: 01000000000" required />
+                    <label>@(isRtl ? "رقم الهاتف / الواتساب" : "Phone / WhatsApp Number")</label>
+                    <input asp-for="PhoneNumber" class="form-control" placeholder="01000000000" required dir="ltr" />
                 </div>
                 <div class="form-group">
-                    <label>التخصص الدقيق</label>
-                    <input asp-for="Specialization" class="form-control" placeholder="مثال: هندسة البرمجيات، إدارة أعمال..." required />
+                    <label>@(isRtl ? "التخصص الدقيق" : "Specialization")</label>
+                    <input asp-for="Specialization" class="form-control" placeholder="@(isRtl ? "مثال: هندسة البرمجيات، إدارة أعمال..." : "e.g., Software Engineering, Business...")" required />
                 </div>
             </div>
 
             <div class="form-group">
-                <label>الصورة الشخصية (تظهر للطلاب)</label>
+                <label>@(isRtl ? "الصورة الشخصية (تظهر للطلاب)" : "Profile Picture (Visible to students)")</label>
                 <div class="file-upload-wrapper">
                     <input asp-for="ProfilePictureFile" type="file" class="form-control" accept="image/*" required />
                     <i class="fa-solid fa-image"></i>
@@ -158,7 +160,7 @@
             </div>
 
             <div class="form-group">
-                <label>السيرة الذاتية (CV) بصيغة PDF</label>
+                <label>@(isRtl ? "السيرة الذاتية (CV) بصيغة PDF" : "Resume (CV) in PDF Format")</label>
                 <div class="file-upload-wrapper">
                     <input asp-for="CVFile" type="file" class="form-control" accept=".pdf" required />
                     <i class="fa-solid fa-file-pdf"></i>
@@ -166,7 +168,7 @@
             </div>
 
             <button type="submit" class="btn-submit-join">
-                إرسال الطلب الآن <i class="fa-solid fa-paper-plane"></i>
+                @(isRtl ? "إرسال الطلب الآن" : "Submit Application Now") <i class="fa-solid fa-paper-plane"></i>
             </button>
         </form>
     </div>
