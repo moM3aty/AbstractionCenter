@@ -24,6 +24,24 @@
             color: #d4af37;
         }
 
+    .btn-outline-white {
+        border: 1px solid rgba(255,255,255,0.2);
+        color: white;
+        padding: 12px 25px;
+        border-radius: 12px;
+        text-decoration: none;
+        font-weight: 800;
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        transition: 0.3s;
+    }
+
+        .btn-outline-white:hover {
+            background: rgba(255,255,255,0.1);
+            border-color: white;
+        }
+
     .instructors-grid {
         display: grid;
         grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
@@ -185,6 +203,43 @@
         border: 1px solid #ef4444;
         color: #dc2626;
     }
+
+    /* === Media Queries للموبايل === */
+    @@media (max-width: 768px) {
+        .page-header-card {
+            flex-direction: column;
+            text-align: center;
+            gap: 20px;
+            padding: 30px 20px;
+            border-radius: 20px;
+        }
+
+            .page-header-card h1 {
+                font-size: 1.6rem;
+            }
+
+        .btn-outline-white {
+            width: 100%;
+            justify-content: center;
+        }
+
+        .instructors-grid {
+            grid-template-columns: 1fr;
+            gap: 20px;
+        }
+
+        .card-body {
+            padding: 60px 15px 15px;
+        }
+
+        .card-actions {
+            flex-direction: column;
+        }
+
+        .btn-action {
+            width: 100%;
+        }
+    }
 </style>
 
 <div>
@@ -193,7 +248,7 @@
             <h1><i class="fa-solid fa-chalkboard-user"></i> الهيئة الأكاديمية والمدربين</h1>
             <p style="color: #cbd5e1; margin: 0;">إدارة حسابات المحاضرين، تعديل بياناتهم، أو إزالتهم من النظام.</p>
         </div>
-        <a href="/Admin/Index" class="btn btn-outline" style="border-color: rgba(255,255,255,0.2); color: white;">
+        <a href="/Admin/Index" class="btn-outline-white">
             العودة للوحة التحكم <i class="fa-solid fa-arrow-left"></i>
         </a>
     </div>
@@ -236,7 +291,6 @@
                         <p class="email" style="margin-top: -10px;"><i class="fa-solid fa-phone"></i> @(instructor.PhoneNumber ?? "لا يوجد رقم")</p>
                     </div>
                     <div class="card-actions">
-                        <!-- نستخدم نفس صفحة تعديل الطالب لأنها تعدل أي ApplicationUser -->
                         <a href="/Admin/EditStudent?userId=@instructor.Id" class="btn-action btn-edit">
                             <i class="fa-solid fa-pen-to-square"></i> تعديل
                         </a>

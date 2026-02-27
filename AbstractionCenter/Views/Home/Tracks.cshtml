@@ -36,6 +36,33 @@
             background-image: url('data:image/svg+xml,%3Csvg width=\'60\' height=\'60\' viewBox=\'0 0 60 60\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cg fill=\'none\' fill-rule=\'evenodd\'%3E%3Cg fill=\'%23d4af37\' fill-opacity=\'0.05\'%3E%3Cpath d=\'M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z\'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E');
         }
 
+    .tracks-section {
+        padding: 100px 0;
+        background: #f8fafc;
+    }
+
+    .tracks-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+        gap: 40px;
+    }
+
+    .track-card {
+        background: white;
+        border-radius: 24px;
+        padding: 50px 30px;
+        text-align: center;
+        border: 1px solid #e2e8f0;
+        box-shadow: 0 10px 25px rgba(11, 17, 32, 0.05);
+        transition: all 0.4s ease;
+    }
+
+        .track-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 25px 50px -12px rgba(11, 17, 32, 0.1);
+            border-color: var(--secondary-color);
+        }
+
     .track-icon-wrapper {
         width: 90px;
         height: 90px;
@@ -51,10 +78,71 @@
         transition: transform 0.4s ease, background 0.4s ease;
     }
 
-    .glass-card:hover .track-icon-wrapper {
+    .track-card:hover .track-icon-wrapper {
         transform: rotate(10deg) scale(1.1);
         background: var(--secondary-color);
         color: var(--primary-color);
+    }
+
+    .track-card h3 {
+        color: var(--primary-color);
+        font-weight: 900;
+        font-size: 1.6rem;
+        margin-bottom: 15px;
+    }
+
+    .track-card p {
+        color: #64748b;
+        line-height: 1.8;
+        font-size: 1.05rem;
+    }
+
+    .browse-btn-container {
+        text-align: center;
+        margin-top: 60px;
+    }
+
+    /* === Media Queries للموبايل === */
+    @@media (max-width: 768px) {
+        .tracks-hero {
+            padding: 120px 0 60px;
+        }
+
+            .tracks-hero h1 {
+                font-size: 2.5rem !important;
+                padding: 0 15px;
+            }
+
+            .tracks-hero p {
+                font-size: 1.1rem !important;
+                padding: 0 15px;
+            }
+
+        .tracks-section {
+            padding: 60px 0;
+        }
+
+        .tracks-grid {
+            grid-template-columns: 1fr;
+            padding: 0 15px;
+            gap: 25px;
+        }
+
+        .track-card {
+            padding: 40px 20px;
+            border-radius: 20px;
+        }
+
+        .browse-btn-container {
+            margin-top: 40px;
+            padding: 0 15px;
+        }
+
+            .browse-btn-container .btn {
+                width: 100%;
+                justify-content: center;
+                font-size: 1.1rem !important;
+            }
     }
 </style>
 
@@ -65,35 +153,44 @@
     </div>
 </section>
 
-<section style="padding: 100px 0; background: #f8fafc;">
+<section class="tracks-section">
     <div class="container">
-        <div class="grid-3">
-            <div class="glass-card" style="text-align: center; padding: 50px 30px;">
-                <div class="track-icon-wrapper">
-                    <i class="@GetSetting("Track1_Icon", "fa-solid fa-code", "fa-solid fa-code")"></i>
-                </div>
-                <h3 style="color: var(--primary-color); font-weight: 900; font-size: 1.6rem; margin-bottom: 15px;">@GetSetting("Track1_Title", "هندسة البرمجيات والتقنية", "Software Engineering & Tech")</h3>
-                <p style="color: #64748b; line-height: 1.8; font-size: 1.05rem;">@GetSetting("Track1_Desc", "تطوير الويب، الذكاء الاصطناعي، الأمن السيبراني، وبرمجة تطبيقات الهواتف الذكية بأحدث التقنيات.", "Web development, AI, cybersecurity, and mobile app programming with the latest technologies.")</p>
-            </div>
+        <div class="tracks-grid">
+            @{
+                // استخراج جميع مفاتيح المسارات الموجودة في الإعدادات وترتيبها
+                var trackKeys = settingsDict.Keys
+                .Where(k => k.StartsWith("Track") && k.EndsWith("_Title"))
+                .Select(k => k.Replace("_Title", ""))
+                .OrderBy(k =>
+                {
+                    int.TryParse(k.Replace("Track", ""), out int num);
+                    return num;
+                })
+                .ToList();
 
-            <div class="glass-card" style="text-align: center; padding: 50px 30px;">
-                <div class="track-icon-wrapper">
-                    <i class="@GetSetting("Track2_Icon", "fa-solid fa-chart-line", "fa-solid fa-chart-line")"></i>
-                </div>
-                <h3 style="color: var(--primary-color); font-weight: 900; font-size: 1.6rem; margin-bottom: 15px;">@GetSetting("Track2_Title", "الإدارة والأعمال", "Management & Business")</h3>
-                <p style="color: #64748b; line-height: 1.8; font-size: 1.05rem;">@GetSetting("Track2_Desc", "التسويق الرقمي، إدارة المشاريع (PMP)، الموارد البشرية، وتحليل الأعمال وريادة المشاريع.", "Digital marketing, PMP, HR, business analysis, and entrepreneurship.")</p>
-            </div>
+                // رسم الكروت بشكل ديناميكي
+                foreach (var trackKey in trackKeys)
+                {
+                    var title = GetSetting($"{trackKey}_Title", "", "");
 
-            <div class="glass-card" style="text-align: center; padding: 50px 30px;">
-                <div class="track-icon-wrapper">
-                    <i class="@GetSetting("Track3_Icon", "fa-solid fa-language", "fa-solid fa-language")"></i>
-                </div>
-                <h3 style="color: var(--primary-color); font-weight: 900; font-size: 1.6rem; margin-bottom: 15px;">@GetSetting("Track3_Title", "اللغات والمهارات الناعمة", "Languages & Soft Skills")</h3>
-                <p style="color: #64748b; line-height: 1.8; font-size: 1.05rem;">@GetSetting("Track3_Desc", "اللغة الإنجليزية المهنية، مهارات التواصل، القيادة، والتحضير لاجتياز المقابلات الشخصية بنجاح.", "Professional English, communication skills, leadership, and interview preparation.")</p>
-            </div>
+                    // إذا ترك الأدمن العنوان فارغاً، يتم تجاهل المسار ولن يظهر
+                    if (string.IsNullOrWhiteSpace(title)) continue;
+
+                    var desc = GetSetting($"{trackKey}_Desc", "", "");
+                    var icon = GetSetting($"{trackKey}_Icon", "fa-solid fa-star", "fa-solid fa-star");
+
+                    <div class="track-card">
+                        <div class="track-icon-wrapper">
+                            <i class="@icon"></i>
+                        </div>
+                        <h3>@title</h3>
+                        <p>@desc</p>
+                    </div>
+                }
+            }
         </div>
 
-        <div style="text-align: center; margin-top: 60px;">
+        <div class="browse-btn-container">
             <a href="/Courses/Open" class="btn btn-primary" style="padding: 18px 40px; font-size: 1.15rem;">
                 @(isRtl ? "تصفح جميع البرامج المتاحة للتسجيل" : "Browse all available programs") <i class="fa-solid @(isRtl ? "fa-arrow-left" : "fa-arrow-right")"></i>
             </a>

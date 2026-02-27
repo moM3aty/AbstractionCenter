@@ -13,6 +13,28 @@
         margin-bottom: 30px;
     }
 
+    .card-title-pro {
+        color: #0b1120;
+        margin-bottom: 35px;
+        border-bottom: 2px solid #d4af37;
+        padding-bottom: 15px;
+        display: inline-flex;
+        align-items: center;
+        gap: 12px;
+        font-size: 1.6rem;
+        font-weight: 900;
+    }
+
+        .card-title-pro i {
+            color: #d4af37;
+        }
+
+    .info-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 0 40px;
+    }
+
     .info-group {
         margin-bottom: 25px;
         padding-bottom: 20px;
@@ -112,20 +134,120 @@
             transform: translateY(-5px);
             box-shadow: 0 10px 25px rgba(239, 68, 68, 0.3);
         }
+
+    .btn-back-pro {
+        color: #d4af37;
+        font-weight: 900;
+        font-size: 1.1rem;
+        margin-bottom: 30px;
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        text-decoration: none;
+        background: #0b1120;
+        padding: 12px 25px;
+        border-radius: 15px;
+        transition: 0.3s;
+    }
+
+        .btn-back-pro:hover {
+            background: #d4af37;
+            color: #0b1120;
+        }
+
+    .status-badge-lg {
+        font-size: 1.4rem;
+        font-weight: 900;
+        padding: 25px 40px;
+        border-radius: 20px;
+        display: inline-block;
+        border: 2px solid transparent;
+    }
+
+    .status-success-lg {
+        color: #059669;
+        background: rgba(16, 185, 129, 0.1);
+        border-color: #10b981;
+    }
+
+    .status-error-lg {
+        color: #dc2626;
+        background: rgba(239, 68, 68, 0.1);
+        border-color: #ef4444;
+    }
+
+    /* === Media Queries للموبايل === */
+    @@media (max-width: 768px) {
+        .details-premium-card {
+            padding: 25px 20px;
+            border-radius: 20px;
+        }
+
+        .card-title-pro {
+            font-size: 1.3rem;
+            margin-bottom: 25px;
+        }
+
+        .info-grid {
+            grid-template-columns: 1fr;
+            gap: 0;
+        }
+
+        .info-group {
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+        }
+
+        .info-value {
+            font-size: 1.1rem;
+        }
+
+        .qa-box {
+            padding: 20px 15px;
+        }
+
+        .decision-panel {
+            padding: 30px 20px;
+        }
+
+            .decision-panel h3 {
+                font-size: 1.5rem !important;
+            }
+
+        .action-buttons-wrapper {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .btn-action-lg {
+            width: 100%;
+            justify-content: center;
+            font-size: 1.1rem;
+            padding: 15px;
+        }
+
+        .status-badge-lg {
+            font-size: 1.1rem;
+            padding: 15px 20px;
+            display: block;
+            width: 100%;
+        }
+    }
 </style>
 
 <div>
-    <a href="/Admin/RegistrationRequests" style="color: #d4af37; font-weight: 900; font-size: 1.1rem; margin-bottom: 30px; display: inline-flex; align-items: center; gap: 10px; text-decoration: none; background: #0b1120; padding: 12px 25px; border-radius: 15px;">
+    <a href="/Admin/RegistrationRequests" class="btn-back-pro">
         <i class="fa-solid fa-arrow-right"></i> العودة لقائمة الطلبات
     </a>
 
     <!-- بيانات الطالب -->
     <div class="details-premium-card">
-        <h2 style="color: #0b1120; margin-bottom: 35px; border-bottom: 2px solid #d4af37; padding-bottom: 15px; display: inline-flex; align-items: center; gap: 12px;">
-            <i class="fa-solid fa-address-card" style="color: #d4af37;"></i> الاستمارة الأساسية للمتدرب
+        <h2 class="card-title-pro">
+            <i class="fa-solid fa-address-card"></i> الاستمارة الأساسية للمتدرب
         </h2>
 
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 0 40px;">
+        <div class="info-grid">
             <div class="info-group">
                 <div class="info-label">اسم الدورة المطلوبة</div>
                 <div class="info-value">@Model.Batch?.Course?.Title</div>
@@ -177,8 +299,8 @@
 
     <!-- إجابات الأسئلة المخصصة -->
     <div class="details-premium-card">
-        <h2 style="color: #0b1120; margin-bottom: 35px; border-bottom: 2px solid #d4af37; padding-bottom: 15px; display: inline-flex; align-items: center; gap: 12px;">
-            <i class="fa-solid fa-clipboard-question" style="color: #d4af37;"></i> إجابات أسئلة التقييم المخصصة
+        <h2 class="card-title-pro">
+            <i class="fa-solid fa-clipboard-question"></i> إجابات أسئلة التقييم المخصصة
         </h2>
 
         @if (Model.Answers != null && Model.Answers.Any())
@@ -207,15 +329,15 @@
 
         @if (Model.Status == AbstractionCenter.Models.Entities.RequestStatus.Pending)
         {
-            <div style="display: flex; justify-content: center; gap: 25px; flex-wrap: wrap;">
-                <form asp-controller="Admin" asp-action="ApproveRequest" method="post">
+            <div class="action-buttons-wrapper" style="display: flex; justify-content: center; gap: 25px; flex-wrap: wrap;">
+                <form asp-controller="Admin" asp-action="ApproveRequest" method="post" style="margin: 0;">
                     <input type="hidden" name="requestId" value="@Model.Id" />
                     <button type="submit" class="btn-action-lg btn-approve-lg">
                         <i class="fa-solid fa-user-check"></i> قبول واعتماد المتدرب
                     </button>
                 </form>
 
-                <form asp-controller="Admin" asp-action="RejectRequest" method="post" onsubmit="return confirm('هل أنت متأكد من رغبتك في رفض هذا الطلب؟')">
+                <form asp-controller="Admin" asp-action="RejectRequest" method="post" onsubmit="return confirm('هل أنت متأكد من رغبتك في رفض هذا الطلب؟')" style="margin: 0;">
                     <input type="hidden" name="requestId" value="@Model.Id" />
                     <button type="submit" class="btn-action-lg btn-reject-lg">
                         <i class="fa-solid fa-user-xmark"></i> رفض الطلب
@@ -225,13 +347,13 @@
         }
         else if (Model.Status == AbstractionCenter.Models.Entities.RequestStatus.Approved)
         {
-            <div style="color: #059669; font-size: 1.4rem; font-weight: 900; background: rgba(16, 185, 129, 0.1); padding: 25px 40px; border-radius: 20px; display: inline-block; border: 2px solid #10b981;">
+            <div class="status-badge-lg status-success-lg">
                 <i class="fa-solid fa-circle-check" style="font-size: 2rem; vertical-align: middle; margin-left: 10px;"></i> تم قبول الطلب والطالب مسجل في الدفعة حالياً.
             </div>
         }
         else
         {
-            <div style="color: #dc2626; font-size: 1.4rem; font-weight: 900; background: rgba(239, 68, 68, 0.1); padding: 25px 40px; border-radius: 20px; display: inline-block; border: 2px solid #ef4444;">
+            <div class="status-badge-lg status-error-lg">
                 <i class="fa-solid fa-circle-xmark" style="font-size: 2rem; vertical-align: middle; margin-left: 10px;"></i> تم رفض هذا الطلب من قبل الإدارة.
             </div>
         }

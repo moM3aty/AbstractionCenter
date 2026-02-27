@@ -68,6 +68,25 @@
         z-index: 10;
     }
 
+    .verify-icon {
+        font-size: 5rem;
+        color: var(--secondary-color);
+        margin-bottom: 25px;
+    }
+
+    .verify-title {
+        color: var(--primary-color);
+        font-size: 2.5rem;
+        margin-bottom: 15px;
+        font-weight: 900;
+    }
+
+    .verify-subtitle {
+        color: #64748b;
+        font-size: 1.15rem;
+        line-height: 1.8;
+    }
+
     .search-bar {
         display: flex;
         margin-top: 40px;
@@ -126,13 +145,126 @@
         border-radius: var(--radius-md);
         text-align: center;
     }
+
+    .cert-result-icon {
+        width: 80px;
+        height: 80px;
+        background: #10b981;
+        color: white;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2.5rem;
+        margin: 0 auto 20px;
+        box-shadow: 0 10px 25px rgba(16, 185, 129, 0.3);
+    }
+
+    .cert-result-title {
+        color: #10b981;
+        margin-bottom: 20px;
+        font-weight: 900;
+        font-size: 1.6rem;
+    }
+
+    .cert-result-details {
+        text-align: @(isRtl ? "right" : "left");
+        color: var(--primary-color);
+        line-height: 2;
+        background: white;
+        padding: 30px;
+        border-radius: 16px;
+        border: 1px solid #e2e8f0;
+        font-size: 1.1rem;
+    }
+
+    .cert-serial-tag {
+        font-family: monospace;
+        letter-spacing: 2px;
+        color: var(--primary-color);
+        font-weight: 900;
+        background: #f8fafc;
+        padding: 4px 10px;
+        border-radius: 8px;
+        border: 1px solid #e2e8f0;
+    }
+
+    /* === Media Queries للموبايل === */
+    @@media (max-width: 768px) {
+        .verify-section {
+            padding: 100px 15px 60px;
+        }
+
+        .verify-box {
+            padding: 40px 25px;
+            border-radius: 20px;
+        }
+
+        .verify-icon {
+            font-size: 4rem;
+            margin-bottom: 20px;
+        }
+
+        .verify-title {
+            font-size: 1.8rem;
+        }
+
+        .verify-subtitle {
+            font-size: 1rem;
+        }
+
+        .search-bar {
+            flex-direction: column;
+            border-radius: 12px;
+            border: none;
+            background: transparent;
+            box-shadow: none;
+            gap: 15px;
+        }
+
+            .search-bar input {
+                width: 100%;
+                border-radius: 12px;
+                border: 2px solid #e2e8f0;
+                padding: 15px 20px;
+                font-size: 1rem;
+            }
+
+            .search-bar button {
+                width: 100%;
+                padding: 15px;
+                border-radius: 12px;
+                justify-content: center;
+                font-size: 1.1rem;
+            }
+
+        .certificate-result {
+            padding: 30px 20px;
+            margin-top: 30px;
+        }
+
+        .cert-result-icon {
+            width: 60px;
+            height: 60px;
+            font-size: 2rem;
+        }
+
+        .cert-result-title {
+            font-size: 1.4rem;
+        }
+
+        .cert-result-details {
+            padding: 20px;
+            font-size: 1rem;
+        }
+    }
 </style>
 
 <div class="verify-section">
     <div class="verify-box">
-        <i class="fa-solid fa-shield-check" style="font-size: 5rem; color: var(--secondary-color); margin-bottom: 25px;"></i>
-        <h1 style="color: var(--primary-color); font-size: 2.5rem; margin-bottom: 15px; font-weight: 900;">@GetSetting("Verify_HeroTitle", "التحقق من صحة الشهادة", "Verify Certificate Authenticity")</h1>
-        <p style="color: #64748b; font-size: 1.15rem; line-height: 1.8;">@GetSetting("Verify_HeroSubtitle", "أدخل رقم الشهادة الفريد (Serial Number) للتحقق من موثوقيتها واعتمادها من مركز ابستراكشن.", "Enter the unique Serial Number to verify its authenticity and approval from Abstraction Center.")</p>
+        <i class="fa-solid fa-shield-check verify-icon"></i>
+        <h1 class="verify-title">@GetSetting("Verify_HeroTitle", "التحقق من صحة الشهادة", "Verify Certificate Authenticity")</h1>
+        <p class="verify-subtitle">@GetSetting("Verify_HeroSubtitle", "أدخل رقم الشهادة الفريد (Serial Number) للتحقق من موثوقيتها واعتمادها من مركز ابستراكشن.", "Enter the unique Serial Number to verify its authenticity and approval from Abstraction Center.")</p>
 
         <form method="get" action="/Home/VerifyCertificate" class="search-bar">
             <input type="text" name="serialNumber" placeholder="@(isRtl ? "أدخل الرقم المرجعي للشهادة هنا..." : "Enter the Certificate Serial Number here...")" value="@ViewBag.SerialNumber" required dir="ltr" />
@@ -142,14 +274,14 @@
         @if (!string.IsNullOrEmpty(ViewBag.SerialNumber))
         {
             <div class="certificate-result">
-                <div style="width: 80px; height: 80px; background: #10b981; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 2.5rem; margin: 0 auto 20px; box-shadow: 0 10px 25px rgba(16, 185, 129, 0.3);">
+                <div class="cert-result-icon">
                     <i class="fa-solid fa-check"></i>
                 </div>
-                <h3 style="color: #10b981; margin-bottom: 20px; font-weight: 900; font-size: 1.6rem;">@(isRtl ? "شهادة معتمدة وموثقة" : "Certified and Verified")</h3>
-                <div style="text-align: @(isRtl ? "right" : "left"); color: var(--primary-color); line-height: 2; background: white; padding: 30px; border-radius: 16px; border: 1px solid #e2e8f0; font-size: 1.1rem;">
+                <h3 class="cert-result-title">@(isRtl ? "شهادة معتمدة وموثقة" : "Certified and Verified")</h3>
+                <div class="cert-result-details">
                     <p style="margin-bottom: 10px;"><strong><i class="fa-solid fa-user-graduate" style="color: var(--secondary-color); width: 30px;"></i> @(isRtl ? "اسم المتدرب:" : "Student Name:")</strong> طالب مسجل (مثال توضيحي)</p>
                     <p style="margin-bottom: 10px;"><strong><i class="fa-solid fa-award" style="color: var(--secondary-color); width: 30px;"></i> @(isRtl ? "المسار التدريبي:" : "Training Track:")</strong> الدورة المسجلة (مثال توضيحي)</p>
-                    <p style="margin: 0;"><strong><i class="fa-solid fa-barcode" style="color: var(--secondary-color); width: 30px;"></i> @(isRtl ? "الرقم المرجعي:" : "Serial Number:")</strong> <span style="font-family: monospace; letter-spacing: 2px; color: var(--primary-color); font-weight: 900; background: #f8fafc; padding: 4px 10px; border-radius: 8px; border: 1px solid #e2e8f0;">@ViewBag.SerialNumber</span></p>
+                    <p style="margin: 0;"><strong><i class="fa-solid fa-barcode" style="color: var(--secondary-color); width: 30px;"></i> @(isRtl ? "الرقم المرجعي:" : "Serial Number:")</strong> <span class="cert-serial-tag">@ViewBag.SerialNumber</span></p>
                 </div>
             </div>
         }

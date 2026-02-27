@@ -185,6 +185,9 @@ namespace AbstractionCenter.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<string>("AdditionalInstructorIds")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("BatchName")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -192,12 +195,32 @@ namespace AbstractionCenter.Migrations
                     b.Property<int>("CourseId")
                         .HasColumnType("int");
 
+                    b.Property<double>("DiscountPercentage")
+                        .HasColumnType("float");
+
+                    b.Property<string>("ExecutionNote")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
                     b.Property<int?>("FinalExamId")
                         .HasColumnType("int");
 
                     b.Property<string>("InstructorId")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
+
+                    b.Property<decimal>("Price")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<bool>("ShowDiscount")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("ShowExecutionNote")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("ShowPrice")
+                        .HasColumnType("bit");
 
                     b.Property<DateTime>("StartDate")
                         .HasColumnType("datetime2");
@@ -553,6 +576,10 @@ namespace AbstractionCenter.Migrations
                     b.Property<int>("BatchId")
                         .HasColumnType("int");
 
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("FullName")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -562,6 +589,9 @@ namespace AbstractionCenter.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Message")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ReceiptFilePath")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("RequestDate")
@@ -575,7 +605,6 @@ namespace AbstractionCenter.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("StudentId")
-                        .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("TelegramNumber")
@@ -951,9 +980,7 @@ namespace AbstractionCenter.Migrations
 
                     b.HasOne("AbstractionCenter.Models.Entities.ApplicationUser", "Student")
                         .WithMany()
-                        .HasForeignKey("StudentId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("StudentId");
 
                     b.Navigation("Batch");
 

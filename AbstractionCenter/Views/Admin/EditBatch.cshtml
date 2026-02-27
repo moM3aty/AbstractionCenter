@@ -1,0 +1,329 @@
+﻿@model AbstractionCenter.Models.Entities.Batch
+@{
+    ViewData["Title"] = "تعديل بيانات الدفعة";
+}
+
+<style>
+    .premium-form-card {
+        background: #ffffff;
+        border-radius: 24px;
+        padding: 50px;
+        box-shadow: 0 15px 35px -10px rgba(11, 17, 32, 0.08);
+        border: 1px solid rgba(212, 175, 55, 0.15);
+        max-width: 900px;
+        margin: 0 auto;
+    }
+
+    .form-header {
+        text-align: center;
+        margin-bottom: 40px;
+    }
+
+    .form-header-icon {
+        width: 80px;
+        height: 80px;
+        background: linear-gradient(135deg, rgba(212, 175, 55, 0.15), rgba(212, 175, 55, 0.05));
+        color: #d4af37;
+        border-radius: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2.5rem;
+        margin: 0 auto 20px;
+        border: 1px solid rgba(212, 175, 55, 0.3);
+        transform: rotate(10deg);
+    }
+
+    .form-header h2 {
+        color: #0b1120;
+        font-size: 2rem;
+        font-weight: 900;
+        margin-bottom: 10px;
+    }
+
+    .form-header p {
+        color: #64748b;
+        font-size: 1.1rem;
+    }
+
+    .course-badge {
+        display: inline-block;
+        background: rgba(11, 17, 32, 0.05);
+        color: #0b1120;
+        font-weight: 900;
+        padding: 10px 20px;
+        border-radius: 12px;
+        margin-bottom: 30px;
+        border: 1px solid #e2e8f0;
+        font-size: 1.1rem;
+    }
+
+    .form-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+        margin-bottom: 20px;
+    }
+
+    .align-end {
+        align-items: end;
+    }
+
+    .form-group {
+        margin-bottom: 25px;
+    }
+
+        .form-group.mb-0 {
+            margin-bottom: 0;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: 800;
+            color: #0b1120;
+            font-size: 1.05rem;
+        }
+
+    .form-control {
+        width: 100%;
+        padding: 16px 20px;
+        border: 2px solid #e2e8f0;
+        border-radius: 16px;
+        font-family: inherit;
+        font-size: 1rem;
+        background: #f8fafc;
+        transition: all 0.3s ease;
+        color: #1e293b;
+    }
+
+        .form-control:focus {
+            outline: none;
+            border-color: #d4af37;
+            background: #ffffff;
+            box-shadow: 0 0 0 4px rgba(212, 175, 55, 0.15);
+        }
+
+    .section-divider {
+        color: #0b1120;
+        font-size: 1.3rem;
+        font-weight: 900;
+        margin: 40px 0 25px;
+        border-bottom: 2px solid #e2e8f0;
+        padding-bottom: 10px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+        .section-divider i {
+            color: #d4af37;
+        }
+
+    .toggle-container {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        background: #f8fafc;
+        padding: 15px 20px;
+        border-radius: 16px;
+        border: 1px solid #e2e8f0;
+        min-height: 58px; /* توحيد الارتفاع مع حقول الإدخال */
+    }
+
+        .toggle-container input[type="checkbox"] {
+            width: 22px;
+            height: 22px;
+            accent-color: #d4af37;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+
+        .toggle-container label {
+            margin: 0;
+            font-weight: 800;
+            color: #0b1120;
+            cursor: pointer;
+        }
+
+    .btn-submit {
+        background: linear-gradient(135deg, #0b1120, #1e293b);
+        color: #d4af37;
+        border: none;
+        padding: 18px 40px;
+        border-radius: 50px;
+        font-weight: 900;
+        font-size: 1.15rem;
+        cursor: pointer;
+        box-shadow: 0 10px 25px -5px rgba(11, 17, 32, 0.4);
+        transition: all 0.4s ease;
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        margin-top: 30px;
+    }
+
+        .btn-submit:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 35px -5px rgba(11, 17, 32, 0.6);
+            color: white;
+        }
+
+    .btn-cancel {
+        display: block;
+        text-align: center;
+        margin-top: 20px;
+        color: #64748b;
+        font-weight: 700;
+        transition: 0.3s;
+        text-decoration: none;
+    }
+
+        .btn-cancel:hover {
+            color: #ef4444;
+        }
+
+    /* === Media Queries للموبايل والشاشات الصغيرة === */
+    @@media (max-width: 768px) {
+        .premium-form-card {
+            padding: 35px 20px;
+            border-radius: 20px;
+        }
+
+        .form-header h2 {
+            font-size: 1.7rem;
+        }
+
+        .form-header-icon {
+            width: 70px;
+            height: 70px;
+            font-size: 2rem;
+            margin-bottom: 15px;
+        }
+
+        .form-grid {
+            grid-template-columns: 1fr;
+            gap: 15px;
+        }
+
+        .align-end {
+            align-items: stretch; /* إلغاء المحاذاة السفلية في الموبايل */
+        }
+
+        .form-group.mb-0 {
+            margin-bottom: 15px; /* إعادة الهامش السفلي في الموبايل */
+        }
+
+        .toggle-container {
+            padding: 12px 15px;
+        }
+
+        .btn-submit {
+            font-size: 1.1rem;
+            padding: 16px 20px;
+        }
+    }
+</style>
+
+<div class="premium-form-card">
+    <div class="form-header">
+        <div class="form-header-icon"><i class="fa-solid fa-pen-nib"></i></div>
+        <h2>تعديل بيانات الدفعة</h2>
+        <div class="course-badge"><i class="fa-solid fa-layer-group" style="color: #d4af37; margin-left: 5px;"></i> تابعة لمسار: @Model.Course?.Title</div>
+    </div>
+
+    <form asp-action="EditBatch" method="post">
+        @Html.AntiForgeryToken()
+        <input type="hidden" asp-for="Id" />
+        <input type="hidden" asp-for="CourseId" />
+
+        <div class="form-grid">
+            <div class="form-group mb-0">
+                <label>اسم الدفعة</label>
+                <input asp-for="BatchName" class="form-control" required />
+            </div>
+
+            <div class="form-group mb-0">
+                <label>تاريخ البدء</label>
+                <input type="date" asp-for="StartDate" class="form-control" value="@Model.StartDate.ToString("yyyy-MM-dd")" required />
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label>حالة الدفعة</label>
+            <select asp-for="Status" class="form-control">
+                <option value="0" selected="@(Model.Status == AbstractionCenter.Models.Entities.BatchStatus.OpenForRegistration)">مفتوحة للتسجيل</option>
+                <option value="1" selected="@(Model.Status == AbstractionCenter.Models.Entities.BatchStatus.InProgress)">قيد التنفيذ</option>
+                <option value="2" selected="@(Model.Status == AbstractionCenter.Models.Entities.BatchStatus.Completed)">مكتملة</option>
+                <option value="3" selected="@(Model.Status == AbstractionCenter.Models.Entities.BatchStatus.Closed)">مغلقة</option>
+            </select>
+        </div>
+
+        <h3 class="section-divider"><i class="fa-solid fa-chalkboard-user"></i> هيئة التدريس (تنظيم داخلي)</h3>
+
+        <div class="form-group">
+            <label>المحاضرون المسؤولون عن الدفعة</label>
+            <select name="InstructorIds" class="form-control" multiple required style="height: 140px;">
+                @if (ViewBag.Instructors != null)
+                {
+                    foreach (var inst in ViewBag.Instructors)
+                    {
+                        bool isSelected = Model.InstructorId == inst.Id;
+                        if (isSelected)
+                        {
+                            <option value="@inst.Id" selected>@inst.FullName - (@inst.Specialization)</option>
+                        }
+                        else
+                        {
+                            <option value="@inst.Id">@inst.FullName - (@inst.Specialization)</option>
+                        }
+                    }
+                }
+            </select>
+            <small style="color: #ef4444; font-weight: bold; display: block; margin-top: 8px;">
+                <i class="fa-solid fa-eye-slash"></i> أسماء المدربين لا تظهر للطلاب نهائياً في الواجهة الأمامية. تستخدم هذه القائمة لمنح الصلاحيات للمدربين داخلياً فقط.
+            </small>
+        </div>
+
+        <h3 class="section-divider"><i class="fa-solid fa-globe"></i> إعدادات العرض للزوار (واجهة الموقع)</h3>
+
+        <div class="form-group">
+            <label>ملاحظة التنفيذ (تظهر أسفل عنوان الدورة كبديل لاسم المحاضر)</label>
+            <input type="text" name="ExecutionNote" class="form-control" placeholder="Delivered by Abstraction Training Team" value="Delivered by Abstraction Training Team" />
+        </div>
+
+        <div class="form-group toggle-container">
+            <input type="checkbox" id="ShowExecutionNote" name="ShowExecutionNote" value="true" checked />
+            <label for="ShowExecutionNote">إظهار ملاحظة التنفيذ في صفحة تفاصيل الدورة</label>
+        </div>
+
+        <div class="form-grid align-end">
+            <div class="form-group mb-0">
+                <label>تكلفة الدورة (السعر)</label>
+                <input type="number" name="Price" class="form-control" placeholder="أدخل السعر..." min="0" />
+            </div>
+            <div class="form-group toggle-container mb-0">
+                <input type="checkbox" id="ShowPrice" name="ShowPrice" value="true" checked />
+                <label for="ShowPrice">إظهار السعر للزوار</label>
+            </div>
+        </div>
+
+        <div class="form-grid align-end">
+            <div class="form-group mb-0">
+                <label>نسبة التخفيض (%) إن وجدت</label>
+                <input type="number" name="DiscountPercentage" class="form-control" placeholder="مثال: 20" min="0" max="100" />
+            </div>
+            <div class="form-group toggle-container mb-0">
+                <input type="checkbox" id="ShowDiscount" name="ShowDiscount" value="true" />
+                <label for="ShowDiscount">إظهار نسبة التخفيض للزوار</label>
+            </div>
+        </div>
+
+        <div>
+            <button type="submit" class="btn-submit">حفظ التعديلات ونشر الإعدادات <i class="fa-solid fa-floppy-disk"></i></button>
+            <a href="/Admin/ManageBatches?courseId=@Model.CourseId" class="btn-cancel">إلغاء والعودة للقائمة</a>
+        </div>
+    </form>
+</div>

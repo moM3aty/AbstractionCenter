@@ -24,12 +24,21 @@
         justify-content: space-between;
         align-items: center;
         border: 1px solid rgba(212,175,55,0.2);
+        flex-wrap: wrap;
+        gap: 20px;
     }
 
         .page-header-card h1 {
-            font-size: 1.8rem;
-            font-weight: 900;
+            font-size: 1.3rem;
+            color: #cbd5e1;
+            font-weight: normal;
             margin-bottom: 5px;
+        }
+
+        .page-header-card h2 {
+            font-size: 2rem;
+            font-weight: 900;
+            margin: 0;
             color: var(--md-gold);
         }
 
@@ -45,6 +54,7 @@
         display: inline-flex;
         align-items: center;
         gap: 8px;
+        backdrop-filter: blur(5px);
     }
 
         .btn-back:hover {
@@ -152,17 +162,15 @@
         .dynamic-fields.active {
             display: block;
         }
+
     @@keyframes fadeIn {
-        from
+        from {
+            opacity: 0;
+        }
 
-    {
-        opacity: 0;
-    }
-
-    to {
-        opacity: 1;
-    }
-
+        to {
+            opacity: 1;
+        }
     }
 
     .content-item {
@@ -205,21 +213,53 @@
         background: linear-gradient(135deg, #8b5cf6, #4338ca);
     }
 
+    /* === Media Queries للموبايل === */
     @@media (max-width: 992px) {
-        .content-grid
+        .content-grid {
+            grid-template-columns: 1fr;
+        }
 
-    {
-        grid-template-columns: 1fr;
+        .page-header-card {
+            flex-direction: column;
+            text-align: center;
+            padding: 30px 20px;
+        }
+
+        .btn-back {
+            width: 100%;
+            justify-content: center;
+        }
     }
 
+    @@media (max-width: 768px) {
+        .premium-panel {
+            padding: 25px 20px;
+        }
+
+        .content-item {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 15px;
+        }
+
+            .content-item > div:last-child {
+                flex-direction: column;
+                align-items: flex-start !important;
+                gap: 10px;
+            }
+
+        .btn-submit {
+            width: 100% !important;
+            justify-content: center;
+        }
     }
 </style>
 
 <div>
     <div class="page-header-card">
         <div>
-            <h1 style="font-size: 1.3rem; color: #cbd5e1; font-weight: normal; margin-bottom: 5px;">الوحدة @Model.Order</h1>
-            <h2 style="font-size: 2rem; font-weight: 900; margin: 0; color: var(--md-gold);">@Model.Title</h2>
+            <h1>الوحدة @Model.Order</h1>
+            <h2>@Model.Title</h2>
         </div>
         <a href="/Instructor/ManageBatch/@Model.BatchId" class="btn-back">عودة للمنهج <i class="fa-solid fa-arrow-left"></i></a>
     </div>
@@ -314,10 +354,11 @@
                                     <i class="fa-solid fa-list-check"></i>
                                 }
                             </div>
-                            <div style="flex-grow: 1; display: flex; justify-content: space-between; align-items: center;">
+
+                            <div style="flex-grow: 1; display: flex; justify-content: space-between; align-items: center; width: 100%;">
                                 <div>
-                                    <strong style="color: var(--md-primary); font-size: 1.1rem; display: block;">@item.Title</strong>
-                                    <span style="color: var(--md-muted); font-size: 0.85rem; font-weight: 600;">
+                                    <strong style="color: var(--md-primary); font-size: 1.1rem; display: block; margin-bottom: 5px;">@item.Title</strong>
+                                    <span style="color: #64748b; font-size: 0.85rem; font-weight: 600;">
                                         @if (item.Type == AbstractionCenter.Models.Entities.ContentType.Video)
                                         {
                                             <span>فيديو تعليمي</span>

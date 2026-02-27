@@ -26,6 +26,12 @@
         margin-bottom: 20px;
     }
 
+    .form-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+    }
+
     .form-group {
         margin-bottom: 20px;
     }
@@ -59,7 +65,7 @@
         background: linear-gradient(135deg, #0b1120, #1e293b);
         color: #d4af37;
         border: none;
-        padding: 15px 35px;
+        padding: 16px 35px;
         border-radius: 50px;
         font-weight: 900;
         font-size: 1.1rem;
@@ -68,6 +74,21 @@
         display: inline-flex;
         align-items: center;
         gap: 10px;
+        transition: 0.3s;
+        margin-top: 10px;
+    }
+
+        .btn-submit:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 35px -5px rgba(11, 17, 32, 0.6);
+            color: white;
+        }
+
+    .table-responsive {
+        width: 100%;
+        overflow-x: auto;
+        border-radius: 16px;
+        border: 1px solid #e2e8f0;
     }
 
     .modern-data-table {
@@ -110,31 +131,129 @@
         border-radius: 8px;
         font-size: 0.85rem;
     }
+
+    .btn-edit-batch {
+        background: #0b1120;
+        color: #d4af37;
+        padding: 8px 15px;
+        border-radius: 10px;
+        font-size: 0.85rem;
+        font-weight: 800;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        transition: 0.3s;
+        border: none;
+        cursor: pointer;
+    }
+
+        .btn-edit-batch:hover {
+            background: #d4af37;
+            color: #0b1120;
+        }
+
+    .btn-delete-batch {
+        background: rgba(239, 68, 68, 0.1);
+        color: #ef4444;
+        padding: 8px 15px;
+        border-radius: 10px;
+        font-size: 0.85rem;
+        font-weight: 800;
+        border: 1px solid rgba(239, 68, 68, 0.2);
+        cursor: pointer;
+        transition: 0.3s;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+        .btn-delete-batch:hover {
+            background: #ef4444;
+            color: white;
+        }
+
+    .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 30px;
+        flex-wrap: wrap;
+        gap: 15px;
+    }
+
+    /* === Media Queries للموبايل والشاشات الصغيرة === */
+    @@media (max-width: 768px) {
+        .premium-form-card {
+            padding: 30px 20px;
+            border-radius: 20px;
+        }
+
+        .form-grid {
+            grid-template-columns: 1fr;
+            gap: 15px;
+        }
+
+        .btn-submit {
+            width: 100%;
+            justify-content: center;
+            font-size: 1.05rem;
+        }
+
+        .form-header-icon {
+            width: 50px;
+            height: 50px;
+            font-size: 1.4rem;
+            margin-bottom: 15px;
+        }
+
+        .page-header h2 {
+            font-size: 1.5rem !important;
+        }
+
+        h3 {
+            font-size: 1.4rem !important;
+        }
+
+        .modern-data-table th, .modern-data-table td {
+            padding: 12px 15px;
+            font-size: 0.9rem;
+        }
+    }
 </style>
 
 <div>
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+    <div class="page-header">
         <h2 style="color: #0b1120; font-weight: 900; margin: 0;"><i class="fa-solid fa-layer-group" style="color: #d4af37;"></i> إدارة دفعات: @Model.Title</h2>
-        <a href="/Admin/ManageCourses" style="color: #64748b; font-weight: bold; text-decoration: none;"><i class="fa-solid fa-arrow-right"></i> عودة للدورات</a>
+        <a href="/Admin/ManageCourses" style="color: #64748b; font-weight: bold; text-decoration: none; display: flex; align-items: center; gap: 8px;">
+            <i class="fa-solid fa-arrow-right"></i> عودة للدورات
+        </a>
     </div>
 
     @if (TempData["SuccessMessage"] != null)
     {
-        <div style="background: rgba(16, 185, 129, 0.1); color: #059669; padding: 15px 25px; border-radius: 16px; margin-bottom: 25px; font-weight: 800; border: 1px solid #10b981;">
+        <div style="background: rgba(16, 185, 129, 0.1); color: #059669; padding: 15px 25px; border-radius: 16px; margin-bottom: 25px; font-weight: 800; border: 1px solid #10b981; display: flex; align-items: center; gap: 10px;">
             <i class="fa-solid fa-circle-check"></i> @TempData["SuccessMessage"]
+        </div>
+    }
+
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div style="background: rgba(239, 68, 68, 0.1); color: #dc2626; padding: 15px 25px; border-radius: 16px; margin-bottom: 25px; font-weight: 800; border: 1px solid #ef4444; display: flex; align-items: center; gap: 10px;">
+            <i class="fa-solid fa-triangle-exclamation"></i> @TempData["ErrorMessage"]
         </div>
     }
 
     <!-- نموذج إضافة دفعة جديدة -->
     <div class="premium-form-card">
         <div class="form-header-icon"><i class="fa-solid fa-calendar-plus"></i></div>
-        <h3 style="color: #0b1120; font-weight: 900; margin-bottom: 20px;">فتح دفعة جديدة وتعيين محاضر</h3>
+        <h3 style="color: #0b1120; font-weight: 900; margin-bottom: 25px;">فتح دفعة جديدة وتعيين محاضر</h3>
 
         <form asp-action="CreateBatch" method="post">
             @Html.AntiForgeryToken()
             <input type="hidden" name="CourseId" value="@Model.Id" />
 
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+            <div class="form-grid">
                 <div class="form-group">
                     <label>اسم الدفعة (يظهر للطلاب)</label>
                     <input type="text" name="BatchName" class="form-control" placeholder="مثال: الدفعة الأولى - 2025" required />
@@ -145,7 +264,7 @@
                 </div>
             </div>
 
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+            <div class="form-grid">
                 <div class="form-group">
                     <label>المحاضر المسؤول عن هذه الدفعة</label>
                     <select name="InstructorId" class="form-control" required>
@@ -176,9 +295,11 @@
 
     <!-- قائمة الدفعات الحالية -->
     <div class="premium-form-card">
-        <h3 style="color: #0b1120; font-weight: 900; margin-bottom: 25px;"><i class="fa-solid fa-users-viewfinder" style="color: #d4af37;"></i> الدفعات المسجلة لهذا المسار</h3>
+        <h3 style="color: #0b1120; font-weight: 900; margin-bottom: 25px; display: flex; align-items: center; gap: 10px;">
+            <i class="fa-solid fa-users-viewfinder" style="color: #d4af37;"></i> الدفعات المسجلة لهذا المسار
+        </h3>
 
-        <div style="overflow-x: auto; border-radius: 16px; border: 1px solid #e2e8f0;">
+        <div class="table-responsive">
             <table class="modern-data-table">
                 <thead>
                     <tr>
@@ -186,6 +307,7 @@
                         <th>المحاضر</th>
                         <th>تاريخ البدء</th>
                         <th>الحالة</th>
+                        <th>الإجراءات</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -196,16 +318,30 @@
                             <tr>
                                 <td style="font-weight: 900; color: #0b1120;">@batch.BatchName</td>
                                 <td><i class="fa-solid fa-chalkboard-user" style="color: #64748b; margin-left: 5px;"></i> @(batch.Instructor?.FullName ?? "غير محدد")</td>
-                                <td>@batch.StartDate.ToString("dd MMM yyyy")</td>
+                                <td style="font-family: monospace; font-size: 1.1rem; color: #475569;">@batch.StartDate.ToString("yyyy/MM/dd")</td>
                                 <td>
                                     @if (batch.Status == AbstractionCenter.Models.Entities.BatchStatus.OpenForRegistration)
                                     {
-                                        <span class="badge-open">مفتوحة للتسجيل</span>
+                                        <span class="badge-open"><i class="fa-solid fa-door-open"></i> مفتوحة للتسجيل</span>
                                     }
                                     else
                                     {
-                                        <span class="badge-closed">مغلقة / قيد التنفيذ</span>
+                                        <span class="badge-closed"><i class="fa-solid fa-lock"></i> مغلقة / قيد التنفيذ</span>
                                     }
+                                </td>
+                                <td>
+                                    <div style="display: flex; gap: 10px;">
+                                        <a href="/Admin/EditBatch/@batch.Id" class="btn-edit-batch" title="تعديل">
+                                            <i class="fa-solid fa-pen-to-square"></i> تعديل
+                                        </a>
+                                        <form asp-action="DeleteBatch" method="post" style="margin: 0;" onsubmit="return confirm('هل أنت متأكد من حذف هذه الدفعة نهائياً؟');">
+                                            @Html.AntiForgeryToken()
+                                            <input type="hidden" name="id" value="@batch.Id" />
+                                            <button type="submit" class="btn-delete-batch" title="حذف">
+                                                <i class="fa-solid fa-trash-can"></i> حذف
+                                            </button>
+                                        </form>
+                                    </div>
                                 </td>
                             </tr>
                         }
@@ -213,7 +349,7 @@
                     else
                     {
                         <tr>
-                            <td colspan="4" style="text-align: center; padding: 40px; color: #64748b;">لا توجد دفعات تم إنشاؤها لهذه الدورة بعد.</td>
+                            <td colspan="5" style="text-align: center; padding: 40px; color: #64748b;">لا توجد دفعات تم إنشاؤها لهذه الدورة بعد.</td>
                         </tr>
                     }
                 </tbody>

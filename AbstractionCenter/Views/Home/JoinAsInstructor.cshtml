@@ -28,6 +28,12 @@
         border-top: 6px solid var(--secondary-color);
     }
 
+    .form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+    }
+
     .form-group {
         margin-bottom: 25px;
     }
@@ -66,8 +72,8 @@
     }
 
         .file-upload-wrapper i {
-            position: absolute; @(isRtl
-                        ? "left" : "right") : 20px;
+            position: absolute;
+            @(isRtl ? "left" : "right") : 20px;
             color: var(--secondary-color);
             font-size: 1.2rem;
             pointer-events: none;
@@ -100,19 +106,42 @@
             transform: translateY(-5px);
             box-shadow: 0 20px 40px rgba(212, 175, 55, 0.5);
         }
+
+    /* === Media Queries للموبايل === */
     @@media (max-width: 768px) {
-        .join-form-card
+        .join-hero {
+            padding: 120px 0 80px;
+        }
 
-    {
-        padding: 40px 20px;
-    }
+            .join-hero h1 {
+                font-size: 2.2rem !important;
+            }
 
+            .join-hero p {
+                font-size: 1.1rem !important;
+                padding: 0 15px;
+            }
+
+        .join-form-card {
+            padding: 30px 20px;
+            margin: -40px auto 60px;
+        }
+
+        .form-row {
+            grid-template-columns: 1fr;
+            gap: 0;
+        }
+
+        .btn-submit-join {
+            font-size: 1.1rem;
+            padding: 15px;
+        }
     }
 </style>
 
 <section class="join-hero">
     <div class="container">
-        <h1 style="font-size: 3.5rem; font-weight: 900; margin-bottom: 20px;color:#fff;">@(isRtl ? "انضم إلى" : "Join Our") <span style="color: var(--secondary-color);">@(isRtl ? "نخبة الخبراء" : "Elite Experts")</span></h1>
+        <h1 style="font-size: 3.5rem; font-weight: 900; margin-bottom: 20px; color: #fff;">@(isRtl ? "انضم إلى" : "Join Our") <span style="color: var(--secondary-color);">@(isRtl ? "نخبة الخبراء" : "Elite Experts")</span></h1>
         <p style="color: #cbd5e1; font-size: 1.2rem; max-width: 700px; margin: 0 auto;">@(isRtl ? "شارك معرفتك وخبراتك مع آلاف الطلاب، وكن جزءاً من قصة نجاحهم في مسيرتهم المهنية." : "Share your knowledge and expertise with thousands of students, and be part of their career success story.")</p>
     </div>
 </section>
@@ -128,7 +157,7 @@
         }
 
         <form asp-action="JoinAsInstructor" method="post" enctype="multipart/form-data">
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;">
+            <div class="form-row">
                 <div class="form-group">
                     <label>@(isRtl ? "الاسم بالكامل" : "Full Name")</label>
                     <input asp-for="FullName" class="form-control" placeholder="@(isRtl ? "أدخل اسمك الرباعي..." : "Enter your full name...")" required />
@@ -140,7 +169,7 @@
                 </div>
             </div>
 
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;">
+            <div class="form-row">
                 <div class="form-group">
                     <label>@(isRtl ? "رقم الهاتف / الواتساب" : "Phone / WhatsApp Number")</label>
                     <input asp-for="PhoneNumber" class="form-control" placeholder="01000000000" required dir="ltr" />

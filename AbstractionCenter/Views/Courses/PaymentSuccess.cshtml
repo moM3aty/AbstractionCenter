@@ -1,0 +1,136 @@
+﻿@using Microsoft.AspNetCore.Localization
+@{
+    var requestCulture = Context.Features.Get<IRequestCultureFeature>();
+    bool isRtl = requestCulture?.RequestCulture.UICulture.Name == "ar" || requestCulture?.RequestCulture.UICulture.Name == null;
+    ViewData["Title"] = isRtl ? "تم استلام الطلب" : "Request Received";
+}
+
+<style>
+    .success-wrapper {
+        background: #f8fafc;
+        min-height: 80vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 140px 20px 80px;
+    }
+
+    .success-card {
+        background: white;
+        border-radius: 30px;
+        padding: 60px;
+        box-shadow: 0 25px 50px -12px rgba(11, 17, 32, 0.15);
+        max-width: 600px;
+        width: 100%;
+        text-align: center;
+        border: 1px solid rgba(212, 175, 55, 0.2);
+    }
+
+    .success-icon-box {
+        width: 120px;
+        height: 120px;
+        background: rgba(16, 185, 129, 0.1);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 30px;
+    }
+
+        .success-icon-box i {
+            font-size: 4rem;
+            color: #10b981;
+        }
+
+    .success-card h1 {
+        font-size: 2.2rem;
+        font-weight: 900;
+        color: var(--primary-color, #0b1120);
+        margin-bottom: 15px;
+    }
+
+    .success-card p {
+        color: #475569;
+        font-size: 1.2rem;
+        line-height: 1.8;
+        margin-bottom: 40px;
+    }
+
+    .btn-home-return {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        padding: 15px 40px;
+        font-size: 1.1rem;
+        font-weight: 800;
+        border-radius: 50px;
+        text-decoration: none;
+        background: white;
+        color: var(--primary-color, #0b1120);
+        border: 2px solid #e2e8f0;
+        transition: 0.3s;
+    }
+
+        .btn-home-return:hover {
+            border-color: var(--secondary-color, #d4af37);
+            color: var(--secondary-color, #d4af37);
+            background: #f8fafc;
+        }
+
+    /* === Media Queries للموبايل === */
+    @@media (max-width: 768px) {
+        .success-wrapper {
+            padding: 100px 15px 60px;
+        }
+
+        .success-card {
+            padding: 40px 25px;
+            border-radius: 20px;
+        }
+
+        .success-icon-box {
+            width: 90px;
+            height: 90px;
+            margin-bottom: 20px;
+        }
+
+            .success-icon-box i {
+                font-size: 3rem;
+            }
+
+        .success-card h1 {
+            font-size: 1.7rem;
+        }
+
+        .success-card p {
+            font-size: 1.05rem;
+            margin-bottom: 30px;
+        }
+
+        .btn-home-return {
+            width: 100%;
+            padding: 15px 20px;
+        }
+    }
+</style>
+
+<div class="success-wrapper">
+    <div class="success-card">
+        <div class="success-icon-box">
+            <i class="fa-solid fa-check"></i>
+        </div>
+
+        <h1>@(isRtl ? "تم استلام طلبك بنجاح!" : "Request Received Successfully!")</h1>
+
+        <p>
+            @(isRtl ? "طلبك الآن قيد المراجعة. سيتم التأكد من صحة الدفع واعتماد انضمامك خلال 48 ساعة." : "Your request is under review. Payment will be verified and your enrollment approved within 48 hours.")
+            <br><br>
+            @(isRtl ? "بعد القبول، سيتم إرسال رابط لك عبر الواتساب أو الإيميل لإنشاء كلمة المرور الخاصة بك والدخول للمنصة." : "Once approved, a link will be sent to you via WhatsApp or Email to set your password and access the platform.")
+        </p>
+
+        <a href="/" class="btn-home-return">
+            <i class="fa-solid fa-house"></i> @(isRtl ? "العودة للرئيسية" : "Back to Home")
+        </a>
+    </div>
+</div>

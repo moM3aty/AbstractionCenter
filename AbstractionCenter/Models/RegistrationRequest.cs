@@ -1,64 +1,56 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace AbstractionCenter.Models.Entities
 {
-    /// <summary>
-    /// تم تحديث هذا النموذج ليتم ربط طلب تسجيل الطالب بـ (الدفعة) بدلاً من الدورة العامة
-    /// </summary>
     public class RegistrationRequest
     {
-        [Key]
         public int Id { get; set; }
 
-        [Required]
-        public string StudentId { get; set; }
-        [ForeignKey("StudentId")]
-        public ApplicationUser Student { get; set; }
-
-        // التعديل: الربط بالدفعة (Batch)
-        [Required]
         public int BatchId { get; set; }
-        [ForeignKey("BatchId")]
         public Batch Batch { get; set; }
 
-        [Required(ErrorMessage = "الاسم الرباعي مطلوب")]
-        [Display(Name = "الاسم رباعي")]
+        // تم جعل StudentId اختيارياً لأن الزائر ليس له حساب بعد
+        public string? StudentId { get; set; }
+        public ApplicationUser Student { get; set; }
+
+        [Required]
         public string FullName { get; set; }
 
-        [Required(ErrorMessage = "التخصص مطلوب")]
-        [Display(Name = "التخصص")]
-        public string Specialization { get; set; }
+        [Required]
+        [EmailAddress]
+        public string Email { get; set; } // حقل جديد للإيميل
 
-        [Required(ErrorMessage = "المستوى مطلوب")]
-        [Display(Name = "المستوى")]
-        public string Level { get; set; }
-
-        [Required(ErrorMessage = "رقم الواتساب مطلوب")]
-        [Display(Name = "رقم الواتساب")]
+        [Required]
         public string WhatsAppNumber { get; set; }
 
-        [Display(Name = "رقم تلغرام")]
         public string? TelegramNumber { get; set; }
+        public string Specialization { get; set; }
+        public string Level { get; set; }
 
-        [Display(Name = "رسالة أو ملاحظة إضافية")]
+        // حقل جديد لملاحظات المتدرب الإضافية (لحل مشكلة الخطأ)
         public string? Message { get; set; }
 
-        [Display(Name = "تاريخ تقديم الطلب")]
-        public DateTime RequestDate { get; set; } = DateTime.Now;
+        // حقل جديد لحفظ مسار صورة إيصال الدفع
+        public string? ReceiptFilePath { get; set; }
 
-        [Display(Name = "حالة الطلب")]
-        public RequestStatus Status { get; set; } = RequestStatus.Pending;
+        public RequestStatus Status { get; set; }
+        public DateTime RequestDate { get; set; }
 
-        public ICollection<RegistrationAnswer>? Answers { get; set; }
+        public ICollection<RegistrationAnswer> Answers { get; set; }
     }
 
+    // تعريف حالات الطلب لحل مشكلة (The name 'RequestStatus' does not exist)
     public enum RequestStatus
     {
-        [Display(Name = "قيد المراجعة")] Pending,
-        [Display(Name = "تمت الموافقة")] Approved,
-        [Display(Name = "مرفوض")] Rejected
+        [Display(Name = "قيد المراجعة")]
+        Pending = 0,
+
+        [Display(Name = "تم القبول")]
+        Approved = 1,
+
+        [Display(Name = "مرفوض")]
+        Rejected = 2
     }
 }

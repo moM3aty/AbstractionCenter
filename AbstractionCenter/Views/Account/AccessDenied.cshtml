@@ -69,6 +69,10 @@
         text-decoration: none;
         transition: 0.3s;
         box-shadow: 0 10px 25px rgba(11, 17, 32, 0.3);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
     }
 
         .btn-home:hover {
@@ -88,6 +92,10 @@
         cursor: pointer;
         transition: 0.3s;
         font-family: inherit;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
     }
 
         .btn-logout:hover {
@@ -96,6 +104,40 @@
             transform: translateY(-3px);
             box-shadow: 0 10px 25px rgba(239, 68, 68, 0.3);
         }
+
+    /* === Media Queries للموبايل والشاشات الصغيرة === */
+    @@media (max-width: 768px) {
+        .denied-card {
+            padding: 40px 25px;
+            border-radius: 20px;
+        }
+
+        .denied-icon {
+            width: 90px;
+            height: 90px;
+            font-size: 3rem;
+            margin-bottom: 20px;
+        }
+
+        .denied-card h1 {
+            font-size: 1.8rem;
+        }
+
+        .denied-card p {
+            font-size: 1rem;
+            margin-bottom: 30px;
+        }
+
+        .btn-actions {
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .btn-home, .btn-logout {
+            width: 100%;
+            padding: 14px 20px;
+        }
+    }
 </style>
 
 <div class="denied-bg">
@@ -107,10 +149,10 @@
         <p>عذراً، الحساب الذي تستخدمه حالياً لا يمتلك الصلاحيات الأمنية اللازمة لعرض هذه الصفحة أو تنفيذ هذا الإجراء.</p>
 
         <div class="btn-actions">
-            <a href="/" class="btn-home"><i class="fa-solid fa-house" style="margin-left: 8px;"></i> العودة للرئيسية</a>
+            <a href="/" class="btn-home"><i class="fa-solid fa-house"></i> العودة للرئيسية</a>
 
-            <form asp-controller="Account" asp-action="Logout" method="post" style="margin: 0;">
-                <button type="submit" class="btn-logout"><i class="fa-solid fa-arrow-right-from-bracket" style="margin-left: 8px;"></i> تسجيل خروج</button>
+            <form asp-controller="Account" asp-action="Logout" method="post" style="margin: 0; width: 100%;">
+                <button type="submit" class="btn-logout" style="width: 100%;"><i class="fa-solid fa-arrow-right-from-bracket"></i> تسجيل خروج</button>
             </form>
         </div>
     </div>

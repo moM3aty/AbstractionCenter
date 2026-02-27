@@ -5,8 +5,10 @@ using Microsoft.EntityFrameworkCore;
 using System.Threading.Tasks;
 using AbstractionCenter.Data;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Authorization;
 using System.Collections.Generic;
+using System;
+using Microsoft.AspNetCore.Http;
+using AbstractionCenter.Services;
 
 namespace AbstractionCenter.Controllers
 {
@@ -14,18 +16,19 @@ namespace AbstractionCenter.Controllers
     {
         private readonly ApplicationDbContext _context;
         private readonly UserManager<ApplicationUser> _userManager;
+        private readonly IFileUploaderService _fileUploader;
 
-        public CoursesController(ApplicationDbContext context, UserManager<ApplicationUser> userManager)
+        public CoursesController(ApplicationDbContext context, UserManager<ApplicationUser> userManager, IFileUploaderService fileUploader)
         {
             _context = context;
             _userManager = userManager;
+            _fileUploader = fileUploader;
         }
 
         public async Task<IActionResult> Open()
         {
             var openBatches = await _context.Batches
                 .Include(b => b.Course)
-                .Include(b => b.Instructor)
                 .Where(b => b.Status == BatchStatus.OpenForRegistration)
                 .OrderByDescending(b => b.StartDate)
                 .ToListAsync();
@@ -33,7 +36,7 @@ namespace AbstractionCenter.Controllers
             return View(openBatches);
         }
 
-        [Authorize]
+        // إزالة [Authorize] ليتمكن الزائر من التسجيل
         [HttpGet]
         public async Task<IActionResult> Register(int id)
         {
@@ -44,44 +47,32 @@ namespace AbstractionCenter.Controllers
             if (batch == null || batch.Status != BatchStatus.OpenForRegistration)
                 return NotFound();
 
-            var user = await _userManager.GetUserAsync(User);
-
-            var isAlreadyEnrolled = await _context.StudentBatches.AnyAsync(sb => sb.BatchId == id && sb.StudentId == user.Id);
-            if (isAlreadyEnrolled)
-            {
-                TempData["InfoMessage"] = "أنت مسجل بالفعل في هذه الدفعة.";
-                return RedirectToAction("Open");
-            }
-
-            var hasPendingRequest = await _context.RegistrationRequests.AnyAsync(r => r.BatchId == id && r.StudentId == user.Id && r.Status == RequestStatus.Pending);
-            if (hasPendingRequest)
-            {
-                TempData["InfoMessage"] = "لديك طلب مسبق قيد المراجعة لهذه الدفعة.";
-                return RedirectToAction("Open");
-            }
-
             return View(batch);
         }
 
-        [Authorize]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> SubmitRegistration(int batchId, string fullName, string specialization, string level, string whatsAppNumber, string telegramNumber, Dictionary<int, string> customAnswers)
+        public async Task<IActionResult> SubmitRegistration(int batchId, string fullName, string email, string specialization, string level, string whatsAppNumber, string telegramNumber, Dictionary<int, string> customAnswers)
         {
-            var user = await _userManager.GetUserAsync(User);
-            if (user == null) return RedirectToAction("Login", "Account");
+            // التحقق مما إذا كان الإيميل مسجل مسبقاً في هذه الدفعة
+            var existingRequest = await _context.RegistrationRequests.AnyAsync(r => r.BatchId == batchId && r.Email == email && r.Status != RequestStatus.Rejected);
+            if (existingRequest)
+            {
+                TempData["ErrorMessage"] = "يوجد طلب تسجيل مسبق بهذا البريد الإلكتروني لهذه الدفعة.";
+                return RedirectToAction("Register", new { id = batchId });
+            }
 
             var newRequest = new RegistrationRequest
             {
                 BatchId = batchId,
-                StudentId = user.Id,
                 FullName = fullName,
-                Specialization = specialization,
-                Level = level,
+                Email = email,
+                Specialization = specialization ?? "غير محدد",
+                Level = level ?? "غير محدد",
                 WhatsAppNumber = whatsAppNumber,
                 TelegramNumber = telegramNumber,
-                Status = RequestStatus.Pending,
-                RequestDate = System.DateTime.Now
+                Status = RequestStatus.Pending, // لا يزال معلقاً بانتظار الدفع
+                RequestDate = DateTime.Now
             };
 
             _context.RegistrationRequests.Add(newRequest);
@@ -104,8 +95,43 @@ namespace AbstractionCenter.Controllers
                 await _context.SaveChangesAsync();
             }
 
-            TempData["SuccessMessage"] = "تم إرسال طلب التسجيل بنجاح! سيتم مراجعة بياناتك وإضافتك للدفعة قريباً.";
-            return RedirectToAction("Open");
+            // تحويل الطالب لصفحة الدفع ورفع الإيصال
+            return RedirectToAction("Payment", new { requestId = newRequest.Id });
+        }
+
+        // --- صفحة الدفع ---
+        [HttpGet]
+        public async Task<IActionResult> Payment(int requestId)
+        {
+            var request = await _context.RegistrationRequests
+                .Include(r => r.Batch).ThenInclude(b => b.Course)
+                .FirstOrDefaultAsync(r => r.Id == requestId);
+
+            if (request == null) return NotFound();
+
+            return View(request);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> SubmitPayment(int requestId, IFormFile receiptFile)
+        {
+            var request = await _context.RegistrationRequests.FindAsync(requestId);
+            if (request == null) return NotFound();
+
+            if (receiptFile != null)
+            {
+                request.ReceiptFilePath = await _fileUploader.UploadFileAsync(receiptFile, "receipts");
+                await _context.SaveChangesAsync();
+            }
+
+            return RedirectToAction("PaymentSuccess");
+        }
+
+        [HttpGet]
+        public IActionResult PaymentSuccess()
+        {
+            return View();
         }
     }
 }

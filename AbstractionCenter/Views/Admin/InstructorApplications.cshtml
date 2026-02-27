@@ -76,6 +76,7 @@
         object-fit: cover;
         box-shadow: 0 5px 15px rgba(0,0,0,0.1);
         border: 2px solid #f8fafc;
+        flex-shrink: 0;
     }
 
     .avatar-placeholder {
@@ -89,6 +90,7 @@
         justify-content: center;
         font-size: 1.5rem;
         border: 1px solid rgba(212,175,55,0.3);
+        flex-shrink: 0;
     }
 
     .contact-item {
@@ -179,6 +181,9 @@
         font-weight: 800;
         transition: 0.3s;
         border: 1px solid rgba(59, 130, 246, 0.2);
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
     }
 
         .btn-cv:hover {
@@ -206,6 +211,41 @@
         .empty-state p {
             color: #64748b;
         }
+
+    /* === Media Queries للموبايل === */
+    @@media (max-width: 768px) {
+        .premium-table-card {
+            padding: 25px 15px;
+            border-radius: 20px;
+        }
+
+        .toolbar-title {
+            font-size: 1.3rem;
+            margin-bottom: 25px;
+        }
+
+        .modern-data-table th, .modern-data-table td {
+            padding: 12px 15px;
+            font-size: 0.9rem;
+        }
+
+        .applicant-info {
+            gap: 10px;
+        }
+
+        .btn-action {
+            padding: 8px 15px;
+            font-size: 0.85rem;
+        }
+
+        .empty-state i {
+            font-size: 3rem;
+        }
+
+        .empty-state h3 {
+            font-size: 1.2rem;
+        }
+    }
 </style>
 
 <div class="premium-table-card">
@@ -254,7 +294,7 @@
                             </td>
                             <td>
                                 <div class="contact-item"><i class="fa-solid fa-envelope" style="color: #3b82f6;"></i> @app.Email</div>
-                                <div class="contact-item"><i class="fa-brands fa-whatsapp" style="color: #25d366; font-size: 1.1rem;"></i> @app.PhoneNumber</div>
+                                <div class="contact-item"><i class="fa-brands fa-whatsapp" style="color: #25d366; font-size: 1.1rem;"></i> <span dir="ltr">@app.PhoneNumber</span></div>
                             </td>
                             <td>
                                 @if (!string.IsNullOrEmpty(app.CVPath))
@@ -284,11 +324,11 @@
                                 @if (app.Status == AbstractionCenter.Models.Entities.RequestStatus.Pending)
                                 {
                                     <div style="display: flex; gap: 10px;">
-                                        <form asp-action="ApproveInstructor" method="post">
+                                        <form asp-action="ApproveInstructor" method="post" style="margin: 0;">
                                             <input type="hidden" name="id" value="@app.Id" />
                                             <button type="submit" class="btn-action btn-approve" title="إنشاء حساب وتعيينه كمحاضر"><i class="fa-solid fa-check"></i> قبول</button>
                                         </form>
-                                        <form asp-action="RejectInstructor" method="post">
+                                        <form asp-action="RejectInstructor" method="post" style="margin: 0;">
                                             <input type="hidden" name="id" value="@app.Id" />
                                             <button type="submit" class="btn-action btn-reject" title="رفض الطلب"><i class="fa-solid fa-ban"></i> رفض</button>
                                         </form>

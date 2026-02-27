@@ -1,9 +1,26 @@
 ﻿@model IEnumerable<AbstractionCenter.Models.Entities.RegistrationRequest>
 @{
-    ViewData["Title"] = "طلبات تسجيل الطلاب (الفورم)";
+    ViewData["Title"] = "إدارة طلبات التسجيل";
 }
 
 <style>
+    .page-header-card {
+        background: linear-gradient(135deg, #0b1120 0%, #1e293b 100%);
+        border-radius: 24px;
+        padding: 40px;
+        color: white;
+        margin-bottom: 40px;
+        box-shadow: 0 20px 40px -10px rgba(11, 17, 32, 0.3);
+        border: 1px solid rgba(212,175,55,0.2);
+    }
+
+        .page-header-card h1 {
+            font-size: 2rem;
+            font-weight: 900;
+            margin-bottom: 5px;
+            color: #d4af37;
+        }
+
     .premium-table-card {
         background: #ffffff;
         border-radius: 24px;
@@ -11,20 +28,6 @@
         box-shadow: 0 15px 35px -10px rgba(11, 17, 32, 0.08);
         border: 1px solid rgba(212, 175, 55, 0.15);
     }
-
-    .toolbar-title {
-        color: #0b1120;
-        margin: 0 0 35px 0;
-        font-size: 1.6rem;
-        font-weight: 900;
-        display: flex;
-        align-items: center;
-        gap: 12px;
-    }
-
-        .toolbar-title i {
-            color: #d4af37;
-        }
 
     .table-responsive {
         width: 100%;
@@ -83,6 +86,12 @@
         border: 1px solid rgba(16, 185, 129, 0.2);
     }
 
+    .badge-rejected {
+        background: rgba(239, 68, 68, 0.1);
+        color: #dc2626;
+        border: 1px solid rgba(239, 68, 68, 0.2);
+    }
+
     .btn-approve {
         background: linear-gradient(135deg, #10b981, #059669);
         color: white;
@@ -95,6 +104,7 @@
         box-shadow: 0 5px 15px rgba(16, 185, 129, 0.3);
         display: inline-flex;
         align-items: center;
+        justify-content: center;
         gap: 8px;
         font-size: 0.9rem;
         font-family: inherit;
@@ -105,25 +115,50 @@
             box-shadow: 0 8px 20px rgba(16, 185, 129, 0.4);
         }
 
+    .btn-reject {
+        background: white;
+        color: #ef4444;
+        border: 1px solid #ef4444;
+        padding: 10px 20px;
+        border-radius: 12px;
+        font-weight: 800;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        font-size: 0.9rem;
+        font-family: inherit;
+    }
+
+        .btn-reject:hover {
+            background: #ef4444;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(239, 68, 68, 0.3);
+        }
+
     .btn-view {
         background: #0b1120;
         color: #d4af37;
-        padding: 10px 20px;
-        border-radius: 12px;
+        padding: 8px 15px;
+        border-radius: 10px;
         text-decoration: none;
         font-weight: 800;
-        font-size: 0.9rem;
+        font-size: 0.85rem;
         transition: 0.3s;
         display: inline-flex;
         align-items: center;
+        justify-content: center;
         gap: 8px;
+        border: 1px solid transparent;
     }
 
         .btn-view:hover {
             background: #d4af37;
             color: #0b1120;
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(212, 175, 55, 0.3);
+            border-color: #0b1120;
         }
 
     .empty-state {
@@ -146,10 +181,63 @@
         .empty-state p {
             color: #64748b;
         }
+
+    .password-copy-box {
+        background: #fffbeb;
+        color: #b45309;
+        padding: 20px;
+        border-radius: 16px;
+        margin-bottom: 30px;
+        font-weight: 800;
+        border: 2px dashed #fbbf24;
+    }
+
+    /* === Media Queries للموبايل === */
+    @@media (max-width: 768px) {
+        .page-header-card {
+            padding: 30px 20px;
+            text-align: center;
+            border-radius: 20px;
+        }
+
+            .page-header-card h1 {
+                font-size: 1.6rem;
+            }
+
+        .premium-table-card {
+            padding: 20px 15px;
+            border-radius: 20px;
+        }
+
+        .modern-data-table th, .modern-data-table td {
+            padding: 12px 15px;
+            font-size: 0.9rem;
+        }
+
+        .action-buttons-cell {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .btn-approve, .btn-reject, .btn-view {
+            width: 100%;
+        }
+
+        .password-copy-box {
+            padding: 15px;
+            font-size: 0.95rem;
+        }
+    }
 </style>
 
-<div class="premium-table-card">
-    <h3 class="toolbar-title"><i class="fa-solid fa-envelope-open-text"></i> صندوق طلبات التسجيل</h3>
+<div>
+    <div class="page-header-card">
+        <div>
+            <h1><i class="fa-solid fa-inbox"></i> إدارة طلبات التسجيل</h1>
+            <p style="color: #cbd5e1; margin: 0;">مراجعة الإيصالات واعتماد الطلاب في الدفعات.</p>
+        </div>
+    </div>
 
     @if (TempData["SuccessMessage"] != null)
     {
@@ -158,82 +246,113 @@
         </div>
     }
 
-    <div class="table-responsive">
-        <table class="modern-data-table">
-            <thead>
-                <tr>
-                    <th>بيانات الطالب</th>
-                    <th>الدورة والدفعة</th>
-                    <th>تاريخ الطلب</th>
-                    <th>حالة الطلب</th>
-                    <th>الإجراءات</th>
-                </tr>
-            </thead>
-            <tbody>
-                @if (Model != null && Model.Any())
-                {
-                    foreach (var request in Model)
+    <!-- إظهار رابط الباسورد للأدمن لنسخه -->
+    @if (TempData["PasswordLink"] != null)
+    {
+        <div class="password-copy-box">
+            <p style="margin: 0 0 10px 0;"><i class="fa-solid fa-link"></i> تم إنشاء الحساب بنجاح. يرجى نسخ هذا الرابط وإرساله للطالب عبر الواتساب لتعيين كلمة المرور الخاصة به:</p>
+            <input type="text" value="@TempData["PasswordLink"]" readonly class="form-control" style="width: 100%; padding: 12px 15px; border-radius: 10px; border: 1px solid #fbbf24; background: white; cursor: pointer;" onclick="this.select(); document.execCommand('copy'); alert('تم النسخ بنجاح!');" />
+        </div>
+    }
+
+    <div class="premium-table-card">
+        <div class="table-responsive">
+            <table class="modern-data-table">
+                <thead>
+                    <tr>
+                        <th>اسم الطالب / الإيميل</th>
+                        <th>الدفعة والمسار</th>
+                        <th>رقم الواتساب</th>
+                        <th>الإيصال</th>
+                        <th>حالة الطلب</th>
+                        <th>تاريخ الطلب</th>
+                        <th>الإجراءات</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model != null && Model.Any())
                     {
-                        <tr>
-                            <td>
-                                <div style="font-weight: 900; color: #0b1120; font-size: 1.1rem;">@(request.Student?.FullName ?? request.Student?.Email)</div>
-                                <div style="font-size: 0.85rem; color: #64748b; margin-top: 4px;">المستوى: @(request.Level ?? "غير محدد")</div>
-                            </td>
-                            <td>
-                                <div style="color: #1e293b; font-weight: 800;">@(request.Batch?.Course?.Title)</div>
-                                <div style="font-size: 0.85rem; color: #d4af37; font-weight: bold;">@(request.Batch?.BatchName)</div>
-                            </td>
-                            <td style="color: #64748b; font-weight: 700;">
-                                <i class="fa-regular fa-clock" style="color: #d4af37; margin-left: 5px;"></i> @request.RequestDate.ToString("dd MMM yyyy")
-                            </td>
-                            <td>
-                                @if (request.Status == AbstractionCenter.Models.Entities.RequestStatus.Pending)
-                                {
-                                    <span class="badge badge-pending">قيد المراجعة</span>
-                                }
-                                else
-                                {
-                                    <span class="badge badge-approved">تمت الموافقة</span>
-                                }
-                            </td>
-                            <td>
-                                <div style="display: flex; gap: 10px;">
-                                    @if (request.Status == AbstractionCenter.Models.Entities.RequestStatus.Pending)
+                        foreach (var req in Model)
+                        {
+                            <tr>
+                                <td>
+                                    <strong style="color: #0b1120;">@req.FullName</strong>
+                                    <br /><small style="color: #64748b;">@req.Email</small>
+                                </td>
+                                <td>
+                                    <strong style="color: #0b1120;">@req.Batch?.BatchName</strong>
+                                    <br /><small style="color: #d4af37;">@req.Batch?.Course?.Title</small>
+                                </td>
+                                <td>
+                                    <a href="https://wa.me/@req.WhatsAppNumber" target="_blank" style="color:#25d366; font-weight:bold; text-decoration:none;">
+                                        <i class="fa-brands fa-whatsapp"></i> @req.WhatsAppNumber
+                                    </a>
+                                </td>
+                                <td>
+                                    @if (!string.IsNullOrEmpty(req.ReceiptFilePath))
                                     {
-                                        <form asp-action="ApproveRequest" method="post">
-                                            <input type="hidden" name="requestId" value="@request.Id" />
-                                            <button type="submit" class="btn-approve" title="تفعيل الدورة للطالب فوراً">
-                                                <i class="fa-solid fa-user-check"></i> قبول
-                                            </button>
-                                        </form>
+                                        <a href="@req.ReceiptFilePath" target="_blank" class="btn-view" style="background: rgba(59, 130, 246, 0.1); color: #2563eb; border-color: rgba(59, 130, 246, 0.2);">
+                                            <i class="fa-solid fa-file-invoice"></i> عرض الإيصال
+                                        </a>
                                     }
                                     else
                                     {
-                                        <span style="color: #059669; background: rgba(16, 185, 129, 0.1); padding: 10px 15px; border-radius: 12px; font-weight: 800; font-size: 0.9rem; display: inline-flex; align-items: center; gap: 5px;">
-                                            <i class="fa-solid fa-lock"></i> تم الإدراج
-                                        </span>
+                                        <span style="color: #94a3b8; font-size: 0.85rem; background: #f1f5f9; padding: 4px 10px; border-radius: 6px;">لم يُرفع</span>
                                     }
-                                    <a href="/Admin/RegistrationDetails/@request.Id" class="btn-view">
-                                        <i class="fa-solid fa-eye"></i> التفاصيل
-                                    </a>
+                                </td>
+                                <td>
+                                    @if (req.Status == AbstractionCenter.Models.Entities.RequestStatus.Pending)
+                                    {
+                                        <span class="badge badge-pending">قيد المراجعة</span>
+                                    }
+                                    else if (req.Status == AbstractionCenter.Models.Entities.RequestStatus.Approved)
+                                    {
+                                        <span class="badge badge-approved">تم القبول</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge badge-rejected">مرفوض</span>
+                                    }
+                                </td>
+                                <td style="color: #64748b;">@req.RequestDate.ToString("yyyy/MM/dd")</td>
+                                <td>
+                                    <div class="action-buttons-cell" style="display: flex; gap: 8px;">
+                                        <a href="/Admin/RegistrationDetails/@req.Id" class="btn-view">
+                                            <i class="fa-solid fa-eye"></i> التفاصيل
+                                        </a>
+
+                                        @if (req.Status == AbstractionCenter.Models.Entities.RequestStatus.Pending)
+                                        {
+                                            <form asp-action="ApproveRequest" method="post" style="margin: 0;">
+                                                @Html.AntiForgeryToken()
+                                                <input type="hidden" name="requestId" value="@req.Id" />
+                                                <button type="submit" class="btn-approve"><i class="fa-solid fa-check"></i> قبول</button>
+                                            </form>
+                                            <form asp-action="RejectRequest" method="post" style="margin: 0;" onsubmit="return confirm('تأكيد رفض الطلب؟');">
+                                                @Html.AntiForgeryToken()
+                                                <input type="hidden" name="requestId" value="@req.Id" />
+                                                <button type="submit" class="btn-reject"><i class="fa-solid fa-xmark"></i> رفض</button>
+                                            </form>
+                                        }
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="7">
+                                <div class="empty-state">
+                                    <i class="fa-solid fa-inbox"></i>
+                                    <h3>لا توجد طلبات تسجيل حالياً</h3>
+                                    <p>بمجرد قيام الطلاب بملء استمارات التسجيل، ستظهر هنا.</p>
                                 </div>
                             </td>
                         </tr>
                     }
-                }
-                else
-                {
-                    <tr>
-                        <td colspan="5">
-                            <div class="empty-state">
-                                <i class="fa-solid fa-inbox"></i>
-                                <h3>لا توجد طلبات تسجيل معلقة</h3>
-                                <p>كل الطلبات تمت مراجعتها أو لا توجد طلبات جديدة.</p>
-                            </div>
-                        </td>
-                    </tr>
-                }
-            </tbody>
-        </table>
+                </tbody>
+            </table>
+        </div>
     </div>
 </div>

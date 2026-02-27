@@ -1,56 +1,51 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace AbstractionCenter.Models.Entities
 {
-    /// <summary>
-    /// الدفعة (Batch) هي أساس النظام الآن.
-    /// يتم ربط المحاضر والطلاب والدروس والشهادات بالدفعة وليس بالدورة العامة.
-    /// </summary>
     public class Batch
     {
-        [Key]
         public int Id { get; set; }
-
-        [Required]
-        [Display(Name = "اسم الدفعة (مثال: دفعة 2025)")]
-        public string BatchName { get; set; }
-
-        // ربط الدفعة بالدورة الأم
-        [Required]
         public int CourseId { get; set; }
-        [ForeignKey("CourseId")]
         public Course Course { get; set; }
+        public string BatchName { get; set; }
+        public DateTime StartDate { get; set; }
+        public BatchStatus Status { get; set; }
 
-        // ربط الدفعة بمحاضر واحد فقط (لكي لا يرى إلا طلابه ومحتواه)
-        [Required]
+        // المحاضر الأساسي
         public string InstructorId { get; set; }
-        [ForeignKey("InstructorId")]
         public ApplicationUser Instructor { get; set; }
 
-        [Display(Name = "تاريخ بدء الدفعة")]
-        public DateTime StartDate { get; set; }
+        // --- الخصائص الجديدة ---
 
-        [Display(Name = "حالة الدفعة")]
-        public BatchStatus Status { get; set; } = BatchStatus.OpenForRegistration;
+        // المحاضرون الإضافيون (يتم حفظ الـ IDs الخاصة بهم كنص مفصول بفاصلة)
+        public string? AdditionalInstructorIds { get; set; }
 
-        // جميع العمليات التعليمية مرتبطة بالدفعة
-        public ICollection<StudentBatch>? EnrolledStudents { get; set; }
-        public ICollection<Lesson>? Lessons { get; set; }
+        // ملاحظة التنفيذ
+        [MaxLength(200)]
+        public string ExecutionNote { get; set; } = "Delivered by Abstraction Training Team";
+        public bool ShowExecutionNote { get; set; } = true;
 
-        // تم إضافة FinalExamId لدعم الارتباط البرمجي وحل خطأ التعريف
+        // التسعير
+        public decimal Price { get; set; } = 0;
+        public bool ShowPrice { get; set; } = true;
+
+        public double DiscountPercentage { get; set; } = 0;
+        public bool ShowDiscount { get; set; } = false;
+
+        // العلاقات
         public int? FinalExamId { get; set; }
-        [ForeignKey("FinalExamId")]
-        public FinalExam? FinalExam { get; set; }
+        public FinalExam FinalExam { get; set; }
+        public ICollection<StudentBatch> EnrolledStudents { get; set; }
+        public ICollection<Lesson> Lessons { get; set; }
     }
 
     public enum BatchStatus
     {
-        [Display(Name = "مفتوحة للتسجيل")] OpenForRegistration,
-        [Display(Name = "قيد التنفيذ")] InProgress,
-        [Display(Name = "مكتملة")] Completed,
-        [Display(Name = "مغلقة")] Closed
+        OpenForRegistration = 0,
+        InProgress = 1,
+        Completed = 2,
+        Closed = 3
     }
 }

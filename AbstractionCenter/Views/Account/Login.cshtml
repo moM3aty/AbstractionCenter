@@ -60,7 +60,7 @@
             position: absolute;
             top: 0;
             bottom: 0;
-            @(isRtl ? "left" : "right"): 0;
+            @(isRtl ? "left" : "right") : 0;
             width: 6px;
             background: var(--secondary-color);
         }
@@ -141,9 +141,11 @@
             box-shadow: 0 20px 40px rgba(212, 175, 55, 0.5);
         }
 
+    /* === Media Queries للموبايل والشاشات الصغيرة === */
     @@media (max-width: 992px) {
         .auth-card {
             flex-direction: column-reverse;
+            border-radius: 20px;
         }
 
         .auth-image-section {
@@ -160,6 +162,29 @@
 
         .auth-form-section {
             padding: 40px 30px;
+        }
+    }
+
+    @@media (max-width: 576px) {
+        .auth-form-section {
+            padding: 30px 20px;
+        }
+
+            .auth-form-section h2 {
+                font-size: 2rem !important;
+            }
+
+        .auth-image-section h3 {
+            font-size: 1.8rem;
+        }
+
+        .auth-image-section i {
+            font-size: 4rem;
+            margin-bottom: 20px;
+        }
+
+        .auth-image-section p {
+            font-size: 1rem;
         }
     }
 </style>
@@ -196,7 +221,7 @@
                 </div>
 
                 <button type="submit" class="btn-login">
-                    @(isRtl ? "تسجيل الدخول" : "Login") <i class="fa-solid @(isRtl ? "fa-arrow-left-to-bracket" : "fa-arrow-right-to-bracket")" style="margin-@(isRtl ? "right" : "left"): 8px;"></i>
+                    @(isRtl ? "تسجيل الدخول" : "Login") <i class="fa-solid @(isRtl ? "fa-arrow-left-to-bracket" : "fa-arrow-right-to-bracket")"></i>
                 </button>
 
                 <p style="text-align: center; margin-top: 30px; color: #64748b; font-weight: 700; font-size: 1.05rem;">

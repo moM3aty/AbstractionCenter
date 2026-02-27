@@ -35,6 +35,12 @@
             color: var(--mc-gold);
         }
 
+        .page-header-card p {
+            color: #cbd5e1;
+            margin: 0;
+            font-size: 1.05rem;
+        }
+
     .btn-back {
         background: rgba(255, 255, 255, 0.05);
         color: white;
@@ -47,11 +53,13 @@
         align-items: center;
         gap: 8px;
         text-decoration: none;
+        backdrop-filter: blur(5px);
     }
 
         .btn-back:hover {
             background: var(--mc-gold);
             color: var(--mc-primary);
+            border-color: var(--mc-gold);
         }
 
     .premium-tabs {
@@ -64,6 +72,7 @@
         box-shadow: 0 10px 30px rgba(11, 17, 32, 0.05);
         border: 1px solid var(--mc-border);
         overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
     }
 
     .tab-btn {
@@ -177,6 +186,12 @@
             box-shadow: 0 0 0 4px rgba(212, 175, 55, 0.1);
         }
 
+    .form-grid-options {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 15px;
+    }
+
     .btn-submit {
         background: var(--mc-primary);
         color: var(--mc-gold);
@@ -192,6 +207,7 @@
         align-items: center;
         justify-content: center;
         gap: 8px;
+        margin-top: 10px;
     }
 
         .btn-submit:hover {
@@ -252,25 +268,77 @@
             background: #ef4444;
             color: white;
         }
+
+    .student-badge {
+        background: rgba(59, 130, 246, 0.1);
+        color: #2563eb;
+        padding: 4px 10px;
+        border-radius: 8px;
+        font-size: 0.8rem;
+        font-weight: bold;
+    }
+
+    /* === Media Queries للموبايل === */
+    @@media (max-width: 992px) {
+        .content-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .page-header-card {
+            flex-direction: column;
+            text-align: center;
+            padding: 30px 20px;
+        }
+
+        .btn-back {
+            width: 100%;
+            justify-content: center;
+        }
+    }
+
+    @@media (max-width: 768px) {
+        .premium-panel {
+            padding: 25px 20px;
+        }
+
+        .form-grid-options {
+            grid-template-columns: 1fr;
+        }
+
+        .premium-list-item {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 15px;
+        }
+
+            .premium-list-item > div, .premium-list-item > a, .premium-list-item > span {
+                width: 100%;
+                text-align: right;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+            }
+    }
 </style>
 
 <div>
     <div class="page-header-card">
         <div>
             <h1>@(Model?.Course?.Title) - @(Model?.BatchName)</h1>
-            <p>إدارة المنهج، بنك الأسئلة، وتخصيص الاستمارة.</p>
+            <p>إدارة المنهج، الطلاب، بنك الأسئلة، وتخصيص الاستمارة.</p>
         </div>
-        <a href="/Instructor/Dashboard" class="btn-back"><i class="fa-solid fa-arrow-right"></i> العودة</a>
+        <a href="/Instructor/Dashboard" class="btn-back"><i class="fa-solid fa-arrow-right"></i> العودة للأكاديمية</a>
     </div>
 
     <div class="premium-tabs">
         <button class="tab-btn active" data-target="lessons-tab"><i class="fa-solid fa-folder-tree"></i> المنهج</button>
+        <button class="tab-btn" data-target="students-tab"><i class="fa-solid fa-user-graduate"></i> قائمة الطلاب</button>
         <button class="tab-btn" data-target="exam-tab"><i class="fa-solid fa-graduation-cap"></i> بنك الأسئلة</button>
         <button class="tab-btn" data-target="questions-tab"><i class="fa-solid fa-clipboard-list"></i> تخصيص الاستمارة</button>
         <button class="tab-btn" data-target="security-tab"><i class="fa-solid fa-key"></i> أمان الحساب</button>
     </div>
 
-    <!-- المنهج الدراسي -->
+    <!-- 1. المنهج الدراسي -->
     <div id="lessons-tab" class="tab-content active">
         <div class="content-grid">
             <div class="premium-panel">
@@ -297,8 +365,10 @@
                         foreach (var lesson in Model.Lessons.OrderBy(l => l.Order))
                         {
                             <div class="premium-list-item">
-                                <span>الوحدة @lesson.Order: @lesson.Title</span>
-                                <a href="/Instructor/ManageLessonDetails/@lesson.Id" style="color:var(--mc-gold); font-weight:800; text-decoration:none;">إدارة المحتوى <i class="fa-solid fa-chevron-left"></i></a>
+                                <span style="font-weight: bold; color: var(--mc-primary);">الوحدة @lesson.Order: @lesson.Title</span>
+                                <a href="/Instructor/ManageLessonDetails/@lesson.Id" style="color:var(--mc-gold); font-weight:800; text-decoration:none; display: inline-flex; align-items: center; gap: 5px;">
+                                    إدارة المحتوى <i class="fa-solid fa-chevron-left"></i>
+                                </a>
                             </div>
                         }
                     }
@@ -312,7 +382,50 @@
         </div>
     </div>
 
-    <!-- بنك الأسئلة -->
+    <!-- 2. إدارة الطلاب -->
+    <div id="students-tab" class="tab-content">
+        <div class="content-grid">
+            <div class="premium-panel">
+                <h3 class="panel-title"><i class="fa-solid fa-user-plus"></i> إدراج طالب في الدفعة</h3>
+                <p style="color: #64748b; font-size: 0.9rem; margin-bottom: 20px;">أدخل البريد الإلكتروني للطالب (يجب أن يكون لديه حساب مسبق في المنصة).</p>
+                <form id="ajax-add-student" method="post">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="batchId" value="@Model.Id" />
+                    <div class="form-group">
+                        <label>البريد الإلكتروني للطالب</label>
+                        <input type="email" name="studentEmail" class="form-control" placeholder="example@mail.com" required dir="ltr" />
+                    </div>
+                    <button type="submit" class="btn-submit">إضافة للدفعة</button>
+                    <div id="student-feedback" style="margin-top:15px; font-weight:bold;"></div>
+                </form>
+            </div>
+            <div class="premium-panel">
+                <h3 class="panel-title">الطلاب المسجلين بالدفعة (@(Model.EnrolledStudents?.Count ?? 0))</h3>
+                <div id="students-list">
+                    @if (Model.EnrolledStudents != null && Model.EnrolledStudents.Any())
+                    {
+                        foreach (var enrollment in Model.EnrolledStudents)
+                        {
+                            <div class="premium-list-item" id="student-row-@enrollment.Id">
+                                <div>
+                                    <strong style="color:var(--mc-primary); display: block;">@enrollment.Student.FullName</strong>
+                                    <span style="font-size:0.85rem; color:#64748b;">@enrollment.Student.Email</span>
+                                </div>
+                                <span class="student-badge">@enrollment.Status</span>
+                            </div>
+                        }
+                    }
+                    else
+                    {
+
+                        <p class="empty-msg" style="text-align:center; color:#94a3b8;">لا يوجد طلاب مسجلين حالياً.</p>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 3. بنك الأسئلة -->
     <div id="exam-tab" class="tab-content">
         <div class="content-grid">
             <div class="premium-panel">
@@ -324,7 +437,7 @@
                         <label>نص السؤال</label>
                         <input type="text" name="questionText" class="form-control" required />
                     </div>
-                    <div class="form-group" style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+                    <div class="form-group form-grid-options">
                         <input type="text" name="option1" placeholder="خيار 1" class="form-control" required />
                         <input type="text" name="option2" placeholder="خيار 2" class="form-control" required />
                         <input type="text" name="option3" placeholder="خيار 3" class="form-control" required />
@@ -344,12 +457,12 @@
                     {
                         foreach (var q in Model.FinalExam.Questions)
                         {
-                            <div class="premium-list-item" id="q-row-@q.Id" style="flex-direction:column; align-items:start;">
-                                <div style="display:flex; justify-content:space-between; width:100%; margin-bottom:10px;">
-                                    <strong>@q.QuestionText</strong>
+                            <div class="premium-list-item" id="q-row-@q.Id" style="flex-direction:column; align-items:flex-start;">
+                                <div style="display:flex; justify-content:space-between; align-items: center; width:100%; margin-bottom:10px;">
+                                    <strong style="color: var(--mc-primary); line-height: 1.5;">@q.QuestionText</strong>
                                     <button type="button" class="action-btn btn-del" onclick="deleteExamQ(@q.Id)"><i class="fa-solid fa-trash"></i></button>
                                 </div>
-                                <small style="color:#64748b;">الإجابة الصحيحة: خيار رقم @q.CorrectOption</small>
+                                <small style="color:#64748b; font-weight: bold;">الإجابة الصحيحة: خيار رقم @q.CorrectOption</small>
                             </div>
                         }
                     }
@@ -363,7 +476,7 @@
         </div>
     </div>
 
-    <!-- تخصيص نموذج التسجيل -->
+    <!-- 4. تخصيص نموذج التسجيل -->
     <div id="questions-tab" class="tab-content">
         <div class="content-grid">
             <div class="premium-panel">
@@ -371,10 +484,17 @@
                 <form id="ajax-add-course-q" method="post">
                     @Html.AntiForgeryToken()
                     <input type="hidden" name="courseId" value="@Model.CourseId" />
-                    <div class="form-group"><label>نص السؤال</label><input type="text" name="questionText" class="form-control" required /></div>
-                    <div class="form-group"><label>الترتيب</label><input type="number" name="order" class="form-control" value="@((Model?.Course?.CustomQuestions?.Count ?? 0) + 1)" /></div>
+                    <div class="form-group">
+                        <label>نص السؤال</label>
+                        <input type="text" name="questionText" class="form-control" required />
+                    </div>
+                    <div class="form-group">
+                        <label>الترتيب</label>
+                        <input type="number" name="order" class="form-control" value="@((Model?.Course?.CustomQuestions?.Count ?? 0) + 1)" />
+                    </div>
                     <div class="form-group" style="display:flex; align-items:center; gap:10px;">
-                        <input type="checkbox" name="isRequired" value="true" checked style="width:20px; height:20px;" /> <label style="margin:0;">مطلوب</label>
+                        <input type="checkbox" name="isRequired" value="true" checked style="width:20px; height:20px; accent-color: var(--mc-gold);" />
+                        <label style="margin:0;">مطلوب</label>
                     </div>
                     <button type="submit" class="btn-submit">إضافة للاستمارة</button>
                 </form>
@@ -387,7 +507,7 @@
                         foreach (var q in Model.Course.CustomQuestions.OrderBy(x => x.Order))
                         {
                             <div class="premium-list-item" id="cq-row-@q.Id">
-                                <span>@q.Order. @q.QuestionText @(q.IsRequired ? "(مطلوب)" : "")</span>
+                                <span style="font-weight: bold; color: var(--mc-primary);">@q.Order. @q.QuestionText @(q.IsRequired ? "(مطلوب)" : "")</span>
                                 <button type="button" class="action-btn btn-del" onclick="deleteCourseQ(@q.Id)"><i class="fa-solid fa-trash"></i></button>
                             </div>
                         }
@@ -402,12 +522,12 @@
         </div>
     </div>
 
-    <!-- أمان الحساب (تعديل الباسورد) -->
+    <!-- 5. أمان الحساب -->
     <div id="security-tab" class="tab-content">
         <div class="content-grid">
             <div class="premium-panel">
                 <h3 class="panel-title"><i class="fa-solid fa-shield-halved"></i> تحديث كلمة المرور</h3>
-                <p style="color: var(--mc-muted); font-size: 0.9rem; margin-bottom: 20px;">قم بتغيير كلمة المرور الخاصة بحساب المحاضر (<span>@Model.Instructor.FullName</span>).</p>
+                <p style="color: #64748b; font-size: 0.9rem; margin-bottom: 20px;">قم بتغيير كلمة المرور الخاصة بحساب المحاضر (<span>@Model.Instructor.FullName</span>).</p>
 
                 <form id="ajax-change-password" method="post">
                     @Html.AntiForgeryToken()
@@ -431,7 +551,7 @@
 
             <div class="premium-panel">
                 <h3 class="panel-title"><i class="fa-solid fa-circle-info"></i> تنبيهات أمنية</h3>
-                <ul style="color: var(--mc-primary); line-height: 1.8; padding-right: 20px;">
+                <ul style="color: var(--mc-primary); line-height: 1.8; padding-right: 20px; font-weight: 600;">
                     <li>يجب أن لا تقل كلمة المرور عن 6 خانات.</li>
                     <li>يُفضل استخدام مزيج من الحروف والأرقام لزيادة الأمان.</li>
                     <li>تغيير كلمة المرور سيطبق على جميع الدفعات المرتبطة بهذا المحاضر.</li>
@@ -491,75 +611,82 @@
             });
         }
 
-        // 1. إضافة درس
         handleAjaxForm('ajax-add-lesson', '/Instructor/AddLessonModule', 'lessons-list', (data) => `
             <div class="premium-list-item">
-                <span>الوحدة ${data.order}: ${data.title}</span>
-                <a href="/Instructor/ManageLessonDetails/${data.id}" style="color:var(--mc-gold); font-weight:800; text-decoration:none;">إدارة المحتوى <i class="fa-solid fa-chevron-left"></i></a>
+                <span style="font-weight: bold; color: var(--mc-primary);">الوحدة ${data.order}: ${data.title}</span>
+                <a href="/Instructor/ManageLessonDetails/${data.id}" style="color:var(--mc-gold); font-weight:800; text-decoration:none; display: inline-flex; align-items: center; gap: 5px;">إدارة المحتوى <i class="fa-solid fa-chevron-left"></i></a>
             </div>
         `);
 
-        // 2. إضافة سؤال اختبار
+        handleAjaxForm('ajax-add-student', '/Instructor/AddStudentToBatch', 'students-list', (data) => `
+            <div class="premium-list-item">
+                <div>
+                    <strong style="color:var(--mc-primary); display: block;">${data.fullName}</strong>
+                    <span style="font-size:0.85rem; color:#64748b;">${data.email}</span>
+                </div>
+                <span class="student-badge">مسجل</span>
+            </div>
+        `, 'student-feedback');
+
         handleAjaxForm('ajax-add-exam-q', '/Instructor/AddExamQuestion', 'exam-questions-list', (data) => `
-            <div class="premium-list-item" id="q-row-${data.id}" style="flex-direction:column; align-items:start;">
-                <div style="display:flex; justify-content:space-between; width:100%; margin-bottom:10px;">
-                    <strong>${data.questionText}</strong>
+            <div class="premium-list-item" id="q-row-${data.id}" style="flex-direction:column; align-items:flex-start;">
+                <div style="display:flex; justify-content:space-between; align-items: center; width:100%; margin-bottom:10px;">
+                    <strong style="color: var(--mc-primary); line-height: 1.5;">${data.questionText}</strong>
                     <button type="button" class="action-btn btn-del" onclick="deleteExamQ(${data.id})"><i class="fa-solid fa-trash"></i></button>
                 </div>
-                <small style="color:#64748b;">الإجابة الصحيحة: خيار رقم ${data.correctOption}</small>
+                <small style="color:#64748b; font-weight: bold;">الإجابة الصحيحة: خيار رقم ${data.correctOption}</small>
             </div>
         `);
 
-        // 3. إضافة سؤال استمارة
         handleAjaxForm('ajax-add-course-q', '/Instructor/AddCourseQuestion', 'course-questions-list', (data) => `
             <div class="premium-list-item" id="cq-row-${data.id}">
-                <span>${data.order}. ${data.text} ${data.isRequired ? '(مطلوب)' : ''}</span>
+                <span style="font-weight: bold; color: var(--mc-primary);">${data.order}. ${data.text} ${data.isRequired ? '(مطلوب)' : ''}</span>
                 <button type="button" class="action-btn btn-del" onclick="deleteCourseQ(${data.id})"><i class="fa-solid fa-trash"></i></button>
             </div>
         `);
 
-        // --- 4. تغيير كلمة المرور عبر AJAX ---
         const passForm = document.getElementById('ajax-change-password');
-        passForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const feedback = document.getElementById('password-feedback');
-            const btn = passForm.querySelector('button[type="submit"]');
+        if(passForm){
+            passForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const feedback = document.getElementById('password-feedback');
+                const btn = passForm.querySelector('button[type="submit"]');
 
-            const pass = document.getElementById('newPassword').value;
-            const confirm = document.getElementById('confirmPassword').value;
+                const pass = document.getElementById('newPassword').value;
+                const confirm = document.getElementById('confirmPassword').value;
 
-            if (pass !== confirm) {
-                feedback.innerHTML = '<span style="color: #ef4444;"><i class="fa-solid fa-triangle-exclamation"></i> كلمات المرور غير متطابقة!</span>';
-                return;
-            }
-
-            btn.disabled = true;
-            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> جاري التحديث...';
-
-            try {
-                const formData = new FormData(passForm);
-                const response = await fetch('/Account/AdminResetPassword', {
-                    method: 'POST',
-                    body: formData,
-                    headers: { 'X-Requested-With': 'XMLHttpRequest' }
-                });
-
-                const result = await response.json();
-                if (result.success) {
-                    feedback.innerHTML = '<span style="color: #10b981;"><i class="fa-solid fa-check-double"></i> تم تحديث كلمة المرور بنجاح.</span>';
-                    passForm.reset();
-                } else {
-                    feedback.innerHTML = `<span style="color: #ef4444;"><i class="fa-solid fa-xmark"></i> خطأ: ${result.message}</span>`;
+                if (pass !== confirm) {
+                    feedback.innerHTML = '<span style="color: #ef4444;"><i class="fa-solid fa-triangle-exclamation"></i> كلمات المرور غير متطابقة!</span>';
+                    return;
                 }
-            } catch (err) {
-                feedback.innerHTML = '<span style="color: #ef4444;"><i class="fa-solid fa-server"></i> حدث خطأ أثناء الاتصال بالخادم.</span>';
-            } finally {
-                btn.disabled = false;
-                btn.innerHTML = '<i class="fa-solid fa-key"></i> حفظ كلمة المرور الجديدة';
-            }
-        });
 
-        // --- وظائف الحذف عبر AJAX ---
+                btn.disabled = true;
+                btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> جاري التحديث...';
+
+                try {
+                    const formData = new FormData(passForm);
+                    const response = await fetch('/Account/AdminResetPassword', {
+                        method: 'POST',
+                        body: formData,
+                        headers: { 'X-Requested-With': 'XMLHttpRequest' }
+                    });
+
+                    const result = await response.json();
+                    if (result.success) {
+                        feedback.innerHTML = '<span style="color: #10b981;"><i class="fa-solid fa-check-double"></i> تم تحديث كلمة المرور بنجاح.</span>';
+                        passForm.reset();
+                    } else {
+                        feedback.innerHTML = `<span style="color: #ef4444;"><i class="fa-solid fa-xmark"></i> خطأ: ${result.message}</span>`;
+                    }
+                } catch (err) {
+                    feedback.innerHTML = '<span style="color: #ef4444;"><i class="fa-solid fa-server"></i> حدث خطأ أثناء الاتصال بالخادم.</span>';
+                } finally {
+                    btn.disabled = false;
+                    btn.innerHTML = '<i class="fa-solid fa-key"></i> حفظ كلمة المرور الجديدة';
+                }
+            });
+        }
+
         async function deleteExamQ(id) {
             if(!confirm('هل أنت متأكد من حذف هذا السؤال؟')) return;
             const res = await fetch(`/Instructor/DeleteExamQuestion/${id}`, { method: 'POST' });

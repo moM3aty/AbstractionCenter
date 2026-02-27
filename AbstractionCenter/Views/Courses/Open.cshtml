@@ -12,7 +12,6 @@
         padding: 120px 0 100px;
     }
 
-    /* --- Enhanced Hero --- */
     .catalog-hero {
         text-align: center;
         margin-bottom: 80px;
@@ -54,10 +53,9 @@
         line-height: 1.8;
     }
 
-    /* --- Premium Grid --- */
     .luxury-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+        grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
         gap: 40px;
     }
 
@@ -139,42 +137,29 @@
         text-shadow: 0 2px 10px rgba(0,0,0,0.3);
     }
 
-    .instructor-info {
+    .execution-note {
         display: flex;
         align-items: center;
-        gap: 15px;
-        margin-bottom: 25px;
-        background: #f8fafc;
-        padding: 15px;
-        border-radius: 20px;
-        border: 1px solid #f1f5f9;
-    }
-
-    .inst-img {
-        width: 45px;
-        height: 45px;
-        border-radius: 50%;
-        border: 2px solid var(--secondary-color);
-        object-fit: cover;
-    }
-
-    .inst-text strong {
-        display: block;
-        color: var(--primary-color);
+        gap: 12px;
+        margin-bottom: 20px;
+        background: rgba(212, 175, 55, 0.1);
+        padding: 12px 15px;
+        border-radius: 12px;
+        color: #b48a25;
+        font-weight: 800;
         font-size: 0.95rem;
+        border: 1px dashed rgba(212, 175, 55, 0.4);
     }
 
-    .inst-text span {
-        color: #64748b;
-        font-size: 0.8rem;
-        font-weight: 700;
-    }
+        .execution-note i {
+            font-size: 1.2rem;
+        }
 
     .course-description {
         color: #475569;
         font-size: 1.05rem;
         line-height: 1.7;
-        margin-bottom: 30px;
+        margin-bottom: 25px;
         display: -webkit-box;
         -webkit-line-clamp: 3;
         -webkit-box-orient: vertical;
@@ -182,11 +167,50 @@
         flex-grow: 1;
     }
 
+    .pricing-box {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 25px;
+        padding: 15px 0;
+        border-top: 1px solid #f1f5f9;
+        border-bottom: 1px solid #f1f5f9;
+    }
+
+    .price-current {
+        font-size: 1.8rem;
+        font-weight: 900;
+        color: var(--primary-color);
+    }
+
+    .price-old {
+        font-size: 1.1rem;
+        color: #94a3b8;
+        text-decoration: line-through;
+        margin-right: 10px;
+        font-weight: 700;
+    }
+
+    .discount-badge {
+        background: #ef4444;
+        color: white;
+        padding: 4px 10px;
+        border-radius: 8px;
+        font-size: 0.8rem;
+        font-weight: 900;
+    }
+
+    .price-hidden {
+        font-size: 1rem;
+        color: var(--secondary-color);
+        font-weight: 800;
+    }
+
     .batch-meta-grid {
         display: grid;
         grid-template-columns: 1fr 1.2fr;
         gap: 15px;
-        margin-bottom: 35px;
+        margin-bottom: 30px;
     }
 
     .meta-box {
@@ -240,14 +264,51 @@
             color: white;
         }
 
+    /* === Media Queries للموبايل === */
     @@media (max-width: 768px) {
+        .courses-page {
+            padding: 80px 0 60px;
+        }
+
         .catalog-hero h1 {
             font-size: 2.5rem;
+        }
+
+        .catalog-hero p {
+            font-size: 1.1rem;
+            padding: 0 15px;
         }
 
         .luxury-grid {
             grid-template-columns: 1fr;
             padding: 0 20px;
+            gap: 30px;
+        }
+
+        .card-media {
+            height: 220px;
+        }
+
+        .card-body {
+            padding: 25px 20px;
+            margin-top: -50px;
+        }
+
+        .course-title-main {
+            font-size: 1.4rem;
+            min-height: auto;
+            margin-bottom: 15px;
+        }
+
+        .batch-meta-grid {
+            grid-template-columns: 1fr;
+            gap: 10px;
+        }
+
+        .pricing-box {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 10px;
         }
     }
 </style>
@@ -256,11 +317,9 @@
     <div class="container">
         <!-- Hero Section -->
         <div class="catalog-hero">
-            <div class="catalog-badge">
-                <i class="fa-solid fa-crown"></i> @(isRtl ? "استكشف بوابتك للمستقبل" : "Explore Your Portal to Future")
-            </div>
+            <div class="catalog-badge"><i class="fa-solid fa-crown"></i> @(isRtl ? "استكشف بوابتك للمستقبل" : "Explore Your Portal to Future")</div>
             <h1>@(isRtl ? "دليل البرامج" : "Learning") <span>@(isRtl ? "الأكاديمية" : "Catalog")</span></h1>
-            <p>@(isRtl ? "اختر من بين مجموعتنا الواسعة من المسارات التدريبية المصممة بعناية فائقة لتتوافق مع معايير سوق العمل الدولية وتصنع منك خبيراً في مجالك." : "Choose from our wide range of carefully designed training tracks tailored to meet international job market standards and make you an expert in your field.")</p>
+            <p>@(isRtl ? "اختر من بين مجموعتنا الواسعة من المسارات التدريبية المصممة بعناية فائقة لتتوافق مع معايير سوق العمل الدولية وتصنع منك خبيراً في مجالك." : "Choose from our wide range of carefully designed training tracks tailored to meet international job market standards.")</p>
         </div>
 
         <div class="luxury-grid">
@@ -277,9 +336,7 @@
                             }
                             else
                             {
-                                <div style="width:100%; height:100%; display:flex; align-items:center; justify-content:center; background:#1e293b;">
-                                    <i class="fa-solid fa-layer-group" style="font-size:6rem; color:rgba(212,175,55,0.1);"></i>
-                                </div>
+                                <div style="width:100%; height:100%; display:flex; align-items:center; justify-content:center; background:#1e293b;"><i class="fa-solid fa-layer-group" style="font-size:6rem; color:rgba(212,175,55,0.1);"></i></div>
                             }
                             <div class="overlay"></div>
                         </div>
@@ -287,15 +344,48 @@
                         <div class="card-body">
                             <h2 class="course-title-main">@batch.Course?.Title</h2>
 
-                            <div class="instructor-info">
-                                <img src="@(batch.Instructor?.ProfilePicture ?? "https://ui-avatars.com/api/?name=Inst&background=0b1120&color=d4af37")" class="inst-img" alt="Instructor" />
-                                <div class="inst-text">
-                                    <span>@(isRtl ? "بإشراف الخبير" : "Under Expert")</span>
-                                    <strong>@(batch.Instructor?.FullName ?? (isRtl ? "إدارة المركز" : "Academic Admin"))</strong>
+                            @if (batch.ShowExecutionNote && !string.IsNullOrEmpty(batch.ExecutionNote))
+                            {
+                                <div class="execution-note">
+                                    <i class="fa-solid fa-users-gear"></i>
+                                    <span>@batch.ExecutionNote</span>
                                 </div>
-                            </div>
+                            }
+                            else
+                            {
+                                <div style="height: 20px;"></div>
+                            }
 
                             <p class="course-description">@(batch.Course?.Description)</p>
+
+                            <!-- قسم التسعير الديناميكي -->
+                            <div class="pricing-box">
+                                @if (batch.ShowPrice)
+                                {
+                                    <div>
+                                        @if (batch.ShowDiscount && batch.DiscountPercentage > 0)
+                                        {
+                                            decimal discountMultiplier = (decimal)(1 - (batch.DiscountPercentage / 100.0));
+                                            decimal finalPrice = batch.Price * discountMultiplier;
+
+                                            <span class="price-current">@finalPrice.ToString("0.##") $</span>
+                                            <span class="price-old">@batch.Price.ToString("0.##") $</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="price-current">@batch.Price.ToString("0.##") $</span>
+                                        }
+                                    </div>
+                                    @if (batch.ShowDiscount && batch.DiscountPercentage > 0)
+                                    {
+                                        <div class="discount-badge">@(isRtl ? "خصم" : "Save") @batch.DiscountPercentage%</div>
+                                    }
+                                }
+                                else
+                                {
+                                    <span class="price-hidden"><i class="fa-solid fa-tags"></i> @(isRtl ? "تواصل معنا لمعرفة التكلفة" : "Contact us for pricing")</span>
+                                }
+                            </div>
 
                             <div class="batch-meta-grid">
                                 <div class="meta-box">

@@ -65,7 +65,7 @@
 
     .form-grid {
         display: grid;
-        grid-template-columns: 1fr 1fr;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
         gap: 25px;
     }
 
@@ -142,17 +142,37 @@
         font-weight: 600;
     }
 
+    /* === Media Queries للموبايل === */
     @@media (max-width: 768px) {
-        .form-grid
+        .premium-form-card {
+            padding: 35px 20px;
+            border-radius: 20px;
+        }
 
-    {
-        grid-template-columns: 1fr;
-    }
+        .form-header h2 {
+            font-size: 1.8rem;
+        }
 
-    .premium-form-card {
-        padding: 30px 20px;
-    }
+        .form-header-icon {
+            width: 70px;
+            height: 70px;
+            font-size: 2rem;
+            margin-bottom: 15px;
+        }
 
+        .form-grid {
+            grid-template-columns: 1fr;
+            gap: 15px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .btn-save-pro {
+            font-size: 1.15rem;
+            padding: 16px;
+        }
     }
 </style>
 
@@ -184,7 +204,7 @@
                 <div class="form-group">
                     <label>البريد الإلكتروني (اسم المستخدم)</label>
                     <input type="email" value="@Model.Email" class="form-control" disabled />
-                    <small style="color: #94a3b8; font-weight: 700;">لا يمكن تغيير البريد الإلكتروني لدواعي أمان النظام.</small>
+                    <small style="color: #94a3b8; font-weight: 700; display: block; margin-top: 5px;">لا يمكن تغيير البريد الإلكتروني لدواعي أمان النظام.</small>
                 </div>
             </div>
 

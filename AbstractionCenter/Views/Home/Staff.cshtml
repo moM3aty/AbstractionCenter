@@ -55,7 +55,7 @@
         line-height: 1.8;
     }
 
-    /* --- Expert Cards (Reused & Scaled) --- */
+    /* --- Expert Cards --- */
     .expert-grid {
         display: grid;
         grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
@@ -149,18 +149,57 @@
         margin-bottom: 0;
     }
 
+    .empty-staff {
+        grid-column: 1 / -1;
+        text-align: center;
+        padding: 100px 20px;
+        background: white;
+        border-radius: 40px;
+        border: 2px dashed #e2e8f0;
+    }
+
+    /* === Media Queries للموبايل === */
     @@media (max-width: 768px) {
-        .staff-hero h1
+        .staff-page {
+            padding: 80px 0 60px;
+        }
 
-    {
-        font-size: 2.8rem;
-    }
+        .staff-hero {
+            margin-bottom: 50px;
+        }
 
-    .expert-grid {
-        grid-template-columns: 1fr;
-        padding: 0 20px;
-    }
+            .staff-hero h1 {
+                font-size: 2.5rem;
+            }
 
+            .staff-hero p {
+                font-size: 1.1rem;
+                padding: 0 15px;
+            }
+
+        .staff-badge {
+            font-size: 0.85rem;
+            padding: 8px 20px;
+        }
+
+        .expert-grid {
+            grid-template-columns: 1fr;
+            padding: 0 15px;
+            gap: 30px;
+        }
+
+        .expert-img-box {
+            height: 300px;
+        }
+
+        .expert-name {
+            font-size: 1.4rem;
+        }
+
+        .empty-staff {
+            padding: 60px 20px;
+            border-radius: 24px;
+        }
     }
 </style>
 
@@ -201,7 +240,7 @@
             }
             else
             {
-                <div style="grid-column: 1 / -1; text-align: center; padding: 100px 20px; background: white; border-radius: 40px; border: 2px dashed #e2e8f0;">
+                <div class="empty-staff">
                     <i class="fa-solid fa-users-slash" style="font-size: 5rem; color: #cbd5e1; margin-bottom: 25px;"></i>
                     <h3 style="color: var(--primary-color); font-weight: 900; font-size: 2rem;">@(isRtl ? "لا يوجد مدربين متاحين حالياً" : "No Instructors Available")</h3>
                     <p style="color: #64748b; font-size: 1.2rem;">@(isRtl ? "يتم تحديث قائمة الخبراء، يرجى العودة لاحقاً." : "The experts list is being updated, please check back later.")</p>

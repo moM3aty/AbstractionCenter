@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using System.Linq;
+using AbstractionCenter.Models.Entities;
 
 namespace AbstractionCenter.Controllers
 {
@@ -29,21 +30,37 @@ namespace AbstractionCenter.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> UpdateSettings(Dictionary<string, string> settings, Dictionary<string, string> settingsEn)
         {
+            if (settings == null) return RedirectToAction("Index");
+
             foreach (var key in settings.Keys)
             {
                 var settingToUpdate = await _context.SiteSettings.FirstOrDefaultAsync(s => s.Key == key);
+
+                // إضافة المعالجة للقيم الفارغة لمنع خطأ الـ SQL (NULL)
+                string val = settings[key] ?? "";
+                string valEn = (settingsEn != null && settingsEn.ContainsKey(key)) ? (settingsEn[key] ?? "") : "";
+
                 if (settingToUpdate != null)
                 {
-                    settingToUpdate.Value = settings[key];
-                    if (settingsEn.ContainsKey(key))
+                    settingToUpdate.Value = val;
+                    settingToUpdate.ValueEn = valEn;
+                }
+                else
+                {
+                    var newSetting = new SiteSetting
                     {
-                        settingToUpdate.ValueEn = settingsEn[key];
-                    }
+                        Key = key,
+                        Value = val,
+                        ValueEn = valEn,
+                        Group = key.StartsWith("Track") ? "Tracks" : "General",
+                        DisplayName = key.Contains("Title") ? "عنوان/نص" : (key.Contains("Desc") ? "وصف" : "إعداد إضافي")
+                    };
+                    _context.SiteSettings.Add(newSetting);
                 }
             }
 
             await _context.SaveChangesAsync();
-            TempData["SuccessMessage"] = "تم تحديث إعدادات ومحتوى الموقع بنجاح.";
+            TempData["SuccessMessage"] = "تم حفظ التعديلات ونشرها على الموقع بنجاح.";
             return RedirectToAction("Index");
         }
     }

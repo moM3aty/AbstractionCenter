@@ -107,6 +107,7 @@
         font-weight: bold;
         cursor: pointer;
         transition: 0.3s;
+        white-space: nowrap;
     }
 
         .btn-save-grade:hover {
@@ -123,20 +124,67 @@
         font-size: 0.9rem;
         font-weight: bold;
         transition: 0.3s;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
     }
 
         .btn-download-sol:hover {
             background: #2563eb;
             color: white;
         }
+
+    .btn-back-link {
+        color: #64748b;
+        font-weight: bold;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 20px;
+        padding: 10px 20px;
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        border: 1px solid #e2e8f0;
+    }
+
+    /* === Media Queries للموبايل === */
+    @@media (max-width: 768px) {
+        .premium-table-card {
+            padding: 25px 15px;
+            border-radius: 20px;
+        }
+
+        .grade-form {
+            flex-wrap: wrap; /* السماح بالتفاف العناصر في الموبايل */
+            gap: 10px;
+        }
+
+        .grade-input {
+            width: 100px;
+        }
+
+        .feedback-input {
+            width: 100%;
+        }
+
+        .btn-save-grade {
+            width: 100%;
+            padding: 12px;
+        }
+
+        .modern-data-table th, .modern-data-table td {
+            padding: 15px 15px;
+            font-size: 0.95rem;
+        }
+    }
 </style>
 
 <div>
-    <div style="margin-bottom: 20px;">
-        <a href="/Instructor/ManageLessonDetails/@ViewBag.LessonId" style="color: #64748b; font-weight: bold; text-decoration: none;">
-            <i class="fa-solid fa-arrow-right"></i> العودة للوحدة
-        </a>
-    </div>
+    <a href="/Instructor/ManageLessonDetails/@ViewBag.LessonId" class="btn-back-link">
+        <i class="fa-solid fa-arrow-right"></i> العودة للوحدة
+    </a>
 
     <div class="premium-table-card">
         <h3 class="toolbar-title"><i class="fa-solid fa-clipboard-check"></i> تقييم الحلول</h3>
@@ -175,7 +223,7 @@
                                         @Html.AntiForgeryToken()
                                         <input type="hidden" name="submissionId" value="@sub.Id" />
 
-                                        <input type="number" name="grade" class="grade-input" placeholder="الدرجة /100" value="@sub.Grade" min="0" max="100" required />
+                                        <input type="number" name="grade" class="grade-input" placeholder="الدرجة" value="@sub.Grade" min="0" max="100" required />
                                         <input type="text" name="feedback" class="feedback-input" placeholder="ملاحظاتك للطالب..." value="@sub.InstructorFeedback" />
 
                                         <button type="submit" class="btn-save-grade">حفظ التقييم</button>
@@ -183,8 +231,14 @@
 
                                     @if (sub.IsGraded)
                                     {
-                                        <div style="margin-top: 10px;">
+                                        <div style="margin-top: 15px;">
                                             <span class="badge-graded"><i class="fa-solid fa-check"></i> تم التقييم</span>
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <div style="margin-top: 15px;">
+                                            <span class="badge-pending"><i class="fa-solid fa-hourglass-half"></i> بانتظار التقييم</span>
                                         </div>
                                     }
                                 </td>

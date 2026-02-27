@@ -94,6 +94,12 @@
             background: #fcfcfd;
         }
 
+    .action-buttons-wrapper {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap; /* للسماح بالالتفاف في الشاشات الصغيرة */
+    }
+
     .btn-edit {
         background: #0b1120;
         color: #d4af37;
@@ -179,6 +185,41 @@
         .empty-state p {
             color: #64748b;
         }
+
+    /* === Media Queries للموبايل === */
+    @@media (max-width: 768px) {
+        .premium-table-card {
+            padding: 25px 15px;
+            border-radius: 20px;
+        }
+
+        .toolbar {
+            flex-direction: column;
+            align-items: stretch;
+            gap: 15px;
+        }
+
+        .toolbar-title {
+            font-size: 1.3rem;
+            justify-content: center;
+        }
+
+        .btn-add {
+            width: 100%;
+            justify-content: center;
+            font-size: 1rem;
+        }
+
+        .modern-data-table th, .modern-data-table td {
+            padding: 12px 15px;
+            font-size: 0.9rem;
+        }
+
+        .btn-edit, .btn-batches, .btn-delete {
+            padding: 8px 12px;
+            font-size: 0.85rem;
+        }
+    }
 </style>
 
 <div class="premium-table-card">
@@ -230,7 +271,7 @@
                                 </span>
                             </td>
                             <td>
-                                <div style="display: flex; gap: 10px;">
+                                <div class="action-buttons-wrapper">
                                     <a href="/Admin/ManageBatches?courseId=@course.Id" class="btn-batches"><i class="fa-solid fa-users-rectangle"></i> إدارة الدفعات</a>
                                     <a href="/Admin/EditCourse/@course.Id" class="btn-edit"><i class="fa-solid fa-pen-to-square"></i> تعديل الدورة</a>
                                     <form asp-action="DeleteCourse" method="post" style="margin: 0;" onsubmit="return confirm('هل أنت متأكد من رغبتك في حذف هذه الدورة بالكامل؟');">

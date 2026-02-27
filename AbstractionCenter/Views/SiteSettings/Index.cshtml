@@ -1,100 +1,132 @@
 ﻿@model IEnumerable<AbstractionCenter.Models.Entities.SiteSetting>
 @{
     ViewData["Title"] = "إعدادات وتصميم الموقع";
-    var groupedSettings = Model?.GroupBy(s => s.Group).ToDictionary(g => g.Key, g => g.ToList()) ?? new Dictionary<string, List<AbstractionCenter.Models.Entities.SiteSetting>>();
+    var settingsDict = Model.ToDictionary(s => s.Key, s => s);
+
+    string GetVal(string key) => settingsDict.ContainsKey(key) ? settingsDict[key].Value : "";
+    string GetValEn(string key) => settingsDict.ContainsKey(key) ? settingsDict[key].ValueEn ?? "" : "";
+
+    // قائمة الأيقونات الجاهزة للاختيار
+    var commonIcons = new[] {
+        "fa-solid fa-star", "fa-solid fa-laptop-code", "fa-solid fa-briefcase", "fa-solid fa-chart-line",
+        "fa-solid fa-child", "fa-solid fa-language", "fa-solid fa-paintbrush", "fa-solid fa-calculator",
+        "fa-solid fa-microchip", "fa-solid fa-network-wired", "fa-solid fa-robot", "fa-solid fa-scale-balanced",
+        "fa-solid fa-heart-pulse", "fa-solid fa-users", "fa-solid fa-globe", "fa-solid fa-camera",
+        "fa-solid fa-bullhorn", "fa-solid fa-book-open", "fa-solid fa-brain", "fa-solid fa-building-columns"
+    };
 }
 
 <style>
-    /* Royal Enterprise Settings UI */
-    :root {
-        --st-primary: #0f172a;
-        --st-gold: #cda434;
-        --st-bg: #f8fafc;
-        --st-card: #ffffff;
-        --st-text: #1e293b;
-        --st-muted: #64748b;
-        --st-border: #e2e8f0;
-        --st-radius: 20px;
-        --st-shadow: 0 20px 40px -10px rgba(15, 23, 42, 0.1);
-    }
-
-    .settings-page-wrapper {
-        background: var(--st-bg);
-        border-radius: var(--st-radius);
-        padding: 30px;
-    }
-
     .settings-layout {
-        display: grid;
-        grid-template-columns: 280px 1fr;
-        gap: 40px;
-        align-items: start;
+        display: flex;
+        gap: 30px;
+        align-items: flex-start;
     }
 
+    /* --- Sidebar (اليمين) --- */
     .settings-sidebar {
-        background: var(--st-card);
-        border-radius: var(--st-radius);
-        padding: 25px 20px;
-        box-shadow: var(--st-shadow);
+        width: 300px;
+        background: white;
+        border-radius: 24px;
+        padding: 30px 20px;
+        box-shadow: 0 15px 35px -10px rgba(11, 17, 32, 0.08);
+        border: 1px solid rgba(212, 175, 55, 0.15);
         position: sticky;
         top: 100px;
-        border: 1px solid rgba(205, 164, 52, 0.1);
+        flex-shrink: 0;
     }
 
+    .sidebar-title {
+        color: #0b1120;
+        font-size: 1.3rem;
+        font-weight: 900;
+        margin-bottom: 25px;
+        text-align: center;
+        border-bottom: 2px solid #f1f5f9;
+        padding-bottom: 15px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 10px;
+    }
+
+        .sidebar-title i {
+            color: #d4af37;
+        }
+
     .tab-btn {
+        width: 100%;
+        text-align: right;
+        background: transparent;
+        border: none;
+        padding: 15px 20px;
+        border-radius: 12px;
+        font-size: 1.05rem;
+        font-weight: 800;
+        color: #64748b;
+        cursor: pointer;
+        transition: 0.3s;
+        margin-bottom: 8px;
         display: flex;
         align-items: center;
-        gap: 15px;
-        width: 100%;
-        padding: 16px 20px;
-        border: none;
-        background: transparent;
-        text-align: right;
-        border-radius: 14px;
-        font-weight: 700;
-        color: var(--st-muted);
-        cursor: pointer;
-        transition: all 0.3s ease;
-        margin-bottom: 10px;
+        gap: 12px;
         font-family: inherit;
-        font-size: 1.05rem;
     }
 
         .tab-btn:hover {
-            background: rgba(15, 23, 42, 0.03);
-            color: var(--st-primary);
-            transform: translateX(-5px);
+            background: #f8fafc;
+            color: #0b1120;
         }
 
         .tab-btn.active {
-            background: var(--st-primary);
-            color: var(--st-gold);
-            box-shadow: 0 10px 20px rgba(15, 23, 42, 0.2);
+            background: #0b1120;
+            color: #d4af37;
+            box-shadow: 0 5px 15px rgba(11, 17, 32, 0.2);
         }
 
+    .btn-save-publish {
+        width: 100%;
+        background: linear-gradient(135deg, #d4af37, #fef08a);
+        color: #0b1120;
+        border: none;
+        padding: 18px;
+        border-radius: 16px;
+        font-weight: 900;
+        font-size: 1.15rem;
+        cursor: pointer;
+        transition: 0.3s;
+        margin-top: 20px;
+        box-shadow: 0 10px 25px rgba(212, 175, 55, 0.3);
+        font-family: inherit;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 10px;
+    }
+
+        .btn-save-publish:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 30px rgba(212, 175, 55, 0.5);
+        }
+
+    /* --- Content Area (اليسار) --- */
     .settings-content {
-        background: var(--st-card);
-        border-radius: var(--st-radius);
-        padding: 50px;
-        box-shadow: var(--st-shadow);
-        min-height: 600px;
-        border: 1px solid rgba(205, 164, 52, 0.1);
+        flex-grow: 1;
     }
 
     .tab-pane {
         display: none;
-        animation: slideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-        opacity: 0;
+        animation: fadeIn 0.4s ease;
     }
 
         .tab-pane.active {
             display: block;
         }
 
-    @@keyframes slideUp {
+    @@keyframes fadeIn {
         from {
             opacity: 0;
-            transform: translateY(20px);
+            transform: translateY(10px);
         }
 
         to {
@@ -103,382 +135,479 @@
         }
     }
 
-    .section-header {
-        margin-bottom: 40px;
-        padding-bottom: 20px;
-        border-bottom: 2px solid var(--st-border);
-        display: flex;
-        align-items: center;
-        gap: 20px;
+    .setting-card {
+        background: white;
+        border-radius: 20px;
+        padding: 35px;
+        margin-bottom: 30px;
+        box-shadow: 0 10px 25px rgba(11, 17, 32, 0.05);
+        border: 1px solid #e2e8f0;
     }
 
-    .section-header-icon {
-        width: 60px;
-        height: 60px;
-        background: rgba(205, 164, 52, 0.1);
-        color: var(--st-gold);
-        border-radius: 15px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 1.8rem;
-    }
-
-    .section-header h2 {
-        color: var(--st-primary);
+    .setting-card-title {
+        color: #0b1120;
+        font-size: 1.25rem;
         font-weight: 900;
-        font-size: 1.8rem;
-        margin-bottom: 5px;
-    }
-
-    .section-header p {
-        color: var(--st-muted);
-        font-size: 1rem;
-        margin: 0;
-    }
-
-    .form-group {
-        background: #fcfcfd;
-        border: 1px solid #f1f5f9;
-        padding: 25px;
-        border-radius: 16px;
         margin-bottom: 25px;
-        transition: all 0.3s;
-        position: relative;
+        display: flex;
+        align-items: center;
+        gap: 10px;
     }
 
-        .form-group:hover {
-            border-color: rgba(205, 164, 52, 0.3);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.02);
+        .setting-card-title i {
+            color: #d4af37;
         }
 
+    .form-group {
+        margin-bottom: 20px;
+    }
+
         .form-group label {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-bottom: 12px;
+            display: block;
             font-weight: 800;
-            color: var(--st-primary);
-            font-size: 1.05rem;
+            color: #1e293b;
+            margin-bottom: 8px;
+            font-size: 0.95rem;
         }
 
     .form-control {
         width: 100%;
-        padding: 16px 20px;
-        border: 2px solid var(--st-border);
+        padding: 14px 18px;
+        border: 2px solid #e2e8f0;
         border-radius: 12px;
         font-family: inherit;
         font-size: 1rem;
-        background: white;
+        background: #f8fafc;
         transition: 0.3s;
-        color: var(--st-text);
     }
 
         .form-control:focus {
             outline: none;
-            border-color: var(--st-gold);
-            box-shadow: 0 0 0 4px rgba(205, 164, 52, 0.1);
+            border-color: #d4af37;
+            background: white;
+            box-shadow: 0 0 0 4px rgba(212, 175, 55, 0.15);
         }
 
-    .image-preview-container {
-        border-radius: 16px;
-        overflow: hidden;
-        border: 2px dashed var(--st-gold);
-        height: 250px;
-        background: var(--st-primary);
-        position: relative;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        margin-top: 15px;
+    .form-row-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
     }
 
-        .image-preview-container img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
+    .track-box {
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        border-radius: 16px;
+        padding: 25px;
+        margin-bottom: 20px;
+        position: relative;
+        border-right: 4px solid #d4af37;
+    }
 
-    .btn-delete-link {
-        position: absolute;
-        top: 20px;
-        left: 20px;
-        background: rgba(239, 68, 68, 0.1);
-        color: #ef4444;
-        border: none;
-        width: 35px;
-        height: 35px;
-        border-radius: 10px;
+    .btn-add-track {
+        background: rgba(59, 130, 246, 0.1);
+        color: #2563eb;
+        border: 2px dashed rgba(59, 130, 246, 0.3);
+        padding: 20px;
+        width: 100%;
+        border-radius: 16px;
+        font-weight: 900;
+        font-size: 1.1rem;
         cursor: pointer;
         transition: 0.3s;
+        font-family: inherit;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 10px;
+    }
+
+        .btn-add-track:hover {
+            background: #2563eb;
+            color: white;
+            border-style: solid;
+        }
+
+    /* --- Icon Picker Styles --- */
+    .icon-picker-grid {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 10px;
+    }
+
+    .icon-option {
+        width: 45px;
+        height: 45px;
+        border-radius: 12px;
+        background: #ffffff;
+        border: 2px solid #e2e8f0;
         display: flex;
         align-items: center;
         justify-content: center;
-        z-index: 5;
+        font-size: 1.2rem;
+        color: #64748b;
+        cursor: pointer;
+        transition: 0.3s;
     }
 
-        .btn-delete-link:hover {
-            background: #ef4444;
-            color: white;
+        .icon-option:hover {
+            background: rgba(212, 175, 55, 0.1);
+            border-color: #d4af37;
+            color: #d4af37;
+        }
+
+        .icon-option.selected {
+            background: #0b1120;
+            border-color: #0b1120;
+            color: #d4af37;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
             transform: scale(1.1);
         }
 
-    .save-btn {
-        background: linear-gradient(135deg, var(--st-primary), #1e293b);
-        color: var(--st-gold);
-        border: none;
-        padding: 18px 40px;
-        border-radius: 14px;
-        font-weight: 900;
-        font-size: 1.15rem;
-        cursor: pointer;
-        transition: 0.4s;
-        width: 100%;
-        box-shadow: 0 10px 25px rgba(15, 23, 42, 0.3);
-        margin-top: 20px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 10px;
-    }
-
-        .save-btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 15px 35px rgba(15, 23, 42, 0.4);
-            color: white;
-        }
-
-    .add-new-btn {
-        background: rgba(205, 164, 52, 0.05);
-        border: 2px dashed var(--st-gold);
-        color: var(--st-primary);
-        width: 100%;
-        padding: 20px;
-        border-radius: 16px;
-        font-weight: 800;
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 10px;
-        margin-top: 30px;
-    }
-
-        .add-new-btn:hover {
-            background: var(--st-gold);
-            color: var(--st-primary);
-        }
-
-    @@media (max-width: 992px) {
+    /* === Media Queries للموبايل === */
+    @@media(max-width: 992px) {
         .settings-layout {
+            flex-direction: column;
+        }
+
+        .settings-sidebar {
+            width: 100%;
+            position: static;
+            padding: 20px;
+        }
+    }
+
+    @@media(max-width: 768px) {
+        .setting-card {
+            padding: 25px 20px;
+            border-radius: 16px;
+        }
+
+        .form-row-grid {
             grid-template-columns: 1fr;
+            gap: 15px;
+        }
+
+        .track-box {
+            padding: 20px 15px;
+        }
+
+        .icon-picker-grid {
+            justify-content: center;
         }
     }
 </style>
 
-@if (TempData["SuccessMessage"] != null)
-{
-    <div style="background: rgba(16, 185, 129, 0.1); color: #059669; border: 2px solid #10b981; padding: 20px 30px; border-radius: 16px; margin-bottom: 30px; font-weight: 800; display: flex; align-items: center; gap: 15px;">
-        <i class="fa-solid fa-circle-check" style="font-size: 1.8rem;"></i> @TempData["SuccessMessage"]
+<div>
+    <div style="margin-bottom: 30px;">
+        <h1 style="color: #0b1120; font-weight: 900; font-size: 2rem;">إعدادات وتصميم الموقع</h1>
+        <p style="color: #64748b; font-size: 1.1rem;">تحكم في جميع نصوص وصور الواجهة الرئيسية للمنصة.</p>
     </div>
-}
 
-<div class="settings-page-wrapper">
-    <!-- نموذج الحذف السريع (يُستدعى برمجياً) -->
-    <form id="deleteForm" asp-controller="SiteSettings" asp-action="DeleteSetting" method="post" style="display:none;">
-        @Html.AntiForgeryToken()
-        <input type="hidden" name="key" id="deleteKeyInput" />
-    </form>
-
-    <div class="settings-layout">
-
-        <div class="settings-sidebar">
-            <h3 style="color: var(--st-primary); font-size: 1.2rem; font-weight: 900; margin-bottom: 25px; display: flex; align-items: center; gap: 10px;">
-                <i class="fa-solid fa-crown" style="color: var(--st-gold);"></i> لوحة التحكم الملكية
-            </h3>
-            <button type="button" class="tab-btn active" data-target="tab-general"><i class="fa-solid fa-globe"></i> إعدادات عامة</button>
-            <button type="button" class="tab-btn" data-target="tab-home"><i class="fa-solid fa-house"></i> الصفحة الرئيسية</button>
-            <button type="button" class="tab-btn" data-target="tab-about"><i class="fa-solid fa-book-open-reader"></i> صفحة من نحن</button>
-            <button type="button" class="tab-btn" data-target="tab-tracks"><i class="fa-solid fa-layer-group"></i> المسارات</button>
-            <button type="button" class="tab-btn" data-target="tab-contact"><i class="fa-solid fa-address-book"></i> التواصل والسوشيال</button>
-
-            <hr style="border: 0; border-top: 1px solid var(--st-border); margin: 30px 0 20px;" />
-            <button type="button" onclick="document.getElementById('mainForm').submit()" class="save-btn"><i class="fa-solid fa-floppy-disk"></i> حفظ ونشر</button>
-        </div>
-
-        <div class="settings-content">
-            <form id="mainForm" asp-controller="SiteSettings" asp-action="UpdateSettings" method="post">
-
-                <!-- عام -->
-                <div id="tab-general" class="tab-pane active">
-                    <div class="section-header">
-                        <div class="section-header-icon"><i class="fa-solid fa-globe"></i></div>
-                        <div><h2>الإعدادات العامة</h2><p>الاسم، الفوتر، والروابط.</p></div>
-                    </div>
-                    @{
-                        await RenderSettingsGroup(groupedSettings.GetValueOrDefault("General"));
-                    }
-                </div>
-
-                <!-- الرئيسية -->
-                <div id="tab-home" class="tab-pane">
-                    <div class="section-header">
-                        <div class="section-header-icon"><i class="fa-solid fa-house"></i></div>
-                        <div><h2>الصفحة الرئيسية</h2><p>النصوص والصور الترحيبية.</p></div>
-                    </div>
-                    @{
-                        await RenderSettingsGroup(groupedSettings.GetValueOrDefault("Home"));
-                    }
-                </div>
-
-                <!-- من نحن -->
-                <div id="tab-about" class="tab-pane">
-                    <div class="section-header">
-                        <div class="section-header-icon"><i class="fa-solid fa-book-open-reader"></i></div>
-                        <div><h2>صفحة من نحن</h2><p>الرؤية والرسالة وفريق العمل.</p></div>
-                    </div>
-                    @{
-                        await RenderSettingsGroup(groupedSettings.GetValueOrDefault("About"));
-                    }
-                </div>
-
-                <!-- المسارات -->
-                <div id="tab-tracks" class="tab-pane">
-                    <div class="section-header">
-                        <div class="section-header-icon"><i class="fa-solid fa-layer-group"></i></div>
-                        <div><h2>المسارات التدريبية</h2><p>تعديل محتوى وأيقونات المسارات.</p></div>
-                    </div>
-                    @{
-                        await RenderSettingsGroup(groupedSettings.GetValueOrDefault("Tracks"));
-                    }
-                </div>
-
-                <!-- التواصل -->
-                <div id="tab-contact" class="tab-pane">
-                    <div class="section-header">
-                        <div class="section-header-icon"><i class="fa-solid fa-address-book"></i></div>
-                        <div><h2>التواصل والسوشيال ميديا</h2><p>إدارة الروابط وأرقام الهواتف.</p></div>
-                    </div>
-
-                    <h3 style="color: var(--st-primary); font-weight: 800; margin-bottom: 20px;">البيانات والروابط</h3>
-                    @{
-                        await RenderSettingsGroup(groupedSettings.GetValueOrDefault("Contact"), true);
-                    }
-                    <hr style="border: 0; border-top: 1px solid var(--st-border); margin: 30px 0;" />
-                    @{
-                        await RenderSettingsGroup(groupedSettings.GetValueOrDefault("Social"), true);
-                    }
-
-                    <div style="background: rgba(205, 164, 52, 0.05); padding: 30px; border-radius: var(--st-radius); border: 1px solid rgba(205, 164, 52, 0.2); margin-top: 40px;">
-                        <h3 style="color: var(--st-primary); font-weight: 900; margin-bottom: 10px;">إضافة وسيلة جديدة</h3>
-                        <div id="new-contacts-container"></div>
-                        <button type="button" class="add-new-btn" onclick="addNewContactField()"><i class="fa-solid fa-circle-plus"></i> انقر للإضافة</button>
-                    </div>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
-
-@functions {
-    private async Task RenderSettingsGroup(List<AbstractionCenter.Models.Entities.SiteSetting> settings, bool allowDelete = false)
+    @if (TempData["SuccessMessage"] != null)
     {
-        if (settings == null || !settings.Any()) return;
-
-        foreach (var setting in settings)
-        {
-            <div class="form-group">
-                <label><i class="fa-solid fa-pen-nib" style="color: var(--st-gold);"></i> @setting.DisplayName</label>
-
-                @if (allowDelete)
-                {
-                    <button type="button" class="btn-delete-link" onclick="confirmDelete('@setting.Key')" title="حذف نهائي">
-                        <i class="fa-solid fa-trash-can"></i>
-                    </button>
-                }
-
-                @if (setting.Key.EndsWith("Image"))
-                {
-                    <input type="url" name="settings[@setting.Key]" value="@setting.Value" class="form-control image-url-input" data-preview="preview-@setting.Key" dir="ltr" />
-                    <div class="image-preview-container"><img id="preview-@setting.Key" src="@setting.Value" onerror="this.src='https://via.placeholder.com/400x200?text=Invalid+Image'" /></div>
-                }
-                else if (setting.Key.EndsWith("Icon"))
-                {
-                    var icons = new Dictionary<string, string> {
-        { "fa-solid fa-code", "&#xf121; برمجة" },
-        { "fa-solid fa-chart-line", "&#xf201; إدارة" },
-        { "fa-solid fa-language", "&#xf1ab; لغات" },
-        { "fa-solid fa-palette", "&#xf53f; تصميم" },
-        { "fa-solid fa-microchip", "&#xf2db; AI" }
-        };
-
-                    <select name="settings[@setting.Key]" class="form-control icon-selector">
-                        @foreach (var icon in icons)
-                        {
-                            if (setting.Value == icon.Key)
-                            {
-                                <option value="@icon.Key" selected="selected">@Html.Raw(icon.Value)</option>
-                            }
-                            else
-                            {
-                                <option value="@icon.Key">@Html.Raw(icon.Value)</option>
-                            }
-                        }
-                    </select>
-                }
-                else if (setting.Value.Length > 60 || setting.Key.Contains("Desc"))
-                {
-                    <textarea name="settings[@setting.Key]" class="form-control">@setting.Value</textarea>
-                }
-                else
-                {
-                    <input type="text" name="settings[@setting.Key]" value="@setting.Value" class="form-control" dir="auto" />
-                }
-            </div>
-        }
+        <div style="background: rgba(16, 185, 129, 0.1); color: #059669; padding: 15px 25px; border-radius: 16px; margin-bottom: 30px; font-weight: 800; border: 1px solid #10b981; display: flex; align-items: center; gap: 10px;">
+            <i class="fa-solid fa-circle-check" style="font-size: 1.4rem;"></i> @TempData["SuccessMessage"]
+        </div>
     }
-}
+
+    <form asp-action="UpdateSettings" method="post" id="settingsForm">
+        @Html.AntiForgeryToken()
+
+        <div class="settings-layout">
+            <!-- Sidebar -->
+            <aside class="settings-sidebar">
+                <div class="sidebar-title"><i class="fa-solid fa-crown"></i> لوحة التحكم الملكية</div>
+                <button type="button" class="tab-btn active" data-target="tab-general"><i class="fa-solid fa-globe"></i> إعدادات عامة</button>
+                <button type="button" class="tab-btn" data-target="tab-home"><i class="fa-solid fa-house"></i> الصفحة الرئيسية</button>
+                <button type="button" class="tab-btn" data-target="tab-about"><i class="fa-solid fa-building"></i> صفحة من نحن</button>
+                <button type="button" class="tab-btn" data-target="tab-tracks"><i class="fa-solid fa-layer-group"></i> المسارات التعرفية</button>
+                <button type="button" class="tab-btn" data-target="tab-contact"><i class="fa-solid fa-address-book"></i> التواصل والسوشيال</button>
+
+                <hr style="border: 0; border-top: 1px solid #e2e8f0; margin: 20px 0;" />
+                <button type="submit" class="btn-save-publish"><i class="fa-solid fa-cloud-arrow-up"></i> حفظ ونشر</button>
+            </aside>
+
+            <!-- Content Area -->
+            <div class="settings-content">
+
+                <!-- تبويب إعدادات عامة -->
+                <div id="tab-general" class="tab-pane active">
+                    <div class="setting-card">
+                        <h3 class="setting-card-title"><i class="fa-solid fa-globe"></i> إعدادات الهوية الأساسية</h3>
+                        <div class="form-group">
+                            <label>اسم الموقع (عربي)</label>
+                            <input type="text" name="settings[SiteName]" value="@GetVal("SiteName")" class="form-control" />
+                        </div>
+                        <div class="form-group">
+                            <label>اسم الموقع (إنجليزي)</label>
+                            <input type="text" name="settingsEn[SiteName]" value="@GetValEn("SiteName")" class="form-control" dir="ltr" />
+                        </div>
+                        <div class="form-group">
+                            <label>وصف الفوتر (عربي)</label>
+                            <textarea name="settings[FooterDesc]" class="form-control" rows="3">@GetVal("FooterDesc")</textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>وصف الفوتر (إنجليزي)</label>
+                            <textarea name="settingsEn[FooterDesc]" class="form-control" rows="3" dir="ltr">@GetValEn("FooterDesc")</textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- تبويب الصفحة الرئيسية -->
+                <div id="tab-home" class="tab-pane">
+                    <div class="setting-card">
+                        <h3 class="setting-card-title"><i class="fa-solid fa-house"></i> بانر الصفحة الرئيسية (Hero)</h3>
+                        <div class="form-group">
+                            <label>العنوان الرئيسي (عربي)</label>
+                            <input type="text" name="settings[HeroTitle]" value="@GetVal("HeroTitle")" class="form-control" />
+                        </div>
+                        <div class="form-group">
+                            <label>العنوان الرئيسي (إنجليزي)</label>
+                            <input type="text" name="settingsEn[HeroTitle]" value="@GetValEn("HeroTitle")" class="form-control" dir="ltr" />
+                        </div>
+                        <div class="form-group">
+                            <label>النبذة المختصرة (عربي)</label>
+                            <textarea name="settings[HeroSubtitle]" class="form-control" rows="3">@GetVal("HeroSubtitle")</textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>النبذة المختصرة (إنجليزي)</label>
+                            <textarea name="settingsEn[HeroSubtitle]" class="form-control" rows="3" dir="ltr">@GetValEn("HeroSubtitle")</textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>رابط صورة البانر</label>
+                            <input type="url" name="settings[HeroImage]" value="@GetVal("HeroImage")" class="form-control" dir="ltr" />
+                        </div>
+                    </div>
+                </div>
+
+                <!-- تبويب من نحن -->
+                <div id="tab-about" class="tab-pane">
+                    <div class="setting-card">
+                        <h3 class="setting-card-title"><i class="fa-solid fa-building"></i> الرؤية والرسالة</h3>
+                        <div class="form-group">
+                            <label>الرؤية (عربي)</label>
+                            <textarea name="settings[About_Vision]" class="form-control" rows="3">@GetVal("About_Vision")</textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>الرؤية (إنجليزي)</label>
+                            <textarea name="settingsEn[About_Vision]" class="form-control" rows="3" dir="ltr">@GetValEn("About_Vision")</textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>الرسالة (عربي)</label>
+                            <textarea name="settings[About_Mission]" class="form-control" rows="3">@GetVal("About_Mission")</textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>الرسالة (إنجليزي)</label>
+                            <textarea name="settingsEn[About_Mission]" class="form-control" rows="3" dir="ltr">@GetValEn("About_Mission")</textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- === تبويب المسارات === -->
+                <div id="tab-tracks" class="tab-pane">
+                    <div class="setting-card">
+                        <h3 class="setting-card-title"><i class="fa-solid fa-layer-group"></i> المسارات المعروضة في الصفحة التعريفية</h3>
+
+                        <!-- إضافة الترويسة لصفحة المسارات كما طلبت -->
+                        <div style="background: #f8fafc; padding: 25px; border-radius: 16px; margin-bottom: 30px; border: 1px solid #e2e8f0;">
+                            <h4 style="color: #0b1120; font-weight: 900; margin-bottom: 15px;"><i class="fa-solid fa-heading" style="color: #d4af37;"></i> ترويسة صفحة المسارات (Hero Section)</h4>
+                            <div class="form-group">
+                                <label>العنوان الرئيسي (عربي)</label>
+                                <input type="text" name="settings[Tracks_HeroTitle]" value="@GetVal("Tracks_HeroTitle")" class="form-control" />
+                            </div>
+                            <div class="form-group">
+                                <label>العنوان الرئيسي (إنجليزي)</label>
+                                <input type="text" name="settingsEn[Tracks_HeroTitle]" value="@GetValEn("Tracks_HeroTitle")" class="form-control" dir="ltr" />
+                            </div>
+                            <div class="form-group">
+                                <label>الوصف (عربي)</label>
+                                <textarea name="settings[Tracks_HeroSubtitle]" class="form-control" rows="2">@GetVal("Tracks_HeroSubtitle")</textarea>
+                            </div>
+                            <div class="form-group">
+                                <label>الوصف (إنجليزي)</label>
+                                <textarea name="settingsEn[Tracks_HeroSubtitle]" class="form-control" rows="2" dir="ltr">@GetValEn("Tracks_HeroSubtitle")</textarea>
+                            </div>
+                        </div>
+
+                        <p style="color: #64748b; margin-bottom: 25px;">قم بإضافة مسارات جديدة لتظهر ككروت في صفحة المسارات. اختر الأيقونة المناسبة بنقرة واحدة.</p>
+
+                        <div id="dynamic-tracks-container">
+                            @{
+                                var trackKeys = settingsDict.Keys.Where(k => k.StartsWith("Track") && k.EndsWith("_Title")).ToList();
+                                int maxIndex = 0;
+
+                                foreach (var key in trackKeys)
+                                {
+                                    string indexStr = key.Replace("Track", "").Replace("_Title", "");
+                                    if (int.TryParse(indexStr, out int index))
+                                    {
+                                        if (index > maxIndex) maxIndex = index;
+
+                                        var currentIcon = GetVal($"Track{index}_Icon");
+                                        if (string.IsNullOrEmpty(currentIcon)) currentIcon = "fa-solid fa-star";
+
+                                        <div class="track-box" data-index="@index">
+                                            <h4 style="color: #0b1120; font-weight: 900; margin-bottom: 15px;"><i class="fa-solid fa-pen-nib" style="color: #d4af37;"></i> مسار التدريب رقم @index</h4>
+
+                                            <div class="form-row-grid">
+                                                <div class="form-group">
+                                                    <label>عنوان المسار (عربي)</label>
+                                                    <input type="text" name="settings[Track@(index)_Title]" value="@GetVal($"Track{index}_Title")" class="form-control" placeholder="مثال: مسار تطوير الأطفال" />
+                                                </div>
+                                                <div class="form-group">
+                                                    <label>عنوان المسار (إنجليزي)</label>
+                                                    <input type="text" name="settingsEn[Track@(index)_Title]" value="@GetValEn($"Track{index}_Title")" class="form-control" dir="ltr" />
+                                                </div>
+                                            </div>
+
+                                            <div class="form-group">
+                                                <label>وصف المسار (عربي)</label>
+                                                <textarea name="settings[Track@(index)_Desc]" class="form-control" rows="2">@GetVal($"Track{index}_Desc")</textarea>
+                                            </div>
+                                            <div class="form-group">
+                                                <label>وصف المسار (إنجليزي)</label>
+                                                <textarea name="settingsEn[Track@(index)_Desc]" class="form-control" rows="2" dir="ltr">@GetValEn($"Track{index}_Desc")</textarea>
+                                            </div>
+
+                                            <div class="form-group">
+                                                <label>اختر أيقونة المسار</label>
+                                                <!-- الحقل المخفي الذي يحمل قيمة الأيقونة ليتم حفظها -->
+                                                <input type="hidden" name="settings[Track@(index)_Icon]" id="icon_input_@index" value="@currentIcon" />
+                                                <div class="icon-picker-grid">
+                                                    @foreach (var icon in commonIcons)
+                                                    {
+                                                        <div class="icon-option @(currentIcon == icon ? "selected" : "")" onclick="selectIcon(this, 'icon_input_@index', '@icon')">
+                                                            <i class="@icon"></i>
+                                                        </div>
+                                                    }
+                                                </div>
+                                            </div>
+
+                                            <small style="color: #ef4444; font-weight: bold;"><i class="fa-solid fa-trash-can"></i> لحذف هذا المسار من الموقع، فقط امسح عنوانه (العربي والإنجليزي) واحفظ التعديلات.</small>
+                                        </div>
+                                    }
+                                }
+                            }
+                        </div>
+
+                        <button type="button" class="btn-add-track" onclick="addNewTrackForm()">
+                            <i class="fa-solid fa-plus-circle"></i> إضافة مسار تدريبي جديد
+                        </button>
+                    </div>
+                </div>
+
+                <!-- تبويب التواصل -->
+                <div id="tab-contact" class="tab-pane">
+                    <div class="setting-card">
+                        <h3 class="setting-card-title"><i class="fa-solid fa-address-book"></i> بيانات التواصل والسوشيال ميديا</h3>
+                        <div class="form-row-grid">
+                            <div class="form-group">
+                                <label><i class="fa-solid fa-phone" style="color: #d4af37;"></i> رقم الهاتف</label>
+                                <input type="text" name="settings[ContactPhone]" value="@GetVal("ContactPhone")" class="form-control" dir="ltr" />
+                            </div>
+                            <div class="form-group">
+                                <label><i class="fa-solid fa-envelope" style="color: #d4af37;"></i> البريد الإلكتروني</label>
+                                <input type="text" name="settings[ContactEmail]" value="@GetVal("ContactEmail")" class="form-control" dir="ltr" />
+                            </div>
+                            <div class="form-group">
+                                <label><i class="fa-brands fa-facebook" style="color: #3b82f6;"></i> رابط فيسبوك</label>
+                                <input type="url" name="settings[Social_Facebook]" value="@GetVal("Social_Facebook")" class="form-control" dir="ltr" />
+                            </div>
+                            <div class="form-group">
+                                <label><i class="fa-brands fa-whatsapp" style="color: #25d366;"></i> رابط الواتساب</label>
+                                <input type="url" name="settings[Social_WhatsApp]" value="@GetVal("Social_WhatsApp")" class="form-control" dir="ltr" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </form>
+</div>
 
 @section Scripts {
     <script>
-        // التبويبات
+        // نظام التبويبات
         document.querySelectorAll('.tab-btn').forEach(btn => {
             btn.addEventListener('click', function() {
                 document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
                 document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+
                 this.classList.add('active');
                 document.getElementById(this.getAttribute('data-target')).classList.add('active');
             });
         });
 
-        // معاينة الصور
-        document.querySelectorAll('.image-url-input').forEach(input => {
-            input.addEventListener('input', function() {
-                var img = document.getElementById(this.getAttribute('data-preview'));
-                if (img) img.src = this.value;
-            });
-        });
-
-        // الحذف
-        function confirmDelete(key) {
-            if (confirm('هل أنت متأكد من حذف هذا الرابط نهائياً؟')) {
-                document.getElementById('deleteKeyInput').value = key;
-                document.getElementById('deleteForm').submit();
-            }
+        // دالة اختيار الأيقونة
+        function selectIcon(element, inputId, iconClass) {
+            let parent = element.parentElement;
+            parent.querySelectorAll('.icon-option').forEach(el => el.classList.remove('selected'));
+            element.classList.add('selected');
+            document.getElementById(inputId).value = iconClass;
         }
 
-        // إضافة حقول جديدة
-        function addNewContactField() {
-            const html = `
-                <div class="dynamic-field-card" style="background:#f1f5f9; padding:20px; border-radius:15px; margin-bottom:15px; position:relative;">
-                    <button type="button" onclick="this.parentElement.remove()" style="position:absolute; left:15px; top:15px; color:red; border:none; background:none; cursor:pointer;"><i class="fa-solid fa-times-circle"></i></button>
-                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
-                        <select name="NewSetting_Groups" class="form-control"><option value="Contact">هاتف/إيميل</option><option value="Social">سوشيال ميديا</option></select>
-                        <input type="text" name="NewSetting_Names" class="form-control" placeholder="الاسم (مثال: تيك توك)" required>
+        // نظام إضافة المسارات الديناميكي (بما في ذلك منتقي الأيقونات)
+        function addNewTrackForm() {
+            let maxIndex = 0;
+            document.querySelectorAll('.track-box').forEach(el => {
+                let index = parseInt(el.getAttribute('data-index'));
+                if (index > maxIndex) maxIndex = index;
+            });
+
+            if(maxIndex === 0) maxIndex = 3;
+            let newIndex = maxIndex + 1;
+
+            // نفس الأيقونات المستخدمة في النموذج أعلاه
+            const icons = [
+                "fa-solid fa-star", "fa-solid fa-laptop-code", "fa-solid fa-briefcase", "fa-solid fa-chart-line",
+                "fa-solid fa-child", "fa-solid fa-language", "fa-solid fa-paintbrush", "fa-solid fa-calculator",
+                "fa-solid fa-microchip", "fa-solid fa-network-wired", "fa-solid fa-robot", "fa-solid fa-scale-balanced",
+                "fa-solid fa-heart-pulse", "fa-solid fa-users", "fa-solid fa-globe", "fa-solid fa-camera",
+                "fa-solid fa-bullhorn", "fa-solid fa-book-open", "fa-solid fa-brain", "fa-solid fa-building-columns"
+            ];
+
+            let iconsHtml = icons.map(icon =>
+                `<div class="icon-option ${icon === 'fa-solid fa-star' ? 'selected' : ''}" onclick="selectIcon(this, 'icon_input_${newIndex}', '${icon}')">
+                    <i class="${icon}"></i>
+                </div>`
+            ).join('');
+
+            let newHtml = `
+                <div class="track-box" data-index="${newIndex}">
+                    <h4 style="color: #0b1120; font-weight: 900; margin-bottom: 15px;"><i class="fa-solid fa-pen-nib" style="color: #d4af37;"></i> مسار إضافي جديد</h4>
+                    <div class="form-row-grid">
+                        <div class="form-group">
+                            <label>عنوان المسار (عربي)</label>
+                            <input type="text" name="settings[Track${newIndex}_Title]" class="form-control" placeholder="مثال: مسار تطوير الأطفال" required />
+                        </div>
+                        <div class="form-group">
+                            <label>عنوان المسار (إنجليزي)</label>
+                            <input type="text" name="settingsEn[Track${newIndex}_Title]" class="form-control" dir="ltr" />
+                        </div>
                     </div>
-                    <input type="text" name="NewSetting_Values" class="form-control" style="margin-top:10px" placeholder="الرابط أو الرقم" required>
-                </div>`;
-            document.getElementById('new-contacts-container').insertAdjacentHTML('beforeend', html);
+                    <div class="form-group">
+                        <label>وصف المسار (عربي)</label>
+                        <textarea name="settings[Track${newIndex}_Desc]" class="form-control" rows="2" required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>وصف المسار (إنجليزي)</label>
+                        <textarea name="settingsEn[Track${newIndex}_Desc]" class="form-control" rows="2" dir="ltr"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>اختر أيقونة المسار</label>
+                        <input type="hidden" name="settings[Track${newIndex}_Icon]" id="icon_input_${newIndex}" value="fa-solid fa-star" />
+                        <div class="icon-picker-grid">
+                            ${iconsHtml}
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            document.getElementById('dynamic-tracks-container').insertAdjacentHTML('beforeend', newHtml);
+            window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
         }
     </script>
 }

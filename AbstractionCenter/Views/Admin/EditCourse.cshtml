@@ -93,6 +93,7 @@
         align-items: center;
         justify-content: center;
         gap: 10px;
+        margin-top: 30px;
     }
 
         .btn-submit:hover {
@@ -117,22 +118,64 @@
 
     .current-image-preview {
         margin-top: 15px;
-        padding: 10px;
+        padding: 15px;
         background: #f8fafc;
         border: 1px solid #e2e8f0;
         border-radius: 16px;
         display: flex;
         align-items: center;
-        gap: 15px;
+        gap: 20px;
     }
 
         .current-image-preview img {
-            width: 120px;
-            height: 80px;
+            width: 140px;
+            height: 90px;
             object-fit: cover;
-            border-radius: 10px;
+            border-radius: 12px;
             border: 2px solid rgba(212, 175, 55, 0.3);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
         }
+
+    /* === Media Queries للموبايل والشاشات الصغيرة === */
+    @@media (max-width: 768px) {
+        .premium-form-card {
+            padding: 35px 20px;
+            border-radius: 20px;
+        }
+
+        .form-header h2 {
+            font-size: 1.7rem;
+        }
+
+        .form-header-icon {
+            width: 70px;
+            height: 70px;
+            font-size: 2rem;
+            margin-bottom: 15px;
+        }
+
+        .btn-submit {
+            font-size: 1.1rem;
+            padding: 16px 20px;
+        }
+
+        .current-image-preview {
+            flex-direction: column;
+            align-items: flex-start;
+            text-align: center;
+            gap: 15px;
+        }
+
+            .current-image-preview img {
+                width: 100%;
+                height: auto;
+                max-height: 200px;
+            }
+
+            .current-image-preview div {
+                width: 100%;
+            }
+    }
 </style>
 
 <div class="premium-form-card">
@@ -163,19 +206,20 @@
                 <input asp-for="ImageFile" type="file" class="form-control" accept="image/*" style="padding-left: 45px;" />
                 <i class="fa-solid fa-image" style="position: absolute; left: 18px; top: 18px; color: #d4af37; font-size: 1.2rem; pointer-events: none;"></i>
             </div>
+
             @if (!string.IsNullOrEmpty(Model.ImageUrl))
             {
                 <div class="current-image-preview">
                     <img src="@Model.ImageUrl" alt="Current Cover" />
                     <div>
-                        <strong style="display: block; color: #0b1120; font-size: 0.9rem;">الغلاف الحالي</strong>
-                        <span style="color: #64748b; font-size: 0.8rem;">اترك الحقل فارغاً للاحتفاظ بهذه الصورة</span>
+                        <strong style="display: block; color: #0b1120; font-size: 1rem; margin-bottom: 5px;">الغلاف الحالي</strong>
+                        <span style="color: #64748b; font-size: 0.9rem;">اترك حقل الصورة فارغاً للاحتفاظ بهذه الصورة.</span>
                     </div>
                 </div>
             }
         </div>
 
-        <div style="margin-top: 50px;">
+        <div>
             <button type="submit" class="btn-submit">حفظ التعديلات <i class="fa-solid fa-floppy-disk"></i></button>
             <a href="/Admin/ManageCourses" class="btn-cancel">إلغاء والعودة للقائمة</a>
         </div>

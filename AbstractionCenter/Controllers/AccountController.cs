@@ -103,5 +103,39 @@ namespace AbstractionCenter.Controllers
             if (User.IsInRole("Instructor")) return RedirectToAction("Dashboard", "Instructor");
             return RedirectToAction("Dashboard", "Student");
         }
+        [HttpGet]
+        public IActionResult SetPassword(string userId, string code)
+        {
+            if (userId == null || code == null)
+            {
+                return RedirectToAction("Login");
+            }
+            return View();
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> SetPassword(string userId, string code, string password, string confirmPassword)
+        {
+            if (password != confirmPassword)
+            {
+                TempData["ErrorMessage"] = "كلمات المرور غير متطابقة.";
+                return RedirectToAction("SetPassword", new { userId, code });
+            }
+
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user == null) return NotFound();
+
+            var result = await _userManager.ResetPasswordAsync(user, code, password);
+            if (result.Succeeded)
+            {
+                // تسجيل الدخول التلقائي بعد تعيين الباسورد
+                await _signInManager.SignInAsync(user, isPersistent: true);
+                return RedirectToAction("Dashboard", "Student");
+            }
+
+            TempData["ErrorMessage"] = "حدث خطأ. قد يكون الرابط منتهي الصلاحية.";
+            return RedirectToAction("SetPassword", new { userId, code });
+        }
     }
 }

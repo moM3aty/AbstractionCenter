@@ -100,6 +100,13 @@
         max-width: 90%;
     }
 
+    .hero-buttons {
+        display: flex;
+        gap: 20px;
+        flex-wrap: wrap;
+        justify-content: @(isRtl ? "flex-start" : "flex-start");
+    }
+
     .hero-image-wrapper {
         position: relative;
         border-radius: 30px;
@@ -332,40 +339,89 @@
             background: linear-gradient(to @(isRtl ? "right" : "left"), #1e293b, transparent);
         }
 
+    /* === Media Queries للموبايل === */
     @@media (max-width: 992px) {
-        .hero-grid
+        .hero-grid {
+            grid-template-columns: 1fr;
+            text-align: center;
+        }
 
-    {
-        grid-template-columns: 1fr;
-        text-align: center;
+        .hero-title {
+            font-size: 3.5rem;
+        }
+
+        .hero-subtitle {
+            max-width: 100%;
+            margin: 0 auto 40px;
+        }
+
+        .hero-buttons {
+            justify-content: center;
+        }
+
+        .hero-image-wrapper {
+            transform: none;
+        }
+
+        .cta-card {
+            grid-template-columns: 1fr;
+        }
+
+        .cta-image {
+            display: none;
+        }
+
+        .cta-content {
+            text-align: center;
+            padding: 50px 30px;
+        }
     }
 
-    .hero-title {
-        font-size: 3.5rem;
-    }
+    @@media (max-width: 768px) {
+        .hero-premium {
+            padding: 120px 0 60px;
+        }
 
-    .hero-subtitle {
-        max-width: 100%;
-        margin: 0 auto 40px;
-    }
+        .hero-title {
+            font-size: 2.5rem;
+        }
 
-    .hero-image-wrapper {
-        transform: none;
-    }
+        .hero-subtitle {
+            font-size: 1.1rem;
+        }
 
-    .cta-card {
-        grid-template-columns: 1fr;
-    }
+        .hero-badge {
+            font-size: 0.85rem;
+            padding: 6px 15px;
+        }
 
-    .cta-image {
-        display: none;
-    }
+        .hero-image-wrapper img {
+            height: 350px;
+        }
 
-    .cta-content {
-        text-align: center;
-        padding: 50px 30px;
-    }
+        .features-section {
+            padding: 60px 0;
+        }
 
+            .features-section h2 {
+                font-size: 2rem !important;
+            }
+
+        .team-section {
+            padding: 60px 0;
+        }
+
+            .team-section h2 {
+                font-size: 2rem !important;
+            }
+
+        .cta-section {
+            padding: 40px 0;
+        }
+
+        .cta-content h2 {
+            font-size: 2rem;
+        }
     }
 </style>
 
@@ -382,7 +438,7 @@
             <p class="hero-subtitle">
                 @GetSetting("HeroSubtitle", "رؤية طموحة لتمكين الشباب بالمهارات التقنية والإدارية الحديثة. نجمع بين أصالة القيم وحداثة التكنولوجيا لنضعك على طريق النجاح.", "An ambitious vision to empower youth with modern technical and administrative skills. We combine authentic values with modern technology to put you on the path to success.")
             </p>
-            <div style="display: flex; gap: 20px; flex-wrap: wrap; justify-content: @(isRtl ? "flex-start" : "flex-start");">
+            <div class="hero-buttons">
                 <a href="/Courses/Open" class="btn btn-primary" style="font-size: 1.15rem; padding: 18px 40px;">
                     @(isRtl ? "استكشف برامجنا" : "Explore Programs") <i class="fa-solid @(isRtl ? "fa-arrow-left" : "fa-arrow-right")"></i>
                 </a>
@@ -400,7 +456,6 @@
 </section>
 
 <section class="features-section">
-    <!-- ... (نفس قسم المميزات بدون تغيير) ... -->
     <div class="container">
         <div style="text-align: center; margin-bottom: 70px; max-width: 800px; margin-left: auto; margin-right: auto;">
             <h2 style="font-size: 2.8rem; color: var(--primary-color); margin-bottom: 20px; font-weight: 900;">@GetSetting("FeaturesTitle", "لماذا نحن خيارك الأفضل؟", "Why Choose Us?")</h2>
@@ -429,7 +484,6 @@
     </div>
 </section>
 
-<!-- القسم المحدث: تصميم بروفيشنال للمدربين -->
 <section class="team-section">
     <div class="container">
         <div style="text-align: center; margin-bottom: 60px; max-width: 800px; margin-left: auto; margin-right: auto;">
@@ -449,15 +503,11 @@
                         <div class="expert-badge"><i class="fa-solid fa-star"></i> @(isRtl ? "خبير معتمد" : "Certified")</div>
                         <div class="expert-img-box">
                             @{
-                                // معالجة الاسم في حال كان فارغاً
                                 string safeName = !string.IsNullOrEmpty(instructor.FullName) ? instructor.FullName : "Expert";
-
-                                // معالجة مسار الصورة (إضافة / للمسارات المحلية)
                                 string picUrl = string.IsNullOrEmpty(instructor.ProfilePicture)
                                 ? $"https://ui-avatars.com/api/?name={Uri.EscapeDataString(safeName)}&background=0b1120&color=d4af37&size=512&font-size=0.33"
                                 : (instructor.ProfilePicture.StartsWith("http") ? instructor.ProfilePicture : "/" + instructor.ProfilePicture.TrimStart('/'));
                             }
-                            <!-- استخدام onerror لضمان ظهور صورة بديلة إذا فشل تحميل الصورة الأصلية -->
                             <img src="@picUrl" alt="@instructor.FullName" onerror="this.onerror=null;this.src='https://ui-avatars.com/api/?name=@Uri.EscapeDataString(safeName)&background=0b1120&color=d4af37&size=512&font-size=0.33';" />
                             <div class="expert-overlay"></div>
 

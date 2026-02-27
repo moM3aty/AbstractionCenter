@@ -126,7 +126,8 @@
         .unit-container.active {
             display: block;
         }
-    @@keyframes fadeIn {
+
+    @keyframes fadeIn {
         from
 
     {
@@ -313,12 +314,14 @@
         font-weight: 900;
         font-size: 1.4rem;
         box-shadow: 0 5px 15px rgba(212,175,55,0.3);
+        flex-shrink: 0;
     }
 
     /* أزرار التحميل */
     .btn-luxury-action {
         display: inline-flex;
         align-items: center;
+        justify-content: center;
         gap: 12px;
         padding: 18px 35px;
         border-radius: 50px;
@@ -339,7 +342,8 @@
             box-shadow: 0 20px 40px rgba(212, 175, 55, 0.4);
         }
 
-    @@media (max-width: 1024px) {
+    /* === Media Queries للموبايل === */
+    @media (max-width: 1024px) {
         .classroom-wrapper
 
     {
@@ -354,7 +358,57 @@
     }
 
     .content-viewport {
-        padding: 25px;
+        padding: 30px 20px;
+    }
+
+    }
+
+    @media (max-width: 768px) {
+        .content-card-premium
+
+    {
+        padding: 30px 20px;
+        border-radius: 20px;
+    }
+
+    .unit-title {
+        font-size: 1.6rem;
+        margin-bottom: 20px;
+    }
+
+    .pdf-preview-container {
+        height: 400px;
+    }
+
+    .mission-box {
+        padding: 25px 20px;
+    }
+
+    .royal-upload-form {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 15px;
+        padding: 20px;
+    }
+
+    .btn-royal-submit {
+        justify-content: center;
+    }
+
+    .submission-status {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+    }
+
+    .grade-panel {
+        flex-direction: column;
+        align-items: flex-start;
+        text-align: right;
+    }
+
+    .btn-luxury-action {
+        width: 100%;
     }
 
     }
@@ -387,17 +441,14 @@
                                 }
                                 else if (content.Type == AbstractionCenter.Models.Entities.ContentType.Pdf)
                                 {
-
                                     <i class="fa-solid fa-file-pdf"></i>
                                 }
                                 else if (content.Type == AbstractionCenter.Models.Entities.ContentType.Assignment)
                                 {
-
                                     <i class="fa-solid fa-thumbtack"></i>
                                 }
                                 else
                                 {
-
                                     <i class="fa-solid fa-link"></i>
                                 }
                                 <span>@content.Title</span>
