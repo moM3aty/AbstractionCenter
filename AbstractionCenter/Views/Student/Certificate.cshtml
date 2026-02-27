@@ -29,7 +29,7 @@
         }
 
         /* إعدادات الطباعة الدقيقة A4 Landscape */
-        @page {
+        @@page {
             size: A4 landscape;
             margin: 0;
         }
@@ -352,7 +352,7 @@
         .btn-royal:hover { transform: translateY(-3px); }
 
         /* استعلامات الشاشة للموبايل */
-        @media screen and (max-width: 1100px) {
+        @@media screen and (max-width: 1100px) {
             .cert-scroll-wrapper {
                 justify-content: flex-start;
                 align-items: flex-start;
@@ -362,7 +362,7 @@
             }
         }
 
-        @media screen and (max-width: 768px) {
+        @@media screen and (max-width: 768px) {
             .controls-overlay {
                 position: static;
                 transform: none;
@@ -383,7 +383,7 @@
         }
 
         /* تنظيف إعدادات الطباعة للحصول على دقة 100% */
-        @media print {
+        @@media print {
             html, body {
                 width: 297mm;
                 height: 210mm;

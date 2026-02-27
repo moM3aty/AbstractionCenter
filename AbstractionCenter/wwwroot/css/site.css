@@ -83,7 +83,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .logo {
-    font-size: 1.8rem;
+    font-size: 1.5rem;
     font-weight: 900;
     color: var(--primary-color);
     display: flex;
@@ -105,15 +105,15 @@ h1, h2, h3, h4, h5, h6 {
 .nav-links {
     display: flex;
     list-style: none;
-    gap: 35px;
+    gap: 20px;
 }
 
     .nav-links a {
         font-weight: 700;
-        font-size: 1.05rem;
+        font-size: 1rem;
         color: var(--text-dark);
         position: relative;
-        padding: 5px 0;
+        padding: 5px;
     }
 
         .nav-links a::after {

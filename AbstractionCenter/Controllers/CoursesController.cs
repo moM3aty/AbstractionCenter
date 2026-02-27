@@ -52,8 +52,15 @@ namespace AbstractionCenter.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> SubmitRegistration(int batchId, string fullName, string email, string specialization, string level, string whatsAppNumber, string telegramNumber, Dictionary<int, string> customAnswers)
+        public async Task<IActionResult> SubmitRegistration(int batchId, string fullName, string email, string specialization, string level, string whatsAppNumber, string telegramNumber, Dictionary<string, string> customAnswers)
         {
+            // فحص أمان إضافي لمنع انهيار الموقع إذا كان رقم الدفعة غير صالح
+            if (batchId <= 0)
+            {
+                TempData["ErrorMessage"] = "حدث خطأ في قراءة بيانات الدفعة. يرجى العودة لصفحة البرامج والمحاولة من جديد.";
+                return RedirectToAction("Open");
+            }
+
             // التحقق مما إذا كان الإيميل مسجل مسبقاً في هذه الدفعة
             var existingRequest = await _context.RegistrationRequests.AnyAsync(r => r.BatchId == batchId && r.Email == email && r.Status != RequestStatus.Rejected);
             if (existingRequest)
@@ -82,12 +89,13 @@ namespace AbstractionCenter.Controllers
             {
                 foreach (var answer in customAnswers)
                 {
-                    if (!string.IsNullOrWhiteSpace(answer.Value))
+                    // التحويل الآمن للمفتاح لمنع خطأ FormatException نهائياً
+                    if (int.TryParse(answer.Key, out int questionId) && !string.IsNullOrWhiteSpace(answer.Value))
                     {
                         _context.RegistrationAnswers.Add(new RegistrationAnswer
                         {
                             RegistrationRequestId = newRequest.Id,
-                            CourseQuestionId = answer.Key,
+                            CourseQuestionId = questionId,
                             AnswerText = answer.Value
                         });
                     }
@@ -99,7 +107,7 @@ namespace AbstractionCenter.Controllers
             return RedirectToAction("Payment", new { requestId = newRequest.Id });
         }
 
-        // --- صفحة الدفع ---
+
         [HttpGet]
         public async Task<IActionResult> Payment(int requestId)
         {
