@@ -9,189 +9,189 @@ build_property.EnforceExtendedAnalyzerRules =
 build_property._SupportedPlatformList = Linux,macOS,Windows
 build_property.RootNamespace = AbstractionCenter
 build_property.RootNamespace = AbstractionCenter
-build_property.ProjectDir = C:\Users\MOHAMED ABO-ELM3ATY\Downloads\AbstractionCenter\AbstractionCenter\
+build_property.ProjectDir = D:\Dev\AbstractionCenter\AbstractionCenter\
 build_property.EnableComHosting = 
 build_property.EnableGeneratedComInterfaceComImportInterop = 
 build_property.RazorLangVersion = 8.0
 build_property.SupportLocalizedComponentNames = 
 build_property.GenerateRazorMetadataSourceChecksumAttributes = 
-build_property.MSBuildProjectDirectory = C:\Users\MOHAMED ABO-ELM3ATY\Downloads\AbstractionCenter\AbstractionCenter
+build_property.MSBuildProjectDirectory = D:\Dev\AbstractionCenter\AbstractionCenter
 build_property._RazorSourceGeneratorDebug = 
 build_property.EffectiveAnalysisLevelStyle = 8.0
 build_property.EnableCodeStyleSeverity = 
 
-[C:/Users/MOHAMED ABO-ELM3ATY/Downloads/AbstractionCenter/AbstractionCenter/Views/Account/AccessDenied.cshtml]
+[D:/Dev/AbstractionCenter/AbstractionCenter/Views/Account/AccessDenied.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWNjb3VudFxBY2Nlc3NEZW5pZWQuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/MOHAMED ABO-ELM3ATY/Downloads/AbstractionCenter/AbstractionCenter/Views/Account/Login.cshtml]
+[D:/Dev/AbstractionCenter/AbstractionCenter/Views/Account/Login.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWNjb3VudFxMb2dpbi5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/MOHAMED ABO-ELM3ATY/Downloads/AbstractionCenter/AbstractionCenter/Views/Account/SetPassword.cshtml]
+[D:/Dev/AbstractionCenter/AbstractionCenter/Views/Account/SetPassword.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWNjb3VudFxTZXRQYXNzd29yZC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/MOHAMED ABO-ELM3ATY/Downloads/AbstractionCenter/AbstractionCenter/Views/Admin/Certificates.cshtml]
+[D:/Dev/AbstractionCenter/AbstractionCenter/Views/Admin/Certificates.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWRtaW5cQ2VydGlmaWNhdGVzLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/MOHAMED ABO-ELM3ATY/Downloads/AbstractionCenter/AbstractionCenter/Views/Admin/CreateCourse.cshtml]
+[D:/Dev/AbstractionCenter/AbstractionCenter/Views/Admin/CreateCourse.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWRtaW5cQ3JlYXRlQ291cnNlLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/MOHAMED ABO-ELM3ATY/Downloads/AbstractionCenter/AbstractionCenter/Views/Admin/CreateStudent.cshtml]
+[D:/Dev/AbstractionCenter/AbstractionCenter/Views/Admin/CreateStudent.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWRtaW5cQ3JlYXRlU3R1ZGVudC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/MOHAMED ABO-ELM3ATY/Downloads/AbstractionCenter/AbstractionCenter/Views/Admin/EditBatch.cshtml]
+[D:/Dev/AbstractionCenter/AbstractionCenter/Views/Admin/EditBatch.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWRtaW5cRWRpdEJhdGNoLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/MOHAMED ABO-ELM3ATY/Downloads/AbstractionCenter/AbstractionCenter/Views/Admin/EditCourse.cshtml]
+[D:/Dev/AbstractionCenter/AbstractionCenter/Views/Admin/EditCourse.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWRtaW5cRWRpdENvdXJzZS5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/MOHAMED ABO-ELM3ATY/Downloads/AbstractionCenter/AbstractionCenter/Views/Admin/EditStudent.cshtml]
+[D:/Dev/AbstractionCenter/AbstractionCenter/Views/Admin/EditStudent.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWRtaW5cRWRpdFN0dWRlbnQuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/MOHAMED ABO-ELM3ATY/Downloads/AbstractionCenter/AbstractionCenter/Views/Admin/Index.cshtml]
+[D:/Dev/AbstractionCenter/AbstractionCenter/Views/Admin/Index.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWRtaW5cSW5kZXguY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/MOHAMED ABO-ELM3ATY/Downloads/AbstractionCenter/AbstractionCenter/Views/Admin/InstructorApplications.cshtml]
+[D:/Dev/AbstractionCenter/AbstractionCenter/Views/Admin/InstructorApplications.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWRtaW5cSW5zdHJ1Y3RvckFwcGxpY2F0aW9ucy5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/MOHAMED ABO-ELM3ATY/Downloads/AbstractionCenter/AbstractionCenter/Views/Admin/ManageBatches.cshtml]
+[D:/Dev/AbstractionCenter/AbstractionCenter/Views/Admin/ManageBatches.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWRtaW5cTWFuYWdlQmF0Y2hlcy5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/MOHAMED ABO-ELM3ATY/Downloads/AbstractionCenter/AbstractionCenter/Views/Admin/ManageCourses.cshtml]
+[D:/Dev/AbstractionCenter/AbstractionCenter/Views/Admin/ManageCourses.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWRtaW5cTWFuYWdlQ291cnNlcy5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/MOHAMED ABO-ELM3ATY/Downloads/AbstractionCenter/AbstractionCenter/Views/Admin/ManageInstructors.cshtml]
+[D:/Dev/AbstractionCenter/AbstractionCenter/Views/Admin/ManageInstructors.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWRtaW5cTWFuYWdlSW5zdHJ1Y3RvcnMuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/MOHAMED ABO-ELM3ATY/Downloads/AbstractionCenter/AbstractionCenter/Views/Admin/ManageUsers.cshtml]
+[D:/Dev/AbstractionCenter/AbstractionCenter/Views/Admin/ManageUsers.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWRtaW5cTWFuYWdlVXNlcnMuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/MOHAMED ABO-ELM3ATY/Downloads/AbstractionCenter/AbstractionCenter/Views/Admin/RegistrationDetails.cshtml]
+[D:/Dev/AbstractionCenter/AbstractionCenter/Views/Admin/RegistrationDetails.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWRtaW5cUmVnaXN0cmF0aW9uRGV0YWlscy5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/MOHAMED ABO-ELM3ATY/Downloads/AbstractionCenter/AbstractionCenter/Views/Admin/RegistrationRequests.cshtml]
+[D:/Dev/AbstractionCenter/AbstractionCenter/Views/Admin/RegistrationRequests.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWRtaW5cUmVnaXN0cmF0aW9uUmVxdWVzdHMuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/MOHAMED ABO-ELM3ATY/Downloads/AbstractionCenter/AbstractionCenter/Views/Courses/Open.cshtml]
+[D:/Dev/AbstractionCenter/AbstractionCenter/Views/Courses/Open.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQ291cnNlc1xPcGVuLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/MOHAMED ABO-ELM3ATY/Downloads/AbstractionCenter/AbstractionCenter/Views/Courses/Payment.cshtml]
+[D:/Dev/AbstractionCenter/AbstractionCenter/Views/Courses/Payment.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQ291cnNlc1xQYXltZW50LmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/MOHAMED ABO-ELM3ATY/Downloads/AbstractionCenter/AbstractionCenter/Views/Courses/PaymentSuccess.cshtml]
+[D:/Dev/AbstractionCenter/AbstractionCenter/Views/Courses/PaymentSuccess.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQ291cnNlc1xQYXltZW50U3VjY2Vzcy5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/MOHAMED ABO-ELM3ATY/Downloads/AbstractionCenter/AbstractionCenter/Views/Courses/Register.cshtml]
+[D:/Dev/AbstractionCenter/AbstractionCenter/Views/Courses/Register.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQ291cnNlc1xSZWdpc3Rlci5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/MOHAMED ABO-ELM3ATY/Downloads/AbstractionCenter/AbstractionCenter/Views/Home/About.cshtml]
+[D:/Dev/AbstractionCenter/AbstractionCenter/Views/Home/About.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxBYm91dC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/MOHAMED ABO-ELM3ATY/Downloads/AbstractionCenter/AbstractionCenter/Views/Home/Contact.cshtml]
+[D:/Dev/AbstractionCenter/AbstractionCenter/Views/Home/Contact.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxDb250YWN0LmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/MOHAMED ABO-ELM3ATY/Downloads/AbstractionCenter/AbstractionCenter/Views/Home/Index.cshtml]
+[D:/Dev/AbstractionCenter/AbstractionCenter/Views/Home/Index.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxJbmRleC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/MOHAMED ABO-ELM3ATY/Downloads/AbstractionCenter/AbstractionCenter/Views/Home/JoinAsInstructor.cshtml]
+[D:/Dev/AbstractionCenter/AbstractionCenter/Views/Home/JoinAsInstructor.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxKb2luQXNJbnN0cnVjdG9yLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/MOHAMED ABO-ELM3ATY/Downloads/AbstractionCenter/AbstractionCenter/Views/Home/Staff.cshtml]
+[D:/Dev/AbstractionCenter/AbstractionCenter/Views/Home/Staff.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxTdGFmZi5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/MOHAMED ABO-ELM3ATY/Downloads/AbstractionCenter/AbstractionCenter/Views/Home/Tracks.cshtml]
+[D:/Dev/AbstractionCenter/AbstractionCenter/Views/Home/Tracks.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxUcmFja3MuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/MOHAMED ABO-ELM3ATY/Downloads/AbstractionCenter/AbstractionCenter/Views/Home/VerifyCertificate.cshtml]
+[D:/Dev/AbstractionCenter/AbstractionCenter/Views/Home/VerifyCertificate.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxWZXJpZnlDZXJ0aWZpY2F0ZS5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/MOHAMED ABO-ELM3ATY/Downloads/AbstractionCenter/AbstractionCenter/Views/Instructor/Dashboard.cshtml]
+[D:/Dev/AbstractionCenter/AbstractionCenter/Views/Instructor/Dashboard.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSW5zdHJ1Y3RvclxEYXNoYm9hcmQuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/MOHAMED ABO-ELM3ATY/Downloads/AbstractionCenter/AbstractionCenter/Views/Instructor/ManageBatch.cshtml]
+[D:/Dev/AbstractionCenter/AbstractionCenter/Views/Instructor/ManageBatch.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSW5zdHJ1Y3RvclxNYW5hZ2VCYXRjaC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/MOHAMED ABO-ELM3ATY/Downloads/AbstractionCenter/AbstractionCenter/Views/Instructor/ManageLessonDetails.cshtml]
+[D:/Dev/AbstractionCenter/AbstractionCenter/Views/Instructor/ManageLessonDetails.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSW5zdHJ1Y3RvclxNYW5hZ2VMZXNzb25EZXRhaWxzLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/MOHAMED ABO-ELM3ATY/Downloads/AbstractionCenter/AbstractionCenter/Views/Instructor/ViewSubmissions.cshtml]
+[D:/Dev/AbstractionCenter/AbstractionCenter/Views/Instructor/ViewSubmissions.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSW5zdHJ1Y3RvclxWaWV3U3VibWlzc2lvbnMuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/MOHAMED ABO-ELM3ATY/Downloads/AbstractionCenter/AbstractionCenter/Views/Shared/Error.cshtml]
+[D:/Dev/AbstractionCenter/AbstractionCenter/Views/Shared/Error.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXEVycm9yLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/MOHAMED ABO-ELM3ATY/Downloads/AbstractionCenter/AbstractionCenter/Views/Shared/_AdminLayout.cshtml]
+[D:/Dev/AbstractionCenter/AbstractionCenter/Views/Shared/_AdminLayout.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXF9BZG1pbkxheW91dC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/MOHAMED ABO-ELM3ATY/Downloads/AbstractionCenter/AbstractionCenter/Views/Shared/_ValidationScriptsPartial.cshtml]
+[D:/Dev/AbstractionCenter/AbstractionCenter/Views/Shared/_ValidationScriptsPartial.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXF9WYWxpZGF0aW9uU2NyaXB0c1BhcnRpYWwuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/MOHAMED ABO-ELM3ATY/Downloads/AbstractionCenter/AbstractionCenter/Views/SiteSettings/Index.cshtml]
+[D:/Dev/AbstractionCenter/AbstractionCenter/Views/SiteSettings/Index.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2l0ZVNldHRpbmdzXEluZGV4LmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/MOHAMED ABO-ELM3ATY/Downloads/AbstractionCenter/AbstractionCenter/Views/Student/BatchDetails.cshtml]
+[D:/Dev/AbstractionCenter/AbstractionCenter/Views/Student/BatchDetails.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU3R1ZGVudFxCYXRjaERldGFpbHMuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/MOHAMED ABO-ELM3ATY/Downloads/AbstractionCenter/AbstractionCenter/Views/Student/Certificate.cshtml]
+[D:/Dev/AbstractionCenter/AbstractionCenter/Views/Student/Certificate.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU3R1ZGVudFxDZXJ0aWZpY2F0ZS5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/MOHAMED ABO-ELM3ATY/Downloads/AbstractionCenter/AbstractionCenter/Views/Student/Dashboard.cshtml]
+[D:/Dev/AbstractionCenter/AbstractionCenter/Views/Student/Dashboard.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU3R1ZGVudFxEYXNoYm9hcmQuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/MOHAMED ABO-ELM3ATY/Downloads/AbstractionCenter/AbstractionCenter/Views/Student/Notifications.cshtml]
+[D:/Dev/AbstractionCenter/AbstractionCenter/Views/Student/Notifications.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU3R1ZGVudFxOb3RpZmljYXRpb25zLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/MOHAMED ABO-ELM3ATY/Downloads/AbstractionCenter/AbstractionCenter/Views/Student/TakeExam.cshtml]
+[D:/Dev/AbstractionCenter/AbstractionCenter/Views/Student/TakeExam.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU3R1ZGVudFxUYWtlRXhhbS5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/MOHAMED ABO-ELM3ATY/Downloads/AbstractionCenter/AbstractionCenter/Views/_ViewImports.cshtml]
+[D:/Dev/AbstractionCenter/AbstractionCenter/Views/_ViewImports.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcX1ZpZXdJbXBvcnRzLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/MOHAMED ABO-ELM3ATY/Downloads/AbstractionCenter/AbstractionCenter/Views/_ViewStart.cshtml]
+[D:/Dev/AbstractionCenter/AbstractionCenter/Views/_ViewStart.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcX1ZpZXdTdGFydC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/MOHAMED ABO-ELM3ATY/Downloads/AbstractionCenter/AbstractionCenter/Views/Shared/_Layout.cshtml]
+[D:/Dev/AbstractionCenter/AbstractionCenter/Views/Shared/_Layout.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXF9MYXlvdXQuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = b-v80ah9xsmv
