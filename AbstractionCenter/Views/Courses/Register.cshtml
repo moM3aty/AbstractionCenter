@@ -104,7 +104,7 @@
             color: var(--secondary-color);
         }
 
-    /* --- CAPTCHA Styles --- */
+    /* --- Canvas CAPTCHA Styles (Fixed) --- */
     .captcha-container {
         background: #f8fafc;
         border: 1px dashed #cbd5e1;
@@ -120,33 +120,40 @@
         display: flex;
         align-items: center;
         gap: 15px;
+        flex-wrap: wrap; /* يمنع انضغاط العناصر وينزلها سطر جديد لو الشاشة صغيرة */
     }
 
     .captcha-canvas {
         background: white;
         border: 2px solid #e2e8f0;
         border-radius: 10px;
-        letter-spacing: 5px;
-        flex-shrink: 0; /* التعديل هنا لمنع الانضغاط */
-        padding : 0px 20px;
-        width: 210px;
+        width: 200px;
+        height: 60px;
+        flex-shrink: 0; /* يمنع تقلص الصورة نهائياً */
+        display: block;
     }
 
     .btn-refresh-captcha {
         background: var(--primary-color);
         color: var(--secondary-color);
         border: none;
-        width: 50px;
-        height: 50px;
+        width: 60px;
+        height: 60px;
         border-radius: 10px;
         cursor: pointer;
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 1.2rem;
+        font-size: 1.5rem;
         transition: 0.3s;
-        flex-shrink: 0; /* التعديل هنا لمنع الانضغاط */
+        flex-shrink: 0; /* يمنع تقلص الزر نهائياً */
     }
+
+        .btn-refresh-captcha:hover {
+            background: var(--secondary-color);
+            color: var(--primary-color);
+            transform: rotate(180deg);
+        }
 
     .btn-submit-reg {
         background: linear-gradient(135deg, var(--secondary-color), #fef08a);
@@ -175,48 +182,56 @@
 
     /* === Media Queries === */
     @@media (max-width: 768px) {
-        .form-wrapper {
-            padding: 100px 15px 60px;
+        .form-wrapper
+
+    {
+        padding: 100px 15px 60px;
+    }
+
+    .form-card {
+        padding: 30px 20px;
+        border-radius: 20px;
+    }
+
+    .course-header-card {
+        padding: 25px 15px;
+        border-radius: 16px;
+    }
+
+        .course-header-card h2 {
+            font-size: 1.6rem;
         }
 
-        .form-card {
-            padding: 30px 20px;
-            border-radius: 20px;
-        }
+    .form-grid {
+        grid-template-columns: 1fr;
+        gap: 0;
+    }
 
-        .course-header-card {
-            padding: 25px 15px;
-            border-radius: 16px;
-        }
+    .form-group {
+        margin-bottom: 20px;
+    }
 
-            .course-header-card h2 {
-                font-size: 1.6rem;
-            }
+    .section-title {
+        font-size: 1.3rem;
+        margin: 30px 0 20px;
+    }
 
-        .form-grid {
-            grid-template-columns: 1fr;
-            gap: 0;
-        }
+    .btn-submit-reg {
+        padding: 16px;
+        font-size: 1.1rem;
+        margin-top: 20px;
+    }
 
-        .form-group {
-            margin-bottom: 20px;
-        }
+    .captcha-box {
+        flex-direction: row;
+        justify-content: flex-start;
+    }
 
-        .section-title {
-            font-size: 1.3rem;
-            margin: 30px 0 20px;
-        }
+    #captchaInput {
+        width: 100%; /* يأخذ العرض كاملاً في الموبايل تحت الصورة */
+        max-width: 100% !important;
+    }
 
-        .btn-submit-reg {
-            padding: 16px;
-            font-size: 1.1rem;
-            margin-top: 20px;
-        }
-
-        .captcha-box {
-            flex-direction: column;
-            align-items: flex-start;
-        }
     }
 </style>
 
@@ -303,20 +318,19 @@
                 }
             }
 
-            <!-- وحدة التحقق الأمني CAPTCHA -->
+            <!-- وحدة التحقق الأمني (Canvas CAPTCHA) -->
             <div class="captcha-container">
                 <label style="font-weight: 800; color: var(--primary-color); margin: 0;">
                     <i class="fa-solid fa-shield-halved" style="color: var(--secondary-color);"></i> @(isRtl ? "تحقق أمني (للأمان)" : "Security Check")
                 </label>
-                <p style="font-size: 0.9rem; color: #64748b; margin: 0 0 10px 0;">@(isRtl ? "يرجى كتابة الحروف والأرقام الظاهرة في الصورة أدناه لتأكيد أنك لست روبوتاً." : "Please type the characters shown in the image below.")</p>
+                <p style="font-size: 0.9rem; color: #64748b; margin: 0;">@(isRtl ? "يرجى كتابة الحروف والأرقام الظاهرة في الصورة أدناه لتأكيد أنك لست روبوتاً." : "Please type the characters shown in the image below.")</p>
 
                 <div class="captcha-box">
-                    <!-- تم تكبير العرض والطول هنا -->
                     <canvas id="captchaCanvas" width="200" height="60" class="captcha-canvas"></canvas>
                     <button type="button" onclick="generateCaptcha()" class="btn-refresh-captcha" title="@(isRtl ? "تغيير الرمز" : "Refresh")">
                         <i class="fa-solid fa-arrows-rotate"></i>
                     </button>
-                    <input type="text" id="captchaInput" class="form-control" placeholder="@(isRtl ? "أدخل الرمز هنا..." : "Enter code here...")" required style="max-width: 250px; text-transform: uppercase;" autocomplete="off" />
+                    <input type="text" id="captchaInput" class="form-control" placeholder="@(isRtl ? "أدخل الرمز هنا..." : "Enter code here...")" required style="flex-grow: 1; max-width: 300px; text-transform: uppercase; font-size: 1.2rem; font-weight: bold; letter-spacing: 2px;" autocomplete="off" />
                 </div>
                 <span id="captchaError" style="display: none; color: #ef4444; font-weight: bold; font-size: 0.95rem;">
                     <i class="fa-solid fa-circle-exclamation"></i> @(isRtl ? "الرمز غير صحيح، يرجى المحاولة مرة أخرى." : "Incorrect code, please try again.")
@@ -343,7 +357,7 @@
             ctx.fillStyle = '#ffffff';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-            // توليد النص العشوائي
+            // توليد 5 حروف وأرقام عشوائية
             const chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
             currentCaptchaCode = "";
             for (let i = 0; i < 5; i++) {
@@ -360,34 +374,39 @@
                 ctx.stroke();
             }
 
-            // رسم النص بانحرافات بسيطة
-            ctx.font = 'bold 30px "Courier New", monospace';
+            // رسم النص بشكل رياضي دقيق ليتوسط الـ Canvas
+            ctx.font = 'bold 34px "Courier New", monospace';
             ctx.fillStyle = '#0b1120';
             ctx.textBaseline = 'middle';
+            ctx.textAlign = 'center';
+
+            const totalWidth = canvas.width;
+            const startX = totalWidth / 6; // توزيع 5 مسافات متساوية
 
             for (let i = 0; i < currentCaptchaCode.length; i++) {
                 ctx.save();
-                // توسيع المسافات بين الحروف لتتناسب مع الحجم الجديد
-                ctx.translate(30 + (i * 35), 30);
-                ctx.rotate((Math.random() - 0.5) * 0.4);
-                ctx.fillText(currentCaptchaCode[i], -10, 0);
+                const x = startX + (i * startX);
+                const y = canvas.height / 2;
+                ctx.translate(x, y);
+                ctx.rotate((Math.random() - 0.5) * 0.4); // ميلان بسيط
+                ctx.fillText(currentCaptchaCode[i], 0, 0);
                 ctx.restore();
             }
         }
 
-        // تشغيل توليد الكود عند تحميل الصفحة
+        // توليد الكود عند فتح الصفحة
         document.addEventListener("DOMContentLoaded", generateCaptcha);
 
-        // التحقق من صحة الكود عند محاولة الإرسال
+        // التحقق عند الإرسال
         document.getElementById('registrationForm').addEventListener('submit', function(e) {
             const inputVal = document.getElementById('captchaInput').value.toUpperCase();
 
             if (inputVal !== currentCaptchaCode) {
-                e.preventDefault(); // منع إرسال النموذج
+                e.preventDefault();
                 document.getElementById('captchaError').style.display = 'block';
                 document.getElementById('captchaInput').value = '';
                 document.getElementById('captchaInput').focus();
-                generateCaptcha(); // توليد كود جديد
+                generateCaptcha();
             } else {
                 document.getElementById('captchaError').style.display = 'none';
             }
