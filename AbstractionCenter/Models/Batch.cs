@@ -19,6 +19,9 @@ namespace AbstractionCenter.Models.Entities
 
         // --- الخصائص الجديدة ---
 
+        // رابط مجموعة التلغرام
+        public string? TelegramGroupUrl { get; set; }
+
         // المحاضرون الإضافيون (يتم حفظ الـ IDs الخاصة بهم كنص مفصول بفاصلة)
         public string? AdditionalInstructorIds { get; set; }
 

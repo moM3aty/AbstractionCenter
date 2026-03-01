@@ -42,7 +42,7 @@ namespace AbstractionCenter.Data
                 if (createPowerUser.Succeeded) await userManager.AddToRoleAsync(newAdmin, "Admin");
             }
 
-            // 3. إنشاء إعدادات الموقع الأساسية (تم تزويدها بجميع حقول الموقع)
+            // 3. إنشاء إعدادات الموقع الأساسية (مضاف إليها إعدادات الشهادة)
             if (!context.SiteSettings.Any())
             {
                 var defaultSettings = new List<SiteSetting>
@@ -125,7 +125,18 @@ namespace AbstractionCenter.Data
                     new SiteSetting { Key = "Verify_HeroSubtitle", Value = "أدخل رقم الشهادة الفريد (Serial Number) للتحقق من موثوقيتها واعتمادها.", ValueEn = "Enter the unique Serial Number to verify its authenticity and approval.", Group = "Verify", DisplayName = "وصف التحقق" },
 
                     // --- تعليمات الدفع ---
-                    new SiteSetting { Key = "PaymentInstructions", Value = "يرجى تحويل رسوم الدورة إلى الحساب البنكي التالي: \n بنك كذا - حساب رقم: 00000000 \n وإرسال صورة الإيصال عبر الواتساب.", ValueEn = "Please transfer the course fees to the following bank account: \n Bank XYZ - Account No: 00000000 \n and send the receipt image via WhatsApp.", Group = "Payment", DisplayName = "تعليمات الدفع" }
+                    new SiteSetting { Key = "PaymentInstructions", Value = "يرجى تحويل رسوم الدورة إلى الحساب البنكي التالي: \n بنك كذا - حساب رقم: 00000000 \n وإرسال صورة الإيصال عبر الواتساب.", ValueEn = "Please transfer the course fees to the following bank account: \n Bank XYZ - Account No: 00000000 \n and send the receipt image via WhatsApp.", Group = "Payment", DisplayName = "تعليمات الدفع" },
+
+                    // --- إعدادات نصوص الشهادة المعتمدة (الجديدة) ---
+                    new SiteSetting { Key = "Cert_Title", Value = "شهادة إتمام", ValueEn = "Certificate of Completion", Group = "Certificate", DisplayName = "العنوان الرئيسي" },
+                    new SiteSetting { Key = "Cert_Subtitle", Value = "Certificate of Completion", ValueEn = "شهادة إتمام", Group = "Certificate", DisplayName = "العنوان الفرعي" },
+                    new SiteSetting { Key = "Cert_Intro", Value = "يشهد مركز أبستراكشن للتدريب والاستشارات بأن الفاضل/ـة:", ValueEn = "Abstraction Center for Training & Consulting certifies that:", Group = "Certificate", DisplayName = "النص الافتتاحي" },
+                    new SiteSetting { Key = "Cert_Statement1", Value = "قد اجتاز/ت بنجاح كافة متطلبات المسار التدريبي التخصصي المكثف بعنوان:", ValueEn = "Has successfully completed all requirements of the intensive specialized training track titled:", Group = "Certificate", DisplayName = "نص اجتياز المتطلبات" },
+                    new SiteSetting { Key = "Cert_Statement2", Value = "بمعدل ساعات تدريبية معتمدة، مع إتمام كافة المشاريع العملية والتقييمات المقررة بنجاح،", ValueEn = "with accredited training hours, successfully completing all practical projects and scheduled assessments,", Group = "Certificate", DisplayName = "نص الساعات والمشاريع" },
+                    new SiteSetting { Key = "Cert_DateText", Value = "وذلك في تاريخ", ValueEn = "on the date of", Group = "Certificate", DisplayName = "نص التاريخ" },
+                    new SiteSetting { Key = "Cert_AdminName", Value = "إدارة الأكاديمية", ValueEn = "Academy Administration", Group = "Certificate", DisplayName = "اسم جهة الاعتماد" },
+                    new SiteSetting { Key = "Cert_AdminTitle", Value = "مركز أبستراكشن للتدريب", ValueEn = "Abstraction Training Center", Group = "Certificate", DisplayName = "صفة جهة الاعتماد" },
+                    new SiteSetting { Key = "Cert_ScanText", Value = "امسح للتحقق من الموثوقية", ValueEn = "Scan to Verify", Group = "Certificate", DisplayName = "نص الـ QR Code" }
                 };
                 context.SiteSettings.AddRange(defaultSettings);
                 await context.SaveChangesAsync();

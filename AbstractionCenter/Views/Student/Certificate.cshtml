@@ -1,12 +1,25 @@
 ﻿@using Microsoft.AspNetCore.Localization
+@inject AbstractionCenter.Data.ApplicationDbContext DbContext
 @model AbstractionCenter.Models.Entities.Certificate
 @{
     Layout = null;
 
-    // اكتشاف اللغة الحالية
     var requestCulture = Context.Features.Get<IRequestCultureFeature>();
     var currentCulture = requestCulture?.RequestCulture.UICulture.Name ?? "ar";
     bool isRtl = currentCulture == "ar";
+
+    // جلب الإعدادات الخاصة بالشهادة
+    var settingsDict = DbContext.SiteSettings.ToDictionary(s => s.Key, s => s);
+    string GetSetting(string key, string fallbackAr = "", string fallbackEn = "") 
+    {
+        if (settingsDict.ContainsKey(key))
+        {
+            var setting = settingsDict[key];
+            if (isRtl) return setting.Value;
+            return !string.IsNullOrEmpty(setting.ValueEn) ? setting.ValueEn : setting.Value;
+        }
+        return isRtl ? fallbackAr : fallbackEn;
+    }
 }
 
 <!DOCTYPE html>
@@ -14,9 +27,8 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@(isRtl ? "شهادة إتمام" : "Certificate of Completion") - @Model.Student.FullName</title>
+    <title>@GetSetting("Cert_Title", "شهادة إتمام", "Certificate of Completion") - @Model.Student.FullName</title>
 
-    <!-- خطوط عربية وإنجليزية فاخرة -->
     <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Cairo:wght@400;600;700;900&family=Playfair+Display:wght@600;700;900&family=Outfit:wght@400;600;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
 
@@ -28,7 +40,6 @@
             --cert-bg: #ffffff;
         }
 
-        /* إعدادات الطباعة الدقيقة A4 Landscape */
         @@page {
             size: A4 landscape;
             margin: 0;
@@ -51,7 +62,6 @@
             min-height: 100vh;
         }
 
-        /* حاوية التمرير للهواتف الذكية */
         .cert-scroll-wrapper {
             width: 100%;
             overflow-x: auto;
@@ -60,7 +70,6 @@
             padding: 20px;
         }
 
-        /* الحاوية الرئيسية بمقاسات A4 دقيقة (297mm x 210mm) */
         .certificate-canvas {
             width: 297mm;
             height: 210mm;
@@ -72,10 +81,9 @@
             box-shadow: 0 0 50px rgba(0,0,0,0.5);
             page-break-after: avoid;
             page-break-inside: avoid;
-            flex-shrink: 0; /* منع الانضغاط داخل الـ flex */
+            flex-shrink: 0;
         }
 
-        /* الخلفية الزخرفية */
         .cert-bg-overlay {
             position: absolute;
             inset: 0;
@@ -84,7 +92,6 @@
             z-index: 1;
         }
 
-        /* إطارات الحماية والزخرفة */
         .cert-border-outer {
             position: absolute;
             inset: 5mm;
@@ -101,7 +108,6 @@
             z-index: 2;
         }
 
-        /* الأركان الكلاسيكية */
         .corner {
             position: absolute;
             width: 80px;
@@ -115,7 +121,6 @@
         .corner-br { bottom: 0; right: 0; border-left: none; border-top: none; }
         .corner-bl { bottom: 0; left: 0; border-right: none; border-top: none; }
 
-        /* المحتوى المركزي */
         .cert-main-wrapper {
             flex: 1;
             z-index: 5;
@@ -126,7 +131,6 @@
             background: rgba(255, 255, 255, 0.85);
         }
 
-        /* ترويسة الشهادة */
         .cert-header {
             display: flex;
             justify-content: space-between;
@@ -184,7 +188,6 @@
             font-size: 1rem;
         }
 
-        /* جسم الشهادة */
         .cert-body {
             flex: 1;
             display: flex;
@@ -260,7 +263,6 @@
             padding: 0 4px;
         }
 
-        /* تذييل الشهادة - الإجبار على البقاء في الأسفل */
         .cert-footer {
             display: flex;
             justify-content: space-between;
@@ -319,7 +321,6 @@
             color: #999;
         }
 
-        /* أزرار التحكم */
         .controls-overlay {
             position: fixed;
             bottom: 30px;
@@ -351,57 +352,29 @@
         .btn-white-action { background: white; color: var(--royal-navy); text-decoration: none; }
         .btn-royal:hover { transform: translateY(-3px); }
 
-        /* استعلامات الشاشة للموبايل */
         @@media screen and (max-width: 1100px) {
-            .cert-scroll-wrapper {
-                justify-content: flex-start;
-                align-items: flex-start;
-            }
-            body {
-                align-items: flex-start;
-            }
+            .cert-scroll-wrapper { justify-content: flex-start; align-items: flex-start; }
+            body { align-items: flex-start; }
         }
 
         @@media screen and (max-width: 768px) {
             .controls-overlay {
-                position: static;
-                transform: none;
-                flex-direction: column;
-                width: 100%;
-                padding: 0 20px;
-                margin-top: 20px;
+                position: static; transform: none; flex-direction: column;
+                width: 100%; padding: 0 20px; margin-top: 20px;
             }
-
-            .btn-royal {
-                width: 100%;
-                padding: 15px;
-            }
-            
-            body {
-                flex-direction: column;
-            }
+            .btn-royal { width: 100%; padding: 15px; }
+            body { flex-direction: column; }
         }
 
-        /* تنظيف إعدادات الطباعة للحصول على دقة 100% */
         @@media print {
             html, body {
-                width: 297mm;
-                height: 210mm;
-                background: white;
-                margin: 0;
-                padding: 0;
-                overflow: hidden;
+                width: 297mm; height: 210mm; background: white; margin: 0; padding: 0; overflow: hidden;
             }
-            
             .cert-scroll-wrapper { padding: 0; overflow: visible; display: block; }
             .controls-overlay { display: none !important; }
-            
             .certificate-canvas {
-                box-shadow: none !important;
-                margin: 0 !important;
-                padding: 10mm !important;
-                border: none !important;
-                transform: scale(1) !important;
+                box-shadow: none !important; margin: 0 !important; padding: 10mm !important;
+                border: none !important; transform: scale(1) !important;
             }
         }
     </style>
@@ -412,24 +385,21 @@
         <div class="certificate-canvas">
             <div class="cert-bg-overlay"></div>
 
-            <!-- Frames -->
             <div class="cert-border-outer"></div>
             <div class="cert-border-inner"></div>
 
-            <!-- Royal Corners -->
             <div class="corner corner-tr"></div>
             <div class="corner corner-tl"></div>
             <div class="corner corner-br"></div>
             <div class="corner corner-bl"></div>
 
             <div class="cert-main-wrapper">
-                <!-- Header Section -->
                 <header class="cert-header">
                     <div class="brand-box">
                         <i class="fa-solid fa-crown brand-logo-icon"></i>
                         <div class="brand-text">
-                            <h2>@(isRtl ? "أبستراكشن" : "Abstraction")</h2>
-                            <span>ABSTRACTION CENTER</span>
+                            <h2>@GetSetting("SiteName", "أبستراكشن", "Abstraction")</h2>
+                            <span>@(GetSetting("SiteName", "أبستراكشن", "Abstraction").ToUpper()) CENTER</span>
                         </div>
                     </div>
                     <div class="serial-tag">
@@ -438,31 +408,29 @@
                     </div>
                 </header>
 
-                <!-- Body Section -->
                 <div class="cert-body">
                     <div class="title-group">
-                        <h1 class="main-title">@(isRtl ? "شهادة إتمام" : "Certificate of Completion")</h1>
-                        <div class="sub-title">@(isRtl ? "Certificate of Completion" : "شهادة إتمام")</div>
+                        <h1 class="main-title">@GetSetting("Cert_Title", "شهادة إتمام", "Certificate of Completion")</h1>
+                        <div class="sub-title">@GetSetting("Cert_Subtitle", "Certificate of Completion", "شهادة إتمام")</div>
                     </div>
 
                     <p class="intro-phrase">
-                        @(isRtl ? "يشهد مركز أبستراكشن للتدريب والاستشارات بأن الفاضل/ـة:" : "Abstraction Center for Training & Consulting certifies that:")
+                        @GetSetting("Cert_Intro", "يشهد مركز أبستراكشن للتدريب والاستشارات بأن الفاضل/ـة:", "Abstraction Center for Training & Consulting certifies that:")
                     </p>
 
                     <div class="recipient-name">@Model.Student.FullName</div>
 
                     <p class="statement-text">
-                        @(isRtl ? "قد اجتاز/ت بنجاح كافة متطلبات المسار التدريبي التخصصي المكثف بعنوان:" : "Has successfully completed all requirements of the intensive specialized training track titled:")<br>
+                        @GetSetting("Cert_Statement1", "قد اجتاز/ت بنجاح كافة متطلبات المسار التدريبي التخصصي المكثف بعنوان:", "Has successfully completed all requirements of the intensive specialized training track titled:")<br>
 
                         <strong>@Model.Batch.Course.Title</strong><br>
 
-                        @(isRtl ? "بمعدل ساعات تدريبية معتمدة، مع إتمام كافة المشاريع العملية والتقييمات المقررة بنجاح،" : "with accredited training hours, successfully completing all practical projects and scheduled assessments,")<br>
+                        @GetSetting("Cert_Statement2", "بمعدل ساعات تدريبية معتمدة، مع إتمام كافة المشاريع العملية والتقييمات المقررة بنجاح،", "with accredited training hours, successfully completing all practical projects and scheduled assessments,")<br>
 
-                        @(isRtl ? "وذلك في تاريخ" : "on the date of") <strong>@Model.IssueDate.ToString("dd MMMM yyyy")</strong>.
+                        @GetSetting("Cert_DateText", "وذلك في تاريخ", "on the date of") <strong>@Model.IssueDate.ToString("dd MMMM yyyy")</strong>.
                     </p>
                 </div>
 
-                <!-- Footer Section -->
                 <footer class="cert-footer">
                     <div class="signature-box">
                         <div class="sig-line"></div>
@@ -474,20 +442,19 @@
                         <div class="qr-frame">
                             <img src="@ViewBag.QRCodeBase64" alt="Verify QR" />
                         </div>
-                        <div class="qr-text">@(isRtl ? "امسح للتحقق من الموثوقية" : "Scan to Verify")</div>
+                        <div class="qr-text">@GetSetting("Cert_ScanText", "امسح للتحقق من الموثوقية", "Scan to Verify")</div>
                     </div>
 
                     <div class="signature-box">
                         <div class="sig-line"></div>
-                        <div class="sig-name">@(isRtl ? "إدارة الأكاديمية" : "Academy Administration")</div>
-                        <div class="sig-rank">@(isRtl ? "مركز أبستراكشن للتدريب" : "Abstraction Training Center")</div>
+                        <div class="sig-name">@GetSetting("Cert_AdminName", "إدارة الأكاديمية", "Academy Administration")</div>
+                        <div class="sig-rank">@GetSetting("Cert_AdminTitle", "مركز أبستراكشن للتدريب", "Abstraction Training Center")</div>
                     </div>
                 </footer>
             </div>
         </div>
     </div>
 
-    <!-- UI Controls -->
     <div class="controls-overlay">
         <button class="btn-royal btn-gold-action" onclick="window.print()">
             <i class="fa-solid fa-file-pdf"></i> @(isRtl ? "حفظ الشهادة (PDF)" : "Save Certificate (PDF)")

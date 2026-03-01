@@ -16,7 +16,12 @@ namespace AbstractionCenter.Models.Entities
         public ApplicationUser Student { get; set; }
 
         [Required]
+        [Display(Name = "الاسم باللغة العربية")]
         public string FullName { get; set; }
+
+        [Required]
+        [Display(Name = "الاسم باللغة الإنجليزية")]
+        public string FullNameEn { get; set; }
 
         [Required]
         [EmailAddress]

@@ -290,6 +290,12 @@
         <h3 class="section-divider"><i class="fa-solid fa-globe"></i> إعدادات العرض للزوار (واجهة الموقع)</h3>
 
         <div class="form-group">
+            <label>رابط قناة التلغرام للدفعة (اختياري)</label>
+            <input type="url" asp-for="TelegramGroupUrl" class="form-control" placeholder="https://t.me/..." dir="ltr" />
+            <small style="color: #64748b; font-weight: bold; margin-top: 8px; display: block;">سيظهر هذا الرابط للطلاب داخل القاعة الدراسية للتواصل.</small>
+        </div>
+
+        <div class="form-group">
             <label>ملاحظة التنفيذ (تظهر أسفل عنوان الدورة كبديل لاسم المحاضر)</label>
             <input type="text" name="ExecutionNote" class="form-control" placeholder="Delivered by Abstraction Training Team" value="Delivered by Abstraction Training Team" />
         </div>

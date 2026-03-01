@@ -83,6 +83,54 @@
             padding- @(isRtl ? "left" : "right") : 50px;
         }
 
+    /* --- CAPTCHA Styles --- */
+    .captcha-container {
+        background: #f8fafc;
+        border: 1px dashed #cbd5e1;
+        padding: 20px;
+        border-radius: 16px;
+        margin-top: 30px;
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .captcha-box {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+    }
+
+    .captcha-canvas {
+        background: white;
+        border: 2px solid #e2e8f0;
+        border-radius: 10px;
+        letter-spacing: 5px;
+        flex-shrink: 0; /* منع الانضغاط */
+    }
+
+    .btn-refresh-captcha {
+        background: var(--primary-color);
+        color: var(--secondary-color);
+        border: none;
+        width: 50px;
+        height: 50px;
+        border-radius: 10px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.2rem;
+        transition: 0.3s;
+        flex-shrink: 0; /* منع الانضغاط */
+    }
+
+        .btn-refresh-captcha:hover {
+            background: var(--secondary-color);
+            color: var(--primary-color);
+            transform: rotate(180deg);
+        }
+
     .btn-submit-join {
         background: linear-gradient(135deg, var(--secondary-color), #fef08a);
         color: var(--primary-color);
@@ -107,7 +155,7 @@
             box-shadow: 0 20px 40px rgba(212, 175, 55, 0.5);
         }
 
-    /* === Media Queries للموبايل === */
+    /* === Media Queries === */
     @@media (max-width: 768px) {
         .join-hero {
             padding: 120px 0 80px;
@@ -136,6 +184,11 @@
             font-size: 1.1rem;
             padding: 15px;
         }
+
+        .captcha-box {
+            flex-direction: column;
+            align-items: flex-start;
+        }
     }
 </style>
 
@@ -156,7 +209,7 @@
             </div>
         }
 
-        <form asp-action="JoinAsInstructor" method="post" enctype="multipart/form-data">
+        <form asp-action="JoinAsInstructor" method="post" enctype="multipart/form-data" id="instructorForm">
             <div class="form-row">
                 <div class="form-group">
                     <label>@(isRtl ? "الاسم بالكامل" : "Full Name")</label>
@@ -196,9 +249,86 @@
                 </div>
             </div>
 
+            <!-- وحدة التحقق الأمني CAPTCHA -->
+            <div class="captcha-container">
+                <label style="font-weight: 800; color: var(--primary-color); margin: 0;">
+                    <i class="fa-solid fa-shield-halved" style="color: var(--secondary-color);"></i> @(isRtl ? "تحقق أمني (للأمان)" : "Security Check")
+                </label>
+                <p style="font-size: 0.9rem; color: #64748b; margin: 0 0 10px 0;">@(isRtl ? "يرجى كتابة الحروف والأرقام الظاهرة في الصورة أدناه لتأكيد أنك لست روبوتاً." : "Please type the characters shown in the image below.")</p>
+
+                <div class="captcha-box">
+                    <canvas id="captchaCanvas" width="200" height="60" class="captcha-canvas"></canvas>
+                    <button type="button" onclick="generateCaptcha()" class="btn-refresh-captcha" title="@(isRtl ? "تغيير الرمز" : "Refresh")">
+                        <i class="fa-solid fa-arrows-rotate"></i>
+                    </button>
+                    <input type="text" id="captchaInput" class="form-control" placeholder="@(isRtl ? "أدخل الرمز هنا..." : "Enter code here...")" required style="max-width: 250px; text-transform: uppercase;" autocomplete="off" />
+                </div>
+                <span id="captchaError" style="display: none; color: #ef4444; font-weight: bold; font-size: 0.95rem;">
+                    <i class="fa-solid fa-circle-exclamation"></i> @(isRtl ? "الرمز غير صحيح، يرجى المحاولة مرة أخرى." : "Incorrect code, please try again.")
+                </span>
+            </div>
+
             <button type="submit" class="btn-submit-join">
                 @(isRtl ? "إرسال الطلب الآن" : "Submit Application Now") <i class="fa-solid fa-paper-plane"></i>
             </button>
         </form>
     </div>
 </div>
+
+@section Scripts {
+    <script>
+        let currentCaptchaCode = "";
+
+        function generateCaptcha() {
+            const canvas = document.getElementById('captchaCanvas');
+            const ctx = canvas.getContext('2d');
+
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = '#ffffff';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            const chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+            currentCaptchaCode = "";
+            for (let i = 0; i < 5; i++) {
+                currentCaptchaCode += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+
+            for(let i = 0; i < 7; i++) {
+                ctx.beginPath();
+                ctx.moveTo(Math.random() * canvas.width, Math.random() * canvas.height);
+                ctx.lineTo(Math.random() * canvas.width, Math.random() * canvas.height);
+                ctx.strokeStyle = '#cbd5e1';
+                ctx.lineWidth = 2;
+                ctx.stroke();
+            }
+
+            ctx.font = 'bold 30px "Courier New", monospace';
+            ctx.fillStyle = '#0b1120';
+            ctx.textBaseline = 'middle';
+
+            for (let i = 0; i < currentCaptchaCode.length; i++) {
+                ctx.save();
+                ctx.translate(30 + (i * 35), 30);
+                ctx.rotate((Math.random() - 0.5) * 0.4);
+                ctx.fillText(currentCaptchaCode[i], -10, 0);
+                ctx.restore();
+            }
+        }
+
+        document.addEventListener("DOMContentLoaded", generateCaptcha);
+
+        document.getElementById('instructorForm').addEventListener('submit', function(e) {
+            const inputVal = document.getElementById('captchaInput').value.toUpperCase();
+
+            if (inputVal !== currentCaptchaCode) {
+                e.preventDefault();
+                document.getElementById('captchaError').style.display = 'block';
+                document.getElementById('captchaInput').value = '';
+                document.getElementById('captchaInput').focus();
+                generateCaptcha();
+            } else {
+                document.getElementById('captchaError').style.display = 'none';
+            }
+        });
+    </script>
+}

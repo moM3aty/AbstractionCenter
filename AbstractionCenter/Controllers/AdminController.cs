@@ -22,15 +22,28 @@ namespace AbstractionCenter.Controllers
         }
 
         // --- النظرة العامة للوحة القيادة ---
+        [HttpGet]
         public async Task<IActionResult> Index()
         {
-            var students = await _userManager.GetUsersInRoleAsync("Student");
-            var instructors = await _userManager.GetUsersInRoleAsync("Instructor");
+            // الإحصائيات العامة (أرقام سريعة)
+            var totalStudents = await _userManager.GetUsersInRoleAsync("Student");
+            ViewBag.TotalStudents = totalStudents.Count;
 
-            ViewBag.TotalStudents = students.Count;
-            ViewBag.ActiveInstructors = instructors.Count(i => i.IsActive);
             ViewBag.TotalCourses = await _context.Courses.CountAsync();
             ViewBag.PendingCertificates = await _context.Certificates.CountAsync(c => !c.IsApproved);
+
+            var instructors = await _userManager.GetUsersInRoleAsync("Instructor");
+            ViewBag.ActiveInstructors = instructors.Count(i => i.IsActive);
+
+            // --- الإضافة الجديدة: جلب الدفعات الحالية وعدد طلابها ---
+            var openBatchesStats = await _context.Batches
+                .Include(b => b.Course)
+                .Include(b => b.EnrolledStudents)
+                .Where(b => b.Status == BatchStatus.OpenForRegistration || b.Status == BatchStatus.InProgress)
+                .OrderByDescending(b => b.StartDate)
+                .ToListAsync();
+
+            ViewBag.OpenBatchesStats = openBatchesStats;
 
             return View();
         }
@@ -113,24 +126,190 @@ namespace AbstractionCenter.Controllers
         }
 
         [HttpGet]
-        public IActionResult CreateStudent() => View();
+        public async Task<IActionResult> CreateStudent()
+        {
+            // جلب الدفعات المتاحة ليختار منها الأدمن
+            var availableBatches = await _context.Batches
+                .Include(b => b.Course)
+                .Where(b => b.Status != BatchStatus.Closed && b.Status != BatchStatus.Completed)
+                .OrderByDescending(b => b.StartDate)
+                .ToListAsync();
 
+            ViewBag.AvailableBatches = availableBatches;
+            return View();
+        }
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> CreateStudent(string fullName, string phoneNumber, string email, string password)
+        public async Task<IActionResult> CreateStudent(string fullName, string fullNameEn, string email, string phoneNumber, int? selectedBatchId)
         {
-            var user = new ApplicationUser { UserName = email, Email = email, FullName = fullName, PhoneNumber = phoneNumber, EmailConfirmed = true };
-            var result = await _userManager.CreateAsync(user, password);
+            // التحقق من أن الإيميل غير مسجل مسبقاً
+            var existingUser = await _userManager.FindByEmailAsync(email);
+            if (existingUser != null)
+            {
+                TempData["ErrorMessage"] = "البريد الإلكتروني مسجل بالفعل في المنصة.";
+                return RedirectToAction("CreateStudent");
+            }
+
+            var user = new ApplicationUser
+            {
+                UserName = email,
+                Email = email,
+                FullName = fullName,
+                FullNameEn = fullNameEn, // حفظ الاسم الإنجليزي
+                PhoneNumber = phoneNumber,
+                EmailConfirmed = true,
+                IsActive = true,
+                CreatedAt = DateTime.Now
+            };
+
+            // إنشاء الحساب بكلمة مرور عشوائية قوية معقدة (لأن الطالب سيقوم بتغييرها عبر الرابط)
+            string randomPassword = $"Abc@123{Guid.NewGuid().ToString().Substring(0, 8)}";
+            var result = await _userManager.CreateAsync(user, randomPassword);
 
             if (result.Succeeded)
             {
                 await _userManager.AddToRoleAsync(user, "Student");
-                TempData["SuccessMessage"] = "تم إنشاء حساب الطالب بنجاح.";
-                return RedirectToAction(nameof(ManageUsers));
+
+                // إذا اختار الأدمن دفعة، يتم تسجيل الطالب فيها فوراً
+                if (selectedBatchId.HasValue && selectedBatchId.Value > 0)
+                {
+                    _context.StudentBatches.Add(new StudentBatch
+                    {
+                        StudentId = user.Id,
+                        BatchId = selectedBatchId.Value,
+                        Status = StudentAcademicStatus.Studying,
+                        EnrollmentDate = DateTime.Now
+                    });
+
+                    // إرسال إشعار للطالب
+                    var batchInfo = await _context.Batches.Include(b => b.Course).FirstOrDefaultAsync(b => b.Id == selectedBatchId.Value);
+                    if (batchInfo != null)
+                    {
+                        _context.Notifications.Add(new Notification
+                        {
+                            UserId = user.Id,
+                            Title = "تم تسجيلك في الدورة",
+                            Message = $"أهلاً بك! تمت إضافتك بنجاح إلى مسار {batchInfo.Course?.Title}. يمكنك بدء الدراسة الآن.",
+                            CreatedAt = DateTime.Now
+                        });
+                    }
+
+                    await _context.SaveChangesAsync();
+                }
+
+                // توليد رابط إعداد كلمة المرور
+                var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+                var callbackUrl = Url.Action(
+                    "SetPassword",
+                    "Account",
+                    new { userId = user.Id, code = token },
+                    protocol: HttpContext.Request.Scheme);
+
+                TempData["PasswordLink"] = callbackUrl;
+                TempData["SuccessMessage"] = "تم إنشاء حساب الطالب بنجاح! يرجى نسخ الرابط أدناه وإرساله للطالب لتعيين كلمة المرور الخاصة به.";
+
+                return RedirectToAction("CreateStudent");
             }
 
-            foreach (var error in result.Errors) ModelState.AddModelError("", error.Description);
-            return View();
+            TempData["ErrorMessage"] = string.Join("<br/>", result.Errors.Select(e => e.Description));
+            return RedirectToAction("CreateStudent");
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ApproveRequest(int requestId)
+        {
+            var request = await _context.RegistrationRequests
+                .Include(r => r.Batch)
+                .FirstOrDefaultAsync(r => r.Id == requestId);
+
+            if (request == null) return NotFound();
+
+            // 1. التحقق مما إذا كان الطالب لديه حساب مسبق
+            var user = await _userManager.FindByEmailAsync(request.Email);
+            bool isNewUser = false;
+            string passwordResetLink = null;
+
+            if (user == null)
+            {
+                // 2. إنشاء حساب جديد للطالب
+                user = new ApplicationUser
+                {
+                    UserName = request.Email,
+                    Email = request.Email,
+                    FullName = request.FullName,
+                    Specialization = request.Specialization,
+                    PhoneNumber = request.WhatsAppNumber,
+                    IsActive = true,
+                    EmailConfirmed = true
+                };
+
+                // يتم إنشاء الحساب بدون كلمة مرور حالياً (سيضعها الطالب لاحقاً)
+                var result = await _userManager.CreateAsync(user);
+                if (result.Succeeded)
+                {
+                    await _userManager.AddToRoleAsync(user, "Student");
+                    isNewUser = true;
+                }
+                else
+                {
+                    TempData["ErrorMessage"] = "حدث خطأ أثناء إنشاء حساب المستخدم.";
+                    return RedirectToAction("RegistrationRequests");
+                }
+            }
+
+            // 3. ربط الطالب بالدفعة التدريبية
+            var existingEnrollment = await _context.StudentBatches
+                .AnyAsync(sb => sb.StudentId == user.Id && sb.BatchId == request.BatchId);
+
+            if (!existingEnrollment)
+            {
+                _context.StudentBatches.Add(new StudentBatch
+                {
+                    StudentId = user.Id,
+                    BatchId = request.BatchId,
+                    Status = StudentAcademicStatus.Studying,
+                    EnrollmentDate = DateTime.Now
+                });
+            }
+
+            // 4. تحديث حالة الطلب
+            request.Status = RequestStatus.Approved;
+            request.StudentId = user.Id; // ربط الطلب بالـ ID الجديد
+
+            // 5. إرسال إشعار للطالب الجديد (اختياري)
+            _context.Notifications.Add(new Notification
+            {
+                UserId = user.Id,
+                Title = "تم اعتماد تسجيلك بنجاح!",
+                Message = $"أهلاً بك في {request.Batch.Course?.Title}. يمكنك الآن بدء رحلتك التعليمية.",
+                CreatedAt = DateTime.Now
+            });
+
+            await _context.SaveChangesAsync();
+
+            // 6. إذا كان المستخدم جديداً، قم بإنشاء رابط تعيين كلمة المرور
+            if (isNewUser)
+            {
+                var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+
+                // إنشاء رابط التفعيل
+                var callbackUrl = Url.Action(
+                    "SetPassword",
+                    "Account",
+                    new { userId = user.Id, code = token },
+                    protocol: HttpContext.Request.Scheme);
+
+                // إرسال الرابط لشاشة الأدمن لنسخه
+                TempData["PasswordLink"] = callbackUrl;
+                TempData["SuccessMessage"] = "تم قبول الطالب وإنشاء الحساب. يرجى نسخ الرابط أدناه وإرساله للطالب لتعيين كلمة المرور.";
+            }
+            else
+            {
+                TempData["SuccessMessage"] = "تم قبول الطالب وربطه بحسابه الحالي بنجاح.";
+            }
+
+            return RedirectToAction("RegistrationRequests");
         }
 
         [HttpGet]
@@ -369,49 +548,7 @@ namespace AbstractionCenter.Controllers
             return View(req);
         }
 
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> ApproveRequest(int requestId)
-        {
-            var req = await _context.RegistrationRequests.FindAsync(requestId);
-            if (req != null && req.Status == RequestStatus.Pending)
-            {
-                req.Status = RequestStatus.Approved;
-
-                // 1. إنشاء حساب للطالب إذا لم يكن موجوداً
-                var user = await _userManager.FindByEmailAsync(req.Email);
-                if (user == null)
-                {
-                    user = new ApplicationUser
-                    {
-                        UserName = req.Email,
-                        Email = req.Email,
-                        FullName = req.FullName,
-                        PhoneNumber = req.WhatsAppNumber,
-                        Specialization = req.Specialization,
-                        EmailConfirmed = true,
-                        IsActive = true
-                    };
-                    // إنشاء الحساب بدون باسورد مبدئياً
-                    await _userManager.CreateAsync(user);
-                    await _userManager.AddToRoleAsync(user, "Student");
-                }
-
-                // 2. تسجيل الطالب في الدفعة
-                var enrollment = new StudentBatch { BatchId = req.BatchId, StudentId = user.Id };
-                _context.StudentBatches.Add(enrollment);
-                await _context.SaveChangesAsync();
-
-                // 3. توليد رابط "إعداد كلمة المرور"
-                var code = await _userManager.GeneratePasswordResetTokenAsync(user);
-                var callbackUrl = Url.Action("SetPassword", "Account", new { userId = user.Id, code = code }, protocol: Request.Scheme);
-
-                // إظهار الرابط للأدمن لنسخه وإرساله واتساب
-                TempData["SuccessMessage"] = "تم اعتماد الطلب بنجاح.";
-                TempData["PasswordLink"] = callbackUrl; // حفظ الرابط لعرضه للأدمن
-            }
-            return RedirectToAction(nameof(RegistrationRequests));
-        }
+        
 
         [HttpPost]
         [ValidateAntiForgeryToken]

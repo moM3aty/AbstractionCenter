@@ -9,6 +9,9 @@ namespace AbstractionCenter.Models.Entities
     {
         public string? FullName { get; set; }
 
+        // --- الحقل الجديد ---
+        public string? FullNameEn { get; set; }
+
         public string? ProfilePicture { get; set; }
 
         [NotMapped]
@@ -20,8 +23,7 @@ namespace AbstractionCenter.Models.Entities
 
         public string? CurrentSessionId { get; set; }
 
-        // --- التعديل الجديد بناءً على طلبك ---
-        // خاصية تفعيل/تعطيل المدرب (Active / Inactive) لظهوره في الموقع التعريفي
+    
         public bool IsActive { get; set; } = true;
     }
 }

@@ -290,5 +290,23 @@ namespace AbstractionCenter.Controllers
             if (question != null) { _context.CourseQuestions.Remove(question); await _context.SaveChangesAsync(); return Json(new { success = true }); }
             return Json(new { success = false });
         }
+
+        // --- 8. إدارة رابط التلغرام للدفعة ---
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> UpdateTelegramLink(int batchId, string telegramUrl)
+        {
+            var user = await _userManager.GetUserAsync(User);
+            var batch = await _context.Batches.FirstOrDefaultAsync(b => b.Id == batchId && b.InstructorId == user.Id);
+
+            if (batch != null)
+            {
+                batch.TelegramGroupUrl = telegramUrl;
+                await _context.SaveChangesAsync();
+                TempData["SuccessMessage"] = "تم تحديث رابط قناة التلغرام بنجاح.";
+            }
+
+            return RedirectToAction("ManageBatch", new { id = batchId });
+        }
     }
 }

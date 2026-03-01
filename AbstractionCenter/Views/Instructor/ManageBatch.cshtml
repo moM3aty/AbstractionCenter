@@ -335,8 +335,16 @@
         <button class="tab-btn" data-target="students-tab"><i class="fa-solid fa-user-graduate"></i> قائمة الطلاب</button>
         <button class="tab-btn" data-target="exam-tab"><i class="fa-solid fa-graduation-cap"></i> بنك الأسئلة</button>
         <button class="tab-btn" data-target="questions-tab"><i class="fa-solid fa-clipboard-list"></i> تخصيص الاستمارة</button>
+        <button class="tab-btn" data-target="communication-tab"><i class="fa-brands fa-telegram"></i> قناة التلغرام</button>
         <button class="tab-btn" data-target="security-tab"><i class="fa-solid fa-key"></i> أمان الحساب</button>
     </div>
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div style="background: rgba(16, 185, 129, 0.1); color: #059669; padding: 15px 25px; border-radius: 12px; margin-bottom: 20px; font-weight: bold; border: 1px solid #10b981;">
+            <i class="fa-solid fa-circle-check"></i> @TempData["SuccessMessage"]
+        </div>
+    }
 
     <!-- 1. المنهج الدراسي -->
     <div id="lessons-tab" class="tab-content active">
@@ -522,7 +530,38 @@
         </div>
     </div>
 
-    <!-- 5. أمان الحساب -->
+    <!-- 5. قناة التلغرام -->
+    <div id="communication-tab" class="tab-content">
+        <div class="content-grid">
+            <div class="premium-panel">
+                <h3 class="panel-title"><i class="fa-brands fa-telegram"></i> رابط قناة / مجموعة التلغرام</h3>
+                <p style="color: #64748b; font-size: 0.95rem; margin-bottom: 25px;">أضف رابط التلغرام الخاص بهذه الدفعة ليتمكن الطلاب المسجلين من الانضمام إليه للتواصل والمتابعة.</p>
+
+                <form action="/Instructor/UpdateTelegramLink" method="post">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="batchId" value="@Model.Id" />
+
+                    <div class="form-group">
+                        <label>رابط التلغرام (URL)</label>
+                        <input type="url" name="telegramUrl" class="form-control" placeholder="https://t.me/..." value="@Model.TelegramGroupUrl" dir="ltr" />
+                    </div>
+
+                    <button type="submit" class="btn-submit" style="background: #0088cc; color: white;"><i class="fa-solid fa-floppy-disk"></i> حفظ الرابط</button>
+                </form>
+            </div>
+
+            <div class="premium-panel">
+                <h3 class="panel-title"><i class="fa-solid fa-circle-info"></i> معلومات هامة</h3>
+                <ul style="color: var(--mc-primary); line-height: 1.8; padding-right: 20px; font-weight: 600;">
+                    <li>سيظهر هذا الرابط لجميع الطلاب المسجلين في الدفعة داخل قاعتهم الدراسية.</li>
+                    <li>تأكد من أن الرابط صحيح ويعمل (يفضل أن يبدأ بـ https://t.me).</li>
+                    <li>يمكنك تحديث الرابط أو إزالته في أي وقت بمسح الحقل وحفظ التعديلات.</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- 6. أمان الحساب -->
     <div id="security-tab" class="tab-content">
         <div class="content-grid">
             <div class="premium-panel">

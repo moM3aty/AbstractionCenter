@@ -1,5 +1,5 @@
 ﻿@{
-    ViewData["Title"] = "إنشاء حساب طالب جديد";
+    ViewData["Title"] = "إنشاء حساب وتسجيل طالب";
 }
 
 <style>
@@ -13,193 +13,90 @@
         margin: 0 auto;
     }
 
-    .form-header {
-        text-align: center;
-        margin-bottom: 40px;
-    }
-
+    .form-header { text-align: center; margin-bottom: 40px; }
     .form-header-icon {
-        width: 80px;
-        height: 80px;
-        background: linear-gradient(135deg, rgba(212, 175, 55, 0.15), rgba(212, 175, 55, 0.05));
-        color: #d4af37;
-        border-radius: 20px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 2.5rem;
-        margin: 0 auto 20px;
-        border: 1px solid rgba(212, 175, 55, 0.3);
+        width: 80px; height: 80px; background: linear-gradient(135deg, rgba(212, 175, 55, 0.15), rgba(212, 175, 55, 0.05));
+        color: #d4af37; border-radius: 20px; display: flex; align-items: center; justify-content: center;
+        font-size: 2.5rem; margin: 0 auto 20px; border: 1px solid rgba(212, 175, 55, 0.3);
     }
+    .form-header h2 { color: #0b1120; font-size: 2rem; font-weight: 900; margin-bottom: 10px; }
+    .form-header p { color: #64748b; font-size: 1.1rem; }
 
-    .form-header h2 {
-        color: #0b1120;
-        font-size: 2rem;
-        font-weight: 900;
-        margin-bottom: 10px;
-    }
-
-    .form-header p {
-        color: #64748b;
-        font-size: 1.1rem;
-    }
-
-    /* كلاس الشبكة المضاف لتسهيل التجاوب */
-    .form-grid {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 20px;
-    }
-
-    .form-group {
-        margin-bottom: 25px;
-    }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 10px;
-            font-weight: 800;
-            color: #0b1120;
-            font-size: 1.05rem;
-        }
-
+    .form-group { margin-bottom: 25px; }
+    .form-group label { display: block; margin-bottom: 10px; font-weight: 800; color: #0b1120; font-size: 1.05rem; }
     .form-control {
-        width: 100%;
-        padding: 16px 20px;
-        border: 2px solid #e2e8f0;
-        border-radius: 16px;
-        font-family: inherit;
-        font-size: 1rem;
-        background: #f8fafc;
-        transition: all 0.3s ease;
-        color: #1e293b;
+        width: 100%; padding: 16px 20px; border: 2px solid #e2e8f0; border-radius: 16px;
+        font-family: inherit; font-size: 1rem; background: #f8fafc; transition: all 0.3s ease; color: #1e293b;
     }
-
-        .form-control:focus {
-            outline: none;
-            border-color: #d4af37;
-            background: #ffffff;
-            box-shadow: 0 0 0 4px rgba(212, 175, 55, 0.15);
-        }
+    .form-control:focus { outline: none; border-color: #d4af37; background: #ffffff; box-shadow: 0 0 0 4px rgba(212, 175, 55, 0.15); }
 
     .btn-submit {
-        background: linear-gradient(135deg, #0b1120, #1e293b);
-        color: #d4af37;
-        border: none;
-        padding: 18px 40px;
-        border-radius: 50px;
-        font-weight: 900;
-        font-size: 1.15rem;
-        cursor: pointer;
-        box-shadow: 0 10px 25px -5px rgba(11, 17, 32, 0.4);
-        transition: all 0.4s ease;
-        width: 100%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 10px;
-        margin-top: 20px;
+        background: linear-gradient(135deg, #0b1120, #1e293b); color: #d4af37; border: none; padding: 18px 40px;
+        border-radius: 50px; font-weight: 900; font-size: 1.15rem; cursor: pointer; box-shadow: 0 10px 25px -5px rgba(11, 17, 32, 0.4);
+        transition: all 0.4s ease; width: 100%; display: flex; align-items: center; justify-content: center; gap: 10px; margin-top: 20px;
     }
+    .btn-submit:hover { transform: translateY(-3px); box-shadow: 0 15px 35px -5px rgba(11, 17, 32, 0.6); color: white; }
 
-        .btn-submit:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 15px 35px -5px rgba(11, 17, 32, 0.6);
-            color: white;
-        }
+    .btn-cancel { display: block; text-align: center; margin-top: 20px; color: #64748b; font-weight: 700; text-decoration: none; transition: 0.3s; }
+    .btn-cancel:hover { color: #ef4444; }
 
-    .btn-cancel {
-        display: block;
-        text-align: center;
-        margin-top: 20px;
-        color: #64748b;
-        font-weight: 700;
-        text-decoration: none;
-        transition: 0.3s;
-    }
-
-        .btn-cancel:hover {
-            color: #ef4444;
-        }
-
-    /* === Media Queries للموبايل === */
-    @@media (max-width: 768px) {
-        .premium-form-card
-
-    {
-        padding: 35px 20px;
-        border-radius: 20px;
-    }
-
-    .form-header-icon {
-        width: 65px;
-        height: 65px;
-        font-size: 2rem;
-        margin-bottom: 15px;
-    }
-
-    .form-header h2 {
-        font-size: 1.6rem;
-    }
-
-    .form-header p {
-        font-size: 0.95rem;
-        margin-bottom: 10px;
-    }
-
-    .form-grid {
-        grid-template-columns: 1fr;
-        gap: 0;
-    }
-
-    .form-group {
-        margin-bottom: 20px;
-    }
-
-    .form-control {
-        padding: 14px 16px;
-        font-size: 0.95rem;
-    }
-
-    .btn-submit {
-        padding: 15px 30px;
-        font-size: 1.05rem;
-    }
-
+    .password-copy-box {
+        background: #fffbeb; color: #b45309; padding: 20px; border-radius: 16px; margin-bottom: 30px; font-weight: 800; border: 2px dashed #fbbf24;
     }
 </style>
 
 <div>
     <div style="margin-bottom: 20px;">
-        <a href="/Admin/ManageUsers" style="color: #d4af37; font-weight: 900; text-decoration: none; background: #0b1120; padding: 10px 20px; border-radius: 12px; display: inline-flex; align-items: center; gap: 8px;"><i class="fa-solid fa-arrow-right"></i> العودة لقائمة المستخدمين</a>
+        <a href="/Admin/ManageUsers" style="color: #d4af37; font-weight: 900; text-decoration: none;"><i class="fa-solid fa-arrow-right"></i> العودة لقائمة المستخدمين</a>
     </div>
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div style="background: rgba(16, 185, 129, 0.1); color: #059669; padding: 20px; border-radius: 16px; margin-bottom: 20px; font-weight: 900; text-align: center; border: 1px solid #10b981;">
+            <i class="fa-solid fa-circle-check"></i> @TempData["SuccessMessage"]
+        </div>
+    }
+
+    <!-- إظهار رابط الباسورد للأدمن لنسخه -->
+    @if (TempData["PasswordLink"] != null)
+    {
+        <div class="password-copy-box">
+            <p style="margin: 0 0 10px 0;"><i class="fa-solid fa-link"></i> رابط تعيين كلمة المرور (أرسله للطالب):</p>
+            <input type="text" value="@TempData["PasswordLink"]" readonly class="form-control" style="background: white; border-color: #fbbf24; cursor: pointer; color: #b45309; font-weight: bold;" onclick="this.select(); document.execCommand('copy'); alert('تم نسخ الرابط بنجاح!');" title="اضغط لنسخ الرابط" />
+        </div>
+    }
 
     <div class="premium-form-card">
         <div class="form-header">
             <div class="form-header-icon">
                 <i class="fa-solid fa-user-plus"></i>
             </div>
-            <h2>إنشاء حساب طالب</h2>
-            <p>قم بإنشاء بيانات الدخول وتزويد الطالب بها ليتمكن من دخول المنصة.</p>
+            <h2>إنشاء حساب طالب وتسجيله بدورة</h2>
+            <p>مثالي للطلاب الذين دفعوا خارج المنصة (كاش أو تحويل بنكي مباشر).</p>
         </div>
 
-        @if (!ViewData.ModelState.IsValid)
+        @if (TempData["ErrorMessage"] != null)
         {
             <div style="background: rgba(239, 68, 68, 0.1); color: #dc2626; padding: 20px; border-radius: 16px; margin-bottom: 30px; font-weight: 800; border: 1px solid rgba(239, 68, 68, 0.2);">
-                @Html.ValidationSummary(false, "", new { @style = "list-style-type: none; margin: 0; padding: 0;" })
+                @Html.Raw(TempData["ErrorMessage"])
             </div>
         }
 
         <form asp-action="CreateStudent" method="post">
             @Html.AntiForgeryToken()
 
-            <div class="form-grid">
+            <h3 style="color: #0b1120; font-size: 1.2rem; font-weight: 900; margin-bottom: 20px; border-bottom: 2px solid #e2e8f0; padding-bottom: 10px;">
+                <i class="fa-solid fa-address-card" style="color: #d4af37;"></i> 1. البيانات الشخصية للطالب
+            </h3>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
                 <div class="form-group">
                     <label>الاسم الرباعي للطالب</label>
                     <input type="text" name="fullName" class="form-control" placeholder="أدخل اسم الطالب..." required />
                 </div>
                 <div class="form-group">
                     <label>رقم الهاتف / الواتساب</label>
-                    <input type="text" name="phoneNumber" class="form-control" placeholder="مثال: 01000000000" />
+                    <input type="text" name="phoneNumber" class="form-control" placeholder="مثال: 01000000000" required />
                 </div>
             </div>
 
@@ -208,19 +105,29 @@
                 <input type="email" name="email" class="form-control" placeholder="student@example.com" required dir="ltr" />
             </div>
 
+            <h3 style="color: #0b1120; font-size: 1.2rem; font-weight: 900; margin: 40px 0 20px; border-bottom: 2px solid #e2e8f0; padding-bottom: 10px;">
+                <i class="fa-solid fa-layer-group" style="color: #d4af37;"></i> 2. التسجيل في دورة (اختياري)
+            </h3>
+
             <div class="form-group">
-                <label>كلمة المرور الابتدائية</label>
-                <div style="position: relative;">
-                    <input type="text" name="password" class="form-control" placeholder="أدخل كلمة مرور قوية" required dir="ltr" />
-                    <i class="fa-solid fa-key" style="position: absolute; left: 20px; top: 18px; color: #cbd5e1;"></i>
-                </div>
-                <small style="color: #64748b; font-weight: bold; margin-top: 8px; display: block;">يجب أن تتكون من 6 أحرف على الأقل.</small>
+                <label>إدراج الطالب مباشرة في الدفعة التالية:</label>
+                <select name="selectedBatchId" class="form-control">
+                    <option value="">-- إنشاء حساب فقط (بدون تسجيل في دورة حالياً) --</option>
+                    @if (ViewBag.AvailableBatches != null)
+                    {
+                        foreach (var batch in (IEnumerable<AbstractionCenter.Models.Entities.Batch>)ViewBag.AvailableBatches)
+                        {
+                            <option value="@batch.Id">@batch.Course?.Title - @batch.BatchName (@(batch.StartDate.ToString("dd MMM yyyy")))</option>
+                        }
+                    }
+                </select>
+                <small style="color: #64748b; font-weight: bold; margin-top: 8px; display: block;">سيقوم النظام بتوليد رابط آمن للطالب لإنشاء كلمة المرور الخاصة به بدلاً من كتابتها يدوياً.</small>
             </div>
 
             <button type="submit" class="btn-submit">
-                تسجيل الحساب <i class="fa-solid fa-check-circle"></i>
+                إنشاء الحساب وتوليد الرابط <i class="fa-solid fa-wand-magic-sparkles"></i>
             </button>
-            <a href="/Admin/ManageUsers" class="btn-cancel">إلغاء</a>
+            <a href="/Admin/ManageUsers" class="btn-cancel">إلغاء والعودة</a>
         </form>
     </div>
 </div>

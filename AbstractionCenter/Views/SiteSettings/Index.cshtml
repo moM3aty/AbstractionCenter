@@ -302,7 +302,7 @@
 <div>
     <div style="margin-bottom: 30px;">
         <h1 style="color: #0b1120; font-weight: 900; font-size: 2rem;">إعدادات وتصميم الموقع</h1>
-        <p style="color: #64748b; font-size: 1.1rem;">تحكم في جميع نصوص وصور الواجهة الرئيسية للمنصة.</p>
+        <p style="color: #64748b; font-size: 1.1rem;">تحكم في جميع نصوص وصور الواجهة الرئيسية للمنصة والشهادات.</p>
     </div>
 
     @if (TempData["SuccessMessage"] != null)
@@ -323,6 +323,7 @@
                 <button type="button" class="tab-btn" data-target="tab-home"><i class="fa-solid fa-house"></i> الصفحة الرئيسية</button>
                 <button type="button" class="tab-btn" data-target="tab-about"><i class="fa-solid fa-building"></i> صفحة من نحن</button>
                 <button type="button" class="tab-btn" data-target="tab-tracks"><i class="fa-solid fa-layer-group"></i> المسارات التعرفية</button>
+                <button type="button" class="tab-btn" data-target="tab-certificate"><i class="fa-solid fa-award"></i> نصوص الشهادات</button>
                 <button type="button" class="tab-btn" data-target="tab-contact"><i class="fa-solid fa-address-book"></i> التواصل والسوشيال</button>
 
                 <hr style="border: 0; border-top: 1px solid #e2e8f0; margin: 20px 0;" />
@@ -410,7 +411,6 @@
                     <div class="setting-card">
                         <h3 class="setting-card-title"><i class="fa-solid fa-layer-group"></i> المسارات المعروضة في الصفحة التعريفية</h3>
 
-                        <!-- إضافة الترويسة لصفحة المسارات كما طلبت -->
                         <div style="background: #f8fafc; padding: 25px; border-radius: 16px; margin-bottom: 30px; border: 1px solid #e2e8f0;">
                             <h4 style="color: #0b1120; font-weight: 900; margin-bottom: 15px;"><i class="fa-solid fa-heading" style="color: #d4af37;"></i> ترويسة صفحة المسارات (Hero Section)</h4>
                             <div class="form-group">
@@ -473,7 +473,6 @@
 
                                             <div class="form-group">
                                                 <label>اختر أيقونة المسار</label>
-                                                <!-- الحقل المخفي الذي يحمل قيمة الأيقونة ليتم حفظها -->
                                                 <input type="hidden" name="settings[Track@(index)_Icon]" id="icon_input_@index" value="@currentIcon" />
                                                 <div class="icon-picker-grid">
                                                     @foreach (var icon in commonIcons)
@@ -495,6 +494,80 @@
                         <button type="button" class="btn-add-track" onclick="addNewTrackForm()">
                             <i class="fa-solid fa-plus-circle"></i> إضافة مسار تدريبي جديد
                         </button>
+                    </div>
+                </div>
+
+                <!-- === تبويب إعدادات الشهادة (الجديد) === -->
+                <div id="tab-certificate" class="tab-pane">
+                    <div class="setting-card">
+                        <h3 class="setting-card-title"><i class="fa-solid fa-award"></i> نصوص الشهادة المعتمدة</h3>
+                        <p style="color: #64748b; margin-bottom: 25px;">قم بضبط النصوص الثابتة التي تظهر في الشهادة التي يستلمها الطالب بعد اجتياز الدورة.</p>
+
+                        <div class="form-row-grid">
+                            <div class="form-group">
+                                <label>عنوان الشهادة (عربي)</label>
+                                <input type="text" name="settings[Cert_Title]" value="@GetVal("Cert_Title")" class="form-control" placeholder="مثال: شهادة إتمام" />
+                            </div>
+                            <div class="form-group">
+                                <label>عنوان الشهادة (إنجليزي)</label>
+                                <input type="text" name="settingsEn[Cert_Title]" value="@GetValEn("Cert_Title")" class="form-control" dir="ltr" placeholder="e.g., Certificate of Completion" />
+                            </div>
+                        </div>
+
+                        <div class="form-row-grid">
+                            <div class="form-group">
+                                <label>العنوان الفرعي (عربي)</label>
+                                <input type="text" name="settings[Cert_Subtitle]" value="@GetVal("Cert_Subtitle")" class="form-control" />
+                            </div>
+                            <div class="form-group">
+                                <label>العنوان الفرعي (إنجليزي)</label>
+                                <input type="text" name="settingsEn[Cert_Subtitle]" value="@GetValEn("Cert_Subtitle")" class="form-control" dir="ltr" />
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>النص الافتتاحي (عربي)</label>
+                            <input type="text" name="settings[Cert_Intro]" value="@GetVal("Cert_Intro")" class="form-control" placeholder="مثال: يشهد مركز أبستراكشن بأن..." />
+                        </div>
+                        <div class="form-group">
+                            <label>النص الافتتاحي (إنجليزي)</label>
+                            <input type="text" name="settingsEn[Cert_Intro]" value="@GetValEn("Cert_Intro")" class="form-control" dir="ltr" />
+                        </div>
+
+                        <div class="form-group">
+                            <label>جملة المتطلبات والمشاريع (عربي)</label>
+                            <textarea name="settings[Cert_Statement1]" class="form-control" rows="2">@GetVal("Cert_Statement1")</textarea>
+                            <textarea name="settings[Cert_Statement2]" class="form-control" rows="2" style="margin-top: 10px;">@GetVal("Cert_Statement2")</textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>جملة المتطلبات والمشاريع (إنجليزي)</label>
+                            <textarea name="settingsEn[Cert_Statement1]" class="form-control" rows="2" dir="ltr">@GetValEn("Cert_Statement1")</textarea>
+                            <textarea name="settingsEn[Cert_Statement2]" class="form-control" rows="2" dir="ltr" style="margin-top: 10px;">@GetValEn("Cert_Statement2")</textarea>
+                        </div>
+
+                        <div class="form-row-grid">
+                            <div class="form-group">
+                                <label>نص التاريخ (عربي)</label>
+                                <input type="text" name="settings[Cert_DateText]" value="@GetVal("Cert_DateText")" class="form-control" placeholder="مثال: وذلك في تاريخ" />
+                            </div>
+                            <div class="form-group">
+                                <label>نص التاريخ (إنجليزي)</label>
+                                <input type="text" name="settingsEn[Cert_DateText]" value="@GetValEn("Cert_DateText")" class="form-control" dir="ltr" />
+                            </div>
+                        </div>
+
+                        <div class="form-row-grid" style="background: #f8fafc; padding: 20px; border-radius: 16px; border: 1px dashed #cbd5e1; margin-top: 20px;">
+                            <div class="form-group" style="margin-bottom: 0;">
+                                <label>توقيع الإدارة (الاسم)</label>
+                                <input type="text" name="settings[Cert_AdminName]" value="@GetVal("Cert_AdminName")" class="form-control" />
+                                <input type="text" name="settingsEn[Cert_AdminName]" value="@GetValEn("Cert_AdminName")" class="form-control" dir="ltr" style="margin-top: 10px;" placeholder="English Name" />
+                            </div>
+                            <div class="form-group" style="margin-bottom: 0;">
+                                <label>صفة الإدارة</label>
+                                <input type="text" name="settings[Cert_AdminTitle]" value="@GetVal("Cert_AdminTitle")" class="form-control" />
+                                <input type="text" name="settingsEn[Cert_AdminTitle]" value="@GetValEn("Cert_AdminTitle")" class="form-control" dir="ltr" style="margin-top: 10px;" placeholder="English Title" />
+                            </div>
+                        </div>
                     </div>
                 </div>
 
@@ -549,7 +622,7 @@
             document.getElementById(inputId).value = iconClass;
         }
 
-        // نظام إضافة المسارات الديناميكي (بما في ذلك منتقي الأيقونات)
+        // نظام إضافة المسارات الديناميكي
         function addNewTrackForm() {
             let maxIndex = 0;
             document.querySelectorAll('.track-box').forEach(el => {
@@ -560,7 +633,6 @@
             if(maxIndex === 0) maxIndex = 3;
             let newIndex = maxIndex + 1;
 
-            // نفس الأيقونات المستخدمة في النموذج أعلاه
             const icons = [
                 "fa-solid fa-star", "fa-solid fa-laptop-code", "fa-solid fa-briefcase", "fa-solid fa-chart-line",
                 "fa-solid fa-child", "fa-solid fa-language", "fa-solid fa-paintbrush", "fa-solid fa-calculator",
