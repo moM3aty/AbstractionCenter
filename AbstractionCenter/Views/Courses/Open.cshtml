@@ -1,5 +1,5 @@
 ﻿@using Microsoft.AspNetCore.Localization
-@model IEnumerable<AbstractionCenter.Models.Entities.Batch>
+@model IEnumerable<AbstractionCenter.Models.Entities.Course>
 @{
     var requestCulture = Context.Features.Get<IRequestCultureFeature>();
     bool isRtl = requestCulture?.RequestCulture.UICulture.Name == "ar" || requestCulture?.RequestCulture.UICulture.Name == null;
@@ -7,499 +7,376 @@
 }
 
 <style>
-    /* --- المتغيرات الأساسية --- */
+    /* --- المتغيرات والتنسيق الأساسي --- */
     :root {
-        --catalog-bg: #f4f7f6;
+        --bg-color: #f8fafc;
         --card-bg: #ffffff;
-        --text-main: #0b1120;
-        --text-muted: #64748b;
-        --gold-main: #d4af37;
-        --gold-light: #fef08a;
-        --accent-green: #10b981;
-        --accent-red: #ef4444;
-        --shadow-soft: 0 10px 40px -10px rgba(11,17,32,0.08);
-        --shadow-hover: 0 25px 50px -12px rgba(212,175,55,0.25);
+        --text-dark: #0f172a;
+        --text-gray: #64748b;
+        --accent-gold: #d4af37;
+        --accent-dark: #1e293b;
     }
 
-    .catalog-wrapper {
-        background-color: var(--catalog-bg);
-        min-height: 100vh;
-        padding-bottom: 100px;
+    body {
+        background-color: var(--bg-color);
     }
 
-    /* --- ترويسة الصفحة (Hero Section) --- */
-    .pro-hero {
-        background: linear-gradient(135deg, #0b1120 0%, #1e293b 100%);
-        padding: 140px 0 100px;
+    .catalog-section {
+        padding: 120px 0 100px;
+    }
+
+    /* --- الترويسة (Hero) --- */
+    .catalog-hero {
         text-align: center;
-        position: relative;
-        overflow: hidden;
-        border-bottom: 4px solid var(--gold-main);
+        margin-bottom: 60px;
     }
 
-        .pro-hero::before {
-            content: '';
-            position: absolute;
-            top: -100px;
-            right: -100px;
-            width: 400px;
-            height: 400px;
-            background: radial-gradient(circle, rgba(212, 175, 55, 0.15) 0%, transparent 70%);
-            border-radius: 50%;
-            filter: blur(40px);
+        .catalog-hero h1 {
+            font-size: 3rem;
+            font-weight: 900;
+            color: var(--text-dark);
+            margin-bottom: 15px;
         }
 
-        .pro-hero::after {
-            content: '';
-            position: absolute;
-            bottom: -100px;
-            left: -100px;
-            width: 300px;
-            height: 300px;
-            background: radial-gradient(circle, rgba(59, 130, 246, 0.1) 0%, transparent 70%);
-            border-radius: 50%;
-            filter: blur(40px);
+            .catalog-hero h1 span {
+                color: var(--accent-gold);
+            }
+
+        .catalog-hero p {
+            font-size: 1.15rem;
+            color: var(--text-gray);
+            max-width: 700px;
+            margin: 0 auto;
+            line-height: 1.8;
         }
-
-    .hero-badge {
-        display: inline-flex;
-        align-items: center;
-        gap: 10px;
-        background: rgba(212, 175, 55, 0.1);
-        border: 1px solid rgba(212, 175, 55, 0.3);
-        color: var(--gold-main);
-        padding: 10px 25px;
-        border-radius: 50px;
-        font-weight: 900;
-        font-size: 1rem;
-        margin-bottom: 25px;
-        position: relative;
-        z-index: 10;
-        backdrop-filter: blur(5px);
-    }
-
-    .pro-hero h1 {
-        font-size: 3.8rem;
-        font-weight: 900;
-        color: white;
-        margin-bottom: 20px;
-        position: relative;
-        z-index: 10;
-        line-height: 1.2;
-    }
-
-        .pro-hero h1 span {
-            background: linear-gradient(to left, var(--gold-main), var(--gold-light));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-    .pro-hero p {
-        font-size: 1.25rem;
-        color: #cbd5e1;
-        max-width: 750px;
-        margin: 0 auto;
-        line-height: 1.8;
-        position: relative;
-        z-index: 10;
-    }
 
     /* --- شبكة الكروت (Grid) --- */
-    .pro-grid {
+    .modern-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
-        gap: 40px;
-        margin-top: -40px; /* لرفع الكروت قليلاً فوق الهيدر */
-        position: relative;
-        z-index: 20;
-        padding: 0 20px;
-        max-width: 1320px;
-        margin-left: auto;
-        margin-right: auto;
+        grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+        gap: 30px;
+        padding: 0 15px;
     }
 
-    /* --- تصميم الكارت الاحترافي --- */
-    .pro-card {
+    /* --- الكارت الحديث (Modern Card) --- */
+    .course-card {
         background: var(--card-bg);
-        border-radius: 24px;
+        border-radius: 20px;
+        box-shadow: 0 10px 25px -5px rgba(0,0,0,0.05);
+        border: 1px solid #f1f5f9;
         overflow: hidden;
-        box-shadow: var(--shadow-soft);
-        border: 1px solid #e2e8f0;
         display: flex;
         flex-direction: column;
-        transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-        position: relative;
+        transition: all 0.3s ease;
     }
 
-        .pro-card:hover {
-            transform: translateY(-12px);
-            box-shadow: var(--shadow-hover);
-            border-color: var(--gold-main);
+        .course-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px -5px rgba(0,0,0,0.1);
+            border-color: rgba(212, 175, 55, 0.3);
         }
 
-    /* صورة الكارت */
-    .pro-media {
-        height: 240px;
+    /* صورة الكارت والحالة */
+    .card-img-box {
         position: relative;
-        overflow: hidden;
-        background: #1e293b;
+        height: 220px;
+        width: 100%;
+        background: var(--accent-dark);
     }
 
-        .pro-media img {
+        .card-img-box img {
             width: 100%;
             height: 100%;
             object-fit: cover;
-            transition: transform 0.7s ease;
         }
 
-    .pro-card:hover .pro-media img {
-        transform: scale(1.08);
-    }
-
-    .status-pill {
+    .status-badge {
         position: absolute;
-        top: 20px;
-        right: 20px;
-        background: rgba(16, 185, 129, 0.95);
-        color: white;
-        padding: 8px 18px;
+        top: 15px;
+        right: 15px;
+        padding: 6px 14px;
         border-radius: 50px;
-        font-weight: 800;
         font-size: 0.85rem;
+        font-weight: 800;
         display: flex;
         align-items: center;
         gap: 6px;
-        backdrop-filter: blur(4px);
-        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-        z-index: 2;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.15);
     }
 
-    /* محتوى الكارت */
-    .pro-body {
-        padding: 30px;
+        .status-badge.open {
+            background: #10b981;
+            color: white;
+        }
+
+        .status-badge.progress {
+            background: #3b82f6;
+            color: white;
+        }
+
+    /* تفاصيل الكارت */
+    .card-content {
+        padding: 25px;
         display: flex;
         flex-direction: column;
-        flex-grow: 1;
+        flex: 1;
     }
 
-    .pro-title {
-        font-size: 1.45rem;
-        font-weight: 900;
-        color: var(--text-main);
-        margin-bottom: 15px;
-        line-height: 1.5;
-    }
-
-    .pro-desc {
-        color: var(--text-muted);
-        font-size: 1.05rem;
-        line-height: 1.7;
-        margin-bottom: 25px;
-        display: -webkit-box;
-        -webkit-line-clamp: 3;
-        -webkit-box-orient: vertical;
-        overflow-y: scroll;
-        flex-grow: 1;
-    }
-
-    /* ملاحظة التنفيذ */
-    .pro-execution {
-        background: rgba(212, 175, 55, 0.08);
-        border: 1px solid rgba(212, 175, 55, 0.2);
-        padding: 12px 15px;
-        border-radius: 12px;
-        color: #b48a25;
+    .course-title {
+        font-size: 1.25rem;
         font-weight: 800;
-        font-size: 0.95rem;
-        display: flex;
+        color: var(--text-dark);
+        margin-bottom: 12px;
+        line-height: 1.4;
+    }
+
+    .course-note {
+        font-size: 0.9rem;
+        color: #b45309;
+        background: #fffbeb;
+        padding: 8px 12px;
+        border-radius: 8px;
+        margin-bottom: 15px;
+        font-weight: 700;
+        display: inline-flex;
         align-items: center;
-        gap: 10px;
+        gap: 8px;
+    }
+
+    .course-desc {
+        font-size: 0.95rem;
+        color: var(--text-gray);
+        line-height: 1.6;
+        margin-bottom: 20px;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        flex: 1;
+    }
+
+    /* البيانات الوصفية */
+    .card-meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 15px;
         margin-bottom: 20px;
     }
 
-    /* البيانات الوصفية (الدفعة والموعد) */
-    .pro-meta {
-        display: grid;
-        grid-template-columns: 1fr 1.2fr;
-        gap: 15px;
-        margin-bottom: 25px;
-    }
-
-    .meta-item {
-        background: #f8fafc;
-        padding: 12px;
-        border-radius: 12px;
+    .meta-data {
+        font-size: 0.85rem;
+        color: var(--text-gray);
+        font-weight: 600;
         display: flex;
-        flex-direction: column;
-        gap: 4px;
-        border: 1px solid #f1f5f9;
+        align-items: center;
+        gap: 6px;
     }
 
-        .meta-item span {
-            font-size: 0.8rem;
-            color: #94a3b8;
-            font-weight: 700;
-            display: flex;
-            align-items: center;
-            gap: 6px;
+        .meta-data i {
+            color: var(--accent-gold);
         }
 
-        .meta-item strong {
-            font-size: 0.95rem;
-            color: var(--text-main);
-            font-weight: 900;
-        }
-
-    /* التسعير */
-    .pro-pricing {
+    /* التسعير والزر */
+    .card-footer {
+        border-top: 1px solid #f1f5f9;
+        padding-top: 20px;
         display: flex;
         align-items: center;
         justify-content: space-between;
-        padding-top: 20px;
-        border-top: 1px solid #f1f5f9;
-        margin-bottom: 25px;
     }
 
-    .price-block {
+    .price-box {
         display: flex;
-        align-items: baseline;
-        gap: 10px;
+        flex-direction: column;
     }
 
-    .price-current {
-        font-size: 1.8rem;
+    .price-final {
+        font-size: 1.4rem;
         font-weight: 900;
-        color: var(--text-main);
+        color: var(--text-dark);
         line-height: 1;
     }
 
-    .price-old {
-        font-size: 1.1rem;
-        color: #94a3b8;
+    .price-original {
+        font-size: 0.9rem;
         text-decoration: line-through;
-        font-weight: 700;
+        color: #94a3b8;
+        font-weight: 600;
+        margin-top: 4px;
     }
 
-    .discount-tag {
-        background: rgba(239, 68, 68, 0.1);
-        color: var(--accent-red);
-        padding: 4px 10px;
-        border-radius: 8px;
-        font-size: 0.85rem;
-        font-weight: 900;
-        border: 1px solid rgba(239, 68, 68, 0.2);
+    .discount-label {
+        background: #ef4444;
+        color: white;
+        font-size: 0.7rem;
+        padding: 2px 6px;
+        border-radius: 4px;
+        margin-right: 5px;
+        font-weight: bold;
     }
 
-    .price-contact {
-        font-size: 1.05rem;
-        color: var(--gold-main);
-        font-weight: 900;
+    .btn-register {
+        background: var(--text-dark);
+        color: var(--accent-gold);
+        padding: 12px 24px;
+        border-radius: 12px;
+        font-weight: 800;
+        font-size: 1rem;
+        text-decoration: none;
+        transition: 0.3s;
         display: flex;
         align-items: center;
         gap: 8px;
     }
 
-    /* الزر */
-    .pro-btn {
-        background: var(--text-main);
-        color: var(--gold-main);
-        text-align: center;
-        padding: 16px;
-        border-radius: 14px;
-        font-size: 1.1rem;
-        font-weight: 900;
-        text-decoration: none;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 10px;
-        transition: 0.3s;
-        border: 2px solid transparent;
-    }
+        .btn-register:hover {
+            background: var(--accent-gold);
+            color: var(--text-dark);
+        }
 
-    .pro-card:hover .pro-btn {
-        background: var(--gold-main);
-        color: var(--text-main);
-        box-shadow: 0 10px 20px rgba(212, 175, 55, 0.3);
-    }
-
-    /* حالة الفراغ */
-    .empty-catalog {
-        grid-column: 1 / -1;
-        text-align: center;
-        padding: 80px 20px;
-        background: white;
-        border-radius: 30px;
-        border: 2px dashed #e2e8f0;
-        box-shadow: var(--shadow-soft);
-    }
-
-    /* === استعلامات الشاشة للموبايل (Media Queries) === */
-    @@media (max-width: 1024px) {
-        .pro-grid
-
-    {
-        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    }
-
-    }
-
-    @@media (max-width: 768px) {
-        .pro-hero
-
-    {
-        padding: 100px 20px 80px;
-    }
-
-    .pro-hero h1 {
-        font-size: 2.2rem;
+    /* --- Custom Select for Batches --- */
+    .batch-select {
+        width: 100%;
+        padding: 12px 15px;
+        border-radius: 12px;
+        border: 2px solid #e2e8f0;
+        background: #f8fafc;
+        font-family: inherit;
+        font-weight: 700;
+        color: var(--text-dark);
         margin-bottom: 15px;
+        outline: none;
+        transition: 0.3s;
+        cursor: pointer;
     }
 
-    .pro-hero p {
-        font-size: 1.05rem;
+        .batch-select:focus {
+            border-color: var(--accent-gold);
+            background: white;
+        }
+
+    /* === للموبايل فقط === */
+    @@media (max-width: 768px) {
+        .catalog-section
+
+    {
+        padding: 100px 0 60px;
     }
 
-    .pro-grid {
+    .catalog-hero h1 {
+        font-size: 2.2rem;
+    }
+
+    .catalog-hero p {
+        font-size: 1rem;
+        padding: 0 15px;
+    }
+
+    .modern-grid {
         grid-template-columns: 1fr;
-        margin-top: -30px;
-        gap: 25px;
+        padding: 0 20px;
     }
 
-    .pro-card {
-        border-radius: 20px;
-    }
-
-    .pro-media {
+    .card-img-box {
         height: 200px;
     }
 
-    .pro-body {
-        padding: 25px 20px;
-    }
-
-    .pro-title {
-        font-size: 1.3rem;
-    }
-
-    .pro-meta {
-        grid-template-columns: 1fr;
-        gap: 10px;
-    }
-
-    .pro-pricing {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 15px;
-    }
-
-    .pro-btn {
-        padding: 14px;
-        font-size: 1.05rem;
+    .card-content {
+        padding: 20px;
     }
 
     }
 </style>
 
-<div class="catalog-wrapper">
-    <!-- Hero Section -->
-    <div class="pro-hero">
-        <div class="hero-badge">
-            <i class="fa-solid fa-crown"></i> @(isRtl ? "استكشف بوابتك للمستقبل" : "Explore Your Portal to Future")
+<div class="catalog-section">
+    <div class="container">
+
+        <!-- الترويسة -->
+        <div class="catalog-hero">
+            <h1>@(isRtl ? "دليل البرامج" : "Learning") <span>@(isRtl ? "والدبلومات" : "Catalog")</span></h1>
+            <p>@(isRtl ? "استثمر في مستقبلك وانضم إلى أقوى المسارات التدريبية المصممة لربطك بسوق العمل مباشرة، بقيادة نخبة من الخبراء." : "Invest in your future and join our powerful training tracks designed to connect you directly to the job market.")</p>
         </div>
-        <h1>@(isRtl ? "دليل البرامج" : "Learning") <span>@(isRtl ? "الأكاديمية" : "Catalog")</span></h1>
-        <p>@(isRtl ? "اختر من بين مجموعتنا الواسعة من المسارات التدريبية المصممة بعناية فائقة لتتوافق مع معايير سوق العمل الدولية وتصنع منك خبيراً في مجالك." : "Choose from our wide range of carefully designed training tracks tailored to meet international job market standards.")</p>
-    </div>
 
-    <!-- Cards Grid -->
-    <div class="pro-grid">
-        @if (Model != null && Model.Any())
-        {
-            foreach (var batch in Model)
+        <!-- شبكة الكورسات -->
+        <div class="modern-grid">
+            @if (Model != null && Model.Any())
             {
-                <div class="pro-card">
-                    <div class="pro-media">
-                        <div class="status-pill"><i class="fa-solid fa-door-open"></i> @(isRtl ? "متاح للتسجيل" : "Open")</div>
-                        @if (!string.IsNullOrEmpty(batch.Course?.ImageUrl))
-                        {
-                            <img src="@batch.Course.ImageUrl" alt="@batch.Course.Title" loading="lazy" />
-                        }
-                        else
-                        {
-                            <div style="width:100%; height:100%; display:flex; align-items:center; justify-content:center; background:#1e293b;">
-                                <i class="fa-solid fa-layer-group" style="font-size:5rem; color:rgba(212,175,55,0.15);"></i>
-                            </div>
-                        }
-                    </div>
+                foreach (var course in Model)
+                {
+                    // جلب الدفعات المتاحة لهذا الكورس فقط
+                    var activeBatches = course.Batches
+                    .Where(b => b.Status == AbstractionCenter.Models.Entities.BatchStatus.OpenForRegistration || b.Status == AbstractionCenter.Models.Entities.BatchStatus.InProgress)
+                    .OrderBy(b => b.StartDate)
+                    .ToList();
 
-                    <div class="pro-body">
-                        <h2 class="pro-title">@batch.Course?.Title</h2>
+                    <div class="course-card">
+                        <div class="card-img-box">
+                            <div class="status-badge open"><i class="fa-solid fa-door-open"></i> @(isRtl ? "متاح للتسجيل" : "Open")</div>
 
-                        @if (batch.ShowExecutionNote && !string.IsNullOrEmpty(batch.ExecutionNote))
-                        {
-                            <div class="pro-execution">
-                                <i class="fa-solid fa-users-gear"></i>
-                                <span>@batch.ExecutionNote</span>
-                            </div>
-                        }
-
-                        <p class="pro-desc">@(batch.Course?.Description)</p>
-
-                        <div class="pro-meta">
-                            <div class="meta-item">
-                                <span><i class="fa-solid fa-users-rectangle"></i> @(isRtl ? "الدفعة" : "Batch")</span>
-                                <strong>@batch.BatchName</strong>
-                            </div>
-                            <div class="meta-item">
-                                <span><i class="fa-regular fa-calendar-days"></i> @(isRtl ? "موعد البدء" : "Start Date")</span>
-                                <strong>@batch.StartDate.ToString("dd MMMM yyyy")</strong>
-                            </div>
-                        </div>
-
-                        <div class="pro-pricing">
-                            @if (batch.ShowPrice)
+                            @if (!string.IsNullOrEmpty(course.ImageUrl))
                             {
-                                <div class="price-block">
-                                    @if (batch.ShowDiscount && batch.DiscountPercentage > 0)
-                                    {
-                                        decimal discountMultiplier = (decimal)(1 - (batch.DiscountPercentage / 100.0));
-                                        decimal finalPrice = batch.Price * discountMultiplier;
-
-                                        <span class="price-current">@finalPrice.ToString("0.##") $</span>
-                                        <span class="price-old">@batch.Price.ToString("0.##") $</span>
-                                    }
-                                    else
-                                    {
-                                        <span class="price-current">@batch.Price.ToString("0.##") $</span>
-                                    }
-                                </div>
-                                @if (batch.ShowDiscount && batch.DiscountPercentage > 0)
-                                {
-                                    <div class="discount-tag">@(isRtl ? "خصم" : "Save") @batch.DiscountPercentage%</div>
-                                }
+                                <img src="@course.ImageUrl" alt="@course.Title" loading="lazy" />
                             }
                             else
                             {
-                                <div class="price-contact">
-                                    <i class="fa-solid fa-tags"></i> @(isRtl ? "تواصل لمعرفة التكلفة" : "Contact for pricing")
+                                <div style="width:100%; height:100%; display:flex; align-items:center; justify-content:center;">
+                                    <i class="fa-solid fa-layer-group" style="font-size:4rem; color:rgba(255,255,255,0.2);"></i>
                                 </div>
                             }
                         </div>
 
-                        <a href="/Courses/Register/@batch.Id" class="pro-btn">
-                            @(isRtl ? "تقديم طلب انضمام" : "Enroll Now") <i class="fa-solid @(isRtl ? "fa-arrow-left" : "fa-arrow-right")"></i>
-                        </a>
+                        <div class="card-content">
+                            <h2 class="course-title">@course.Title</h2>
+
+                            <p class="course-desc">@course.Description</p>
+
+                            <div class="card-footer" style="flex-direction: column; align-items: stretch; border-top: none; padding-top: 0; margin-top: auto;">
+                                <form action="/Courses/Register" method="get" style="display: flex; flex-direction: column; gap: 10px; width: 100%;">
+                                    <label style="font-size: 0.9rem; font-weight: 800; color: var(--text-gray);">@(isRtl ? "اختر الدفعة المناسبة:" : "Select Batch:")</label>
+
+                                    <select name="id" class="batch-select" required>
+                                        <option value="">-- @(isRtl ? "اضغط لاختيار الدفعة" : "Select a batch") --</option>
+                                        @foreach (var b in activeBatches)
+                                        {
+                                            string statusText = b.Status == AbstractionCenter.Models.Entities.BatchStatus.OpenForRegistration ? (isRtl ? "مفتوحة" : "Open") : (isRtl ? "قيد التنفيذ" : "In Progress");
+
+                                            // حساب السعر النهائي للدفعة داخل القائمة
+                                            decimal finalPrice = b.Price;
+                                            string priceText = "";
+                                            if (b.ShowPrice)
+                                            {
+                                                if (b.ShowDiscount && b.DiscountPercentage > 0)
+                                                {
+                                                    finalPrice = b.Price * (decimal)(1 - (b.DiscountPercentage / 100.0));
+                                                    priceText = $" - {finalPrice.ToString("0.##")}$ (خصم {b.DiscountPercentage}%)";
+                                                }
+                                                else
+                                                {
+                                                    priceText = $" - {finalPrice.ToString("0.##")}$";
+                                                }
+                                            }
+
+                                            <option value="@b.Id">@b.BatchName (@statusText) @priceText</option>
+                                        }
+                                    </select>
+
+                                    <button type="submit" class="btn-register" style="width: 100%; justify-content: center;">
+                                        @(isRtl ? "المتابعة للتسجيل" : "Continue to Enroll") <i class="fa-solid @(isRtl ? "fa-arrow-left" : "fa-arrow-right")"></i>
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
                     </div>
+                }
+            }
+            else
+            {
+                <div style="grid-column: 1 / -1; text-align: center; padding: 60px 20px; background: white; border-radius: 20px; border: 2px dashed #cbd5e1;">
+                    <i class="fa-solid fa-box-open" style="font-size: 4rem; color: #cbd5e1; margin-bottom: 20px;"></i>
+                    <h3 style="color: var(--text-dark); font-weight: 800; font-size: 1.5rem; margin-bottom: 10px;">@(isRtl ? "لا توجد برامج متاحة حالياً" : "No Programs Available")</h3>
+                    <p style="color: var(--text-gray); font-size: 1rem;">@(isRtl ? "يتم تحديث البرامج والدفعات بشكل مستمر، يرجى العودة لاحقاً." : "Programs are updated constantly, please check back later.")</p>
                 </div>
             }
-        }
-        else
-        {
-            <div class="empty-catalog">
-                <i class="fa-solid fa-box-open" style="font-size: 5rem; color: #cbd5e1; margin-bottom: 25px;"></i>
-                <h3 style="color: var(--primary-color); font-weight: 900; font-size: 2rem;">@(isRtl ? "لا توجد برامج متاحة حالياً" : "No Available Programs")</h3>
-                <p style="color: #64748b; font-size: 1.15rem; margin-top: 10px;">@(isRtl ? "يتم تحديث الدفعات بشكل دوري. يرجى العودة لاحقاً أو متابعتنا على منصات التواصل." : "Batches are updated periodically. Please check back later or follow us on social media.")</p>
-            </div>
-        }
+        </div>
     </div>
 </div>

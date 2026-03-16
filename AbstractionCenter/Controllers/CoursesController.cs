@@ -27,16 +27,17 @@ namespace AbstractionCenter.Controllers
 
         public async Task<IActionResult> Open()
         {
-            var openBatches = await _context.Batches
-                .Include(b => b.Course)
-                .Where(b => b.Status == BatchStatus.OpenForRegistration)
-                .OrderByDescending(b => b.StartDate)
+            // التعديل الجذري: جلب (الدورات) بدلاً من (الدفعات)
+            // لكي يظهر كل كورس في كارت واحد، وبداخله الدفعات المتاحة للاختيار
+            var availableCourses = await _context.Courses
+                .Include(c => c.Batches)
+                .Where(c => c.Batches.Any(b => b.Status == BatchStatus.OpenForRegistration || b.Status == BatchStatus.InProgress))
+                .AsNoTracking()
                 .ToListAsync();
 
-            return View(openBatches);
+            return View(availableCourses);
         }
 
-        // إزالة [Authorize] ليتمكن الزائر من التسجيل
         [HttpGet]
         public async Task<IActionResult> Register(int id)
         {
@@ -44,10 +45,9 @@ namespace AbstractionCenter.Controllers
                 .Include(b => b.Course).ThenInclude(c => c.CustomQuestions)
                 .FirstOrDefaultAsync(b => b.Id == id);
 
-            if (batch == null || batch.Status != BatchStatus.OpenForRegistration)
+            if (batch == null || (batch.Status != BatchStatus.OpenForRegistration && batch.Status != BatchStatus.InProgress))
                 return NotFound();
 
-            // --- التحقق من حالة التسجيل العامة ---
             var isRegActiveSetting = await _context.SiteSettings.FirstOrDefaultAsync(s => s.Key == "Registration_IsActive");
             bool isRegistrationActive = isRegActiveSetting == null || isRegActiveSetting.Value == "true";
             ViewBag.IsRegistrationActive = isRegistrationActive;
@@ -70,14 +70,12 @@ namespace AbstractionCenter.Controllers
         {
             try
             {
-                // فحص أمان إضافي
                 if (batchId <= 0)
                 {
                     TempData["ErrorMessage"] = "حدث خطأ في قراءة بيانات الدفعة. يرجى العودة لصفحة البرامج والمحاولة من جديد.";
                     return RedirectToAction("Open");
                 }
 
-                // التحقق مما إذا كان الإيميل مسجل مسبقاً في هذه الدفعة
                 var existingRequest = await _context.RegistrationRequests.AnyAsync(r => r.BatchId == batchId && r.Email == email && r.Status != RequestStatus.Rejected);
                 if (existingRequest)
                 {
@@ -89,7 +87,7 @@ namespace AbstractionCenter.Controllers
                 {
                     BatchId = batchId,
                     FullName = fullName,
-                    FullNameEn = fullNameEn, // حفظ الاسم الإنجليزي
+                    FullNameEn = fullNameEn,
                     Email = email,
                     Specialization = specialization ?? "غير محدد",
                     Level = level ?? "غير محدد",
@@ -119,12 +117,10 @@ namespace AbstractionCenter.Controllers
                     await _context.SaveChangesAsync();
                 }
 
-                // تحويل الطالب لصفحة الدفع
                 return RedirectToAction("Payment", new { requestId = newRequest.Id });
             }
             catch (Exception ex)
             {
-                // طباعة الخطأ في واجهة المستخدم بدلاً من صفحة 500
                 TempData["ErrorMessage"] = $"حدث خطأ غير متوقع أثناء معالجة الطلب. التفاصيل: {ex.Message}";
                 return RedirectToAction("Register", new { id = batchId });
             }
