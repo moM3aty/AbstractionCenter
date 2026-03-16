@@ -6,6 +6,8 @@ using AbstractionCenter.Models.Entities;
 using Microsoft.EntityFrameworkCore;
 using System.Threading.Tasks;
 using System.Linq;
+using System.Collections.Generic;
+using System;
 
 namespace AbstractionCenter.Controllers
 {
@@ -21,11 +23,12 @@ namespace AbstractionCenter.Controllers
             _userManager = userManager;
         }
 
+        // ==========================================
         // --- النظرة العامة للوحة القيادة ---
+        // ==========================================
         [HttpGet]
         public async Task<IActionResult> Index()
         {
-            // الإحصائيات العامة (أرقام سريعة)
             var totalStudents = await _userManager.GetUsersInRoleAsync("Student");
             ViewBag.TotalStudents = totalStudents.Count;
 
@@ -35,7 +38,6 @@ namespace AbstractionCenter.Controllers
             var instructors = await _userManager.GetUsersInRoleAsync("Instructor");
             ViewBag.ActiveInstructors = instructors.Count(i => i.IsActive);
 
-            // --- الإضافة الجديدة: جلب الدفعات الحالية وعدد طلابها ---
             var openBatchesStats = await _context.Batches
                 .Include(b => b.Course)
                 .Include(b => b.EnrolledStudents)
@@ -49,7 +51,7 @@ namespace AbstractionCenter.Controllers
         }
 
         // ==========================================
-        // 1. إدارة المحاضرين (الجديدة)
+        // 1. إدارة المحاضرين 
         // ==========================================
         [HttpGet]
         public async Task<IActionResult> ManageInstructors()
@@ -65,7 +67,6 @@ namespace AbstractionCenter.Controllers
             var user = await _userManager.FindByIdAsync(id);
             if (user == null) return NotFound();
 
-            // فحص أمان: منع حذف محاضر يمتلك دفعات لحماية قاعدة البيانات
             bool hasBatches = await _context.Batches.AnyAsync(b => b.InstructorId == id);
             if (hasBatches)
             {
@@ -125,10 +126,12 @@ namespace AbstractionCenter.Controllers
             return RedirectToAction(nameof(ManageUsers));
         }
 
+        // ==========================================
+        // إضافة طالب من لوحة الإدارة
+        // ==========================================
         [HttpGet]
         public async Task<IActionResult> CreateStudent()
         {
-            // جلب الدفعات المتاحة ليختار منها الأدمن
             var availableBatches = await _context.Batches
                 .Include(b => b.Course)
                 .Where(b => b.Status != BatchStatus.Closed && b.Status != BatchStatus.Completed)
@@ -138,11 +141,11 @@ namespace AbstractionCenter.Controllers
             ViewBag.AvailableBatches = availableBatches;
             return View();
         }
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CreateStudent(string fullName, string fullNameEn, string email, string phoneNumber, int? selectedBatchId)
         {
-            // التحقق من أن الإيميل غير مسجل مسبقاً
             var existingUser = await _userManager.FindByEmailAsync(email);
             if (existingUser != null)
             {
@@ -155,14 +158,13 @@ namespace AbstractionCenter.Controllers
                 UserName = email,
                 Email = email,
                 FullName = fullName,
-                FullNameEn = fullNameEn, // حفظ الاسم الإنجليزي
+                FullNameEn = fullNameEn, // ربط الاسم بالإنجليزية
                 PhoneNumber = phoneNumber,
                 EmailConfirmed = true,
                 IsActive = true,
                 CreatedAt = DateTime.Now
             };
 
-            // إنشاء الحساب بكلمة مرور عشوائية قوية معقدة (لأن الطالب سيقوم بتغييرها عبر الرابط)
             string randomPassword = $"Abc@123{Guid.NewGuid().ToString().Substring(0, 8)}";
             var result = await _userManager.CreateAsync(user, randomPassword);
 
@@ -170,7 +172,6 @@ namespace AbstractionCenter.Controllers
             {
                 await _userManager.AddToRoleAsync(user, "Student");
 
-                // إذا اختار الأدمن دفعة، يتم تسجيل الطالب فيها فوراً
                 if (selectedBatchId.HasValue && selectedBatchId.Value > 0)
                 {
                     _context.StudentBatches.Add(new StudentBatch
@@ -181,7 +182,6 @@ namespace AbstractionCenter.Controllers
                         EnrollmentDate = DateTime.Now
                     });
 
-                    // إرسال إشعار للطالب
                     var batchInfo = await _context.Batches.Include(b => b.Course).FirstOrDefaultAsync(b => b.Id == selectedBatchId.Value);
                     if (batchInfo != null)
                     {
@@ -197,7 +197,6 @@ namespace AbstractionCenter.Controllers
                     await _context.SaveChangesAsync();
                 }
 
-                // توليد رابط إعداد كلمة المرور
                 var token = await _userManager.GeneratePasswordResetTokenAsync(user);
                 var callbackUrl = Url.Action(
                     "SetPassword",
@@ -213,103 +212,6 @@ namespace AbstractionCenter.Controllers
 
             TempData["ErrorMessage"] = string.Join("<br/>", result.Errors.Select(e => e.Description));
             return RedirectToAction("CreateStudent");
-        }
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> ApproveRequest(int requestId)
-        {
-            var request = await _context.RegistrationRequests
-                .Include(r => r.Batch)
-                .FirstOrDefaultAsync(r => r.Id == requestId);
-
-            if (request == null) return NotFound();
-
-            // 1. التحقق مما إذا كان الطالب لديه حساب مسبق
-            var user = await _userManager.FindByEmailAsync(request.Email);
-            bool isNewUser = false;
-            string passwordResetLink = null;
-
-            if (user == null)
-            {
-                // 2. إنشاء حساب جديد للطالب
-                user = new ApplicationUser
-                {
-                    UserName = request.Email,
-                    Email = request.Email,
-                    FullName = request.FullName,
-                    Specialization = request.Specialization,
-                    PhoneNumber = request.WhatsAppNumber,
-                    IsActive = true,
-                    EmailConfirmed = true
-                };
-
-                // يتم إنشاء الحساب بدون كلمة مرور حالياً (سيضعها الطالب لاحقاً)
-                var result = await _userManager.CreateAsync(user);
-                if (result.Succeeded)
-                {
-                    await _userManager.AddToRoleAsync(user, "Student");
-                    isNewUser = true;
-                }
-                else
-                {
-                    TempData["ErrorMessage"] = "حدث خطأ أثناء إنشاء حساب المستخدم.";
-                    return RedirectToAction("RegistrationRequests");
-                }
-            }
-
-            // 3. ربط الطالب بالدفعة التدريبية
-            var existingEnrollment = await _context.StudentBatches
-                .AnyAsync(sb => sb.StudentId == user.Id && sb.BatchId == request.BatchId);
-
-            if (!existingEnrollment)
-            {
-                _context.StudentBatches.Add(new StudentBatch
-                {
-                    StudentId = user.Id,
-                    BatchId = request.BatchId,
-                    Status = StudentAcademicStatus.Studying,
-                    EnrollmentDate = DateTime.Now
-                });
-            }
-
-            // 4. تحديث حالة الطلب
-            request.Status = RequestStatus.Approved;
-            request.StudentId = user.Id; // ربط الطلب بالـ ID الجديد
-
-            // 5. إرسال إشعار للطالب الجديد (اختياري)
-            _context.Notifications.Add(new Notification
-            {
-                UserId = user.Id,
-                Title = "تم اعتماد تسجيلك بنجاح!",
-                Message = $"أهلاً بك في {request.Batch.Course?.Title}. يمكنك الآن بدء رحلتك التعليمية.",
-                CreatedAt = DateTime.Now
-            });
-
-            await _context.SaveChangesAsync();
-
-            // 6. إذا كان المستخدم جديداً، قم بإنشاء رابط تعيين كلمة المرور
-            if (isNewUser)
-            {
-                var token = await _userManager.GeneratePasswordResetTokenAsync(user);
-
-                // إنشاء رابط التفعيل
-                var callbackUrl = Url.Action(
-                    "SetPassword",
-                    "Account",
-                    new { userId = user.Id, code = token },
-                    protocol: HttpContext.Request.Scheme);
-
-                // إرسال الرابط لشاشة الأدمن لنسخه
-                TempData["PasswordLink"] = callbackUrl;
-                TempData["SuccessMessage"] = "تم قبول الطالب وإنشاء الحساب. يرجى نسخ الرابط أدناه وإرساله للطالب لتعيين كلمة المرور.";
-            }
-            else
-            {
-                TempData["SuccessMessage"] = "تم قبول الطالب وربطه بحسابه الحالي بنجاح.";
-            }
-
-            return RedirectToAction("RegistrationRequests");
         }
 
         [HttpGet]
@@ -328,6 +230,7 @@ namespace AbstractionCenter.Controllers
             if (user == null) return NotFound();
 
             user.FullName = model.FullName;
+            user.FullNameEn = model.FullNameEn; // تحديث الاسم الإنجليزي أيضاً لو أردت إضافته للصفحة لاحقاً
             user.PhoneNumber = model.PhoneNumber;
             user.Specialization = model.Specialization;
 
@@ -356,6 +259,7 @@ namespace AbstractionCenter.Controllers
             return View(user);
         }
 
+
         // ==========================================
         // 3. إدارة الكورسات والدفعات
         // ==========================================
@@ -375,7 +279,6 @@ namespace AbstractionCenter.Controllers
         {
             if (ModelState.IsValid)
             {
-                // يمكن إضافة لوجيك رفع الصورة هنا باستخدام IFileUploaderService
                 _context.Courses.Add(course);
                 await _context.SaveChangesAsync();
                 TempData["SuccessMessage"] = "تم إنشاء المسار التدريبي بنجاح.";
@@ -412,22 +315,72 @@ namespace AbstractionCenter.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteCourse(int id)
         {
-            var course = await _context.Courses.Include(c => c.Batches).FirstOrDefaultAsync(c => c.Id == id);
-            if (course == null) return NotFound();
+            var course = await _context.Courses
+                .Include(c => c.CustomQuestions)
+                .FirstOrDefaultAsync(c => c.Id == id);
 
-            if (course.Batches != null && course.Batches.Any())
+            if (course != null)
             {
-                TempData["ErrorMessage"] = $"لا يمكن حذف الدورة ({course.Title}) لوجود دفعات دراسية مسجلة بها. يرجى حذف الدفعات أولاً.";
-                return RedirectToAction(nameof(ManageCourses));
+                var batches = await _context.Batches.Where(b => b.CourseId == id).ToListAsync();
+                foreach (var batch in batches)
+                {
+                    var batchId = batch.Id;
+
+                    var studentBatches = _context.StudentBatches.Where(sb => sb.BatchId == batchId);
+                    _context.StudentBatches.RemoveRange(studentBatches);
+
+                    var certificates = _context.Certificates.Where(c => c.BatchId == batchId);
+                    _context.Certificates.RemoveRange(certificates);
+
+                    var regRequests = _context.RegistrationRequests.Include(r => r.Answers).Where(r => r.BatchId == batchId);
+                    foreach (var req in regRequests)
+                    {
+                        _context.RegistrationAnswers.RemoveRange(req.Answers);
+                    }
+                    _context.RegistrationRequests.RemoveRange(regRequests);
+
+                    var lessons = _context.Lessons.Where(l => l.BatchId == batchId).ToList();
+                    foreach (var lesson in lessons)
+                    {
+                        var contents = _context.LessonContents.Where(c => c.LessonId == lesson.Id).ToList();
+                        foreach (var content in contents)
+                        {
+                            var submissions = _context.AssignmentSubmissions.Where(s => s.LessonContentId == content.Id);
+                            _context.AssignmentSubmissions.RemoveRange(submissions);
+                        }
+                        _context.LessonContents.RemoveRange(contents);
+                    }
+                    _context.Lessons.RemoveRange(lessons);
+                }
+
+                _context.Batches.RemoveRange(batches);
+
+                if (course.CustomQuestions != null)
+                {
+                    _context.CourseQuestions.RemoveRange(course.CustomQuestions);
+                }
+
+                var finalExams = _context.FinalExams.Where(f => f.CourseId == id).ToList();
+                foreach (var exam in finalExams)
+                {
+                    var examQuestions = _context.ExamQuestions.Where(eq => eq.FinalExamId == exam.Id);
+                    _context.ExamQuestions.RemoveRange(examQuestions);
+                }
+                _context.FinalExams.RemoveRange(finalExams);
+
+                _context.Courses.Remove(course);
+                await _context.SaveChangesAsync();
+
+                TempData["SuccessMessage"] = "تم حذف الدورة وجميع الدفعات والطلاب المرتبطين بها بنجاح.";
             }
 
-            _context.Courses.Remove(course);
-            await _context.SaveChangesAsync();
-
-            TempData["SuccessMessage"] = $"تم حذف الدورة ({course.Title}) بنجاح.";
-            return RedirectToAction(nameof(ManageCourses));
+            return RedirectToAction("ManageCourses");
         }
 
+
+        // ==========================================
+        // الدفعات
+        // ==========================================
         [HttpGet]
         public async Task<IActionResult> ManageBatches(int courseId)
         {
@@ -468,18 +421,15 @@ namespace AbstractionCenter.Controllers
             var batch = await _context.Batches.FindAsync(model.Id);
             if (batch == null) return NotFound();
 
-            // تحديث البيانات الأساسية
             batch.BatchName = model.BatchName;
             batch.StartDate = model.StartDate;
             batch.Status = model.Status;
 
-            // معالجة تعدد المحاضرين
             if (InstructorIds != null && InstructorIds.Any())
             {
-                batch.InstructorId = InstructorIds.First(); // المحاضر الأساسي
+                batch.InstructorId = InstructorIds.First();
                 if (InstructorIds.Count > 1)
                 {
-                    // حفظ الباقي كنص مفصول بفاصلة للاستخدام الداخلي
                     batch.AdditionalInstructorIds = string.Join(",", InstructorIds.Skip(1));
                 }
                 else
@@ -488,7 +438,6 @@ namespace AbstractionCenter.Controllers
                 }
             }
 
-            // تحديث إعدادات العرض والتسعير
             batch.ExecutionNote = model.ExecutionNote ?? "Delivered by Abstraction Training Team";
             batch.ShowExecutionNote = model.ShowExecutionNote;
             batch.Price = model.Price;
@@ -505,23 +454,47 @@ namespace AbstractionCenter.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteBatch(int id)
         {
-            var batch = await _context.Batches.Include(b => b.EnrolledStudents).FirstOrDefaultAsync(b => b.Id == id);
-            if (batch == null) return NotFound();
-
-            // حماية: منع حذف الدفعة إذا كان بها طلاب مسجلين
-            if (batch.EnrolledStudents != null && batch.EnrolledStudents.Any())
+            var batch = await _context.Batches.FindAsync(id);
+            if (batch != null)
             {
-                TempData["ErrorMessage"] = "لا يمكن حذف هذه الدفعة لوجود طلاب مسجلين بها. يرجى نقل الطلاب لدفعة أخرى أو إلغاء تسجيلهم أولاً.";
-                return RedirectToAction(nameof(ManageBatches), new { courseId = batch.CourseId });
+                int courseId = batch.CourseId;
+
+                var studentBatches = _context.StudentBatches.Where(sb => sb.BatchId == id);
+                _context.StudentBatches.RemoveRange(studentBatches);
+
+                var certificates = _context.Certificates.Where(c => c.BatchId == id);
+                _context.Certificates.RemoveRange(certificates);
+
+                var regRequests = _context.RegistrationRequests.Include(r => r.Answers).Where(r => r.BatchId == id);
+                foreach (var req in regRequests)
+                {
+                    _context.RegistrationAnswers.RemoveRange(req.Answers);
+                }
+                _context.RegistrationRequests.RemoveRange(regRequests);
+
+                var lessons = _context.Lessons.Where(l => l.BatchId == id).ToList();
+                foreach (var lesson in lessons)
+                {
+                    var contents = _context.LessonContents.Where(c => c.LessonId == lesson.Id).ToList();
+                    foreach (var content in contents)
+                    {
+                        var submissions = _context.AssignmentSubmissions.Where(s => s.LessonContentId == content.Id);
+                        _context.AssignmentSubmissions.RemoveRange(submissions);
+                    }
+                    _context.LessonContents.RemoveRange(contents);
+                }
+                _context.Lessons.RemoveRange(lessons);
+
+                _context.Batches.Remove(batch);
+                await _context.SaveChangesAsync();
+
+                TempData["SuccessMessage"] = "تم حذف الدفعة وجميع البيانات والطلاب المرتبطين بها بنجاح.";
+                return RedirectToAction("ManageBatches", new { courseId = courseId });
             }
 
-            int courseId = batch.CourseId;
-            _context.Batches.Remove(batch);
-            await _context.SaveChangesAsync();
-
-            TempData["SuccessMessage"] = "تم حذف الدفعة بشكل نهائي بنجاح.";
-            return RedirectToAction(nameof(ManageBatches), new { courseId = courseId });
+            return RedirectToAction("ManageCourses");
         }
+
 
         // ==========================================
         // 4. طلبات التسجيل للطلاب
@@ -548,7 +521,93 @@ namespace AbstractionCenter.Controllers
             return View(req);
         }
 
-        
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ApproveRequest(int requestId)
+        {
+            var request = await _context.RegistrationRequests
+                .Include(r => r.Batch)
+                .FirstOrDefaultAsync(r => r.Id == requestId);
+
+            if (request == null) return NotFound();
+
+            var user = await _userManager.FindByEmailAsync(request.Email);
+            bool isNewUser = false;
+
+            if (user == null)
+            {
+                user = new ApplicationUser
+                {
+                    UserName = request.Email,
+                    Email = request.Email,
+                    FullName = request.FullName,
+                    FullNameEn = request.FullNameEn, // حفظ الاسم الإنجليزي من استمارة الطالب
+                    Specialization = request.Specialization,
+                    PhoneNumber = request.WhatsAppNumber,
+                    IsActive = true,
+                    EmailConfirmed = true
+                };
+
+                var result = await _userManager.CreateAsync(user);
+                if (result.Succeeded)
+                {
+                    await _userManager.AddToRoleAsync(user, "Student");
+                    isNewUser = true;
+                }
+                else
+                {
+                    TempData["ErrorMessage"] = "حدث خطأ أثناء إنشاء حساب المستخدم.";
+                    return RedirectToAction("RegistrationRequests");
+                }
+            }
+
+            var existingEnrollment = await _context.StudentBatches
+                .AnyAsync(sb => sb.StudentId == user.Id && sb.BatchId == request.BatchId);
+
+            if (!existingEnrollment)
+            {
+                _context.StudentBatches.Add(new StudentBatch
+                {
+                    StudentId = user.Id,
+                    BatchId = request.BatchId,
+                    Status = StudentAcademicStatus.Studying,
+                    EnrollmentDate = DateTime.Now
+                });
+            }
+
+            request.Status = RequestStatus.Approved;
+            request.StudentId = user.Id;
+
+            _context.Notifications.Add(new Notification
+            {
+                UserId = user.Id,
+                Title = "تم اعتماد تسجيلك بنجاح!",
+                Message = $"أهلاً بك في {request.Batch.Course?.Title}. يمكنك الآن بدء رحلتك التعليمية.",
+                CreatedAt = DateTime.Now
+            });
+
+            await _context.SaveChangesAsync();
+
+            if (isNewUser)
+            {
+                var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+
+                var callbackUrl = Url.Action(
+                    "SetPassword",
+                    "Account",
+                    new { userId = user.Id, code = token },
+                    protocol: HttpContext.Request.Scheme);
+
+                TempData["PasswordLink"] = callbackUrl;
+                TempData["SuccessMessage"] = "تم قبول الطالب وإنشاء الحساب. يرجى نسخ الرابط أدناه وإرساله للطالب لتعيين كلمة المرور.";
+            }
+            else
+            {
+                TempData["SuccessMessage"] = "تم قبول الطالب وربطه بحسابه الحالي بنجاح.";
+            }
+
+            return RedirectToAction("RegistrationRequests");
+        }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -581,7 +640,6 @@ namespace AbstractionCenter.Controllers
             var app = await _context.InstructorApplications.FindAsync(id);
             if (app != null && app.Status == RequestStatus.Pending)
             {
-                // إنشاء حساب المحاضر آلياً
                 var newUser = new ApplicationUser
                 {
                     UserName = app.Email,
